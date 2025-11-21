@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: 'root',
       password: 'rootroot',
       database: 'crm-programming-school',
-      autoLoadEntities: true,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
   ],
