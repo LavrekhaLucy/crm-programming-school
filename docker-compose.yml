@@ -3,8 +3,8 @@ services:
     image: mysql:8
     environment:
       - MYSQL_DATABASE=crm-programming-school
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=rootroot
+#      - MYSQL_USER=root
+#      - MYSQL_PASSWORD=rootroot
       - MYSQL_ROOT_PASSWORD=rootroot
     ports:
       - '3307:3306'
