@@ -1,6 +1,6 @@
 export enum TableNameEnum {
   ORDERS = 'orders',
-  ESTABLISHMENT = 'establishment',
+  USERS = 'users',
   REVIEW = 'review',
   FAVORITE = 'favorite',
   COMMENT = 'comment',
