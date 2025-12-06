@@ -7,32 +7,32 @@ export class OrderEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column({ type: 'varchar', length: 25 })
-  name: string;
+  @Column({ type: 'varchar', length: 25, nullable: true })
+  name?: string;
 
-  @Column({ type: 'varchar', length: 25 })
-  surname: string;
+  @Column({ type: 'varchar', length: 25, nullable: true })
+  surname?: string;
 
-  @Column({ type: 'varchar', length: 100, unique: true })
-  email: string;
+  @Column({ type: 'varchar', length: 100, nullable: true, unique: true })
+  email?: string;
 
-  @Column({ type: 'varchar', length: 12 })
-  phone: string;
+  @Column({ type: 'varchar', length: 12, nullable: true })
+  phone?: string;
 
-  @Column({ type: 'int' })
-  age: number;
+  @Column({ type: 'int', nullable: true })
+  age?: number;
 
-  @Column({ type: 'varchar', length: 10 })
-  course: string;
+  @Column({ type: 'varchar', length: 10, nullable: true })
+  course?: string;
 
-  @Column({ type: 'varchar', length: 15 })
-  course_format: string;
+  @Column({ type: 'varchar', length: 15, nullable: true })
+  course_format?: string;
 
-  @Column({ type: 'varchar', length: 100 })
-  course_type: string;
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  course_type?: string;
 
-  @Column({ type: 'int' })
-  sum: number;
+  @Column({ type: 'int', nullable: true })
+  sum?: number;
 
   @Column({ type: 'int', default: 0 })
   alreadyPaid: number;
@@ -43,6 +43,6 @@ export class OrderEntity extends CreateUpdateModel {
   @Column({ type: 'varchar', length: 100, nullable: true })
   msg?: string;
 
-  @Column({ type: 'varchar', length: 15, default: 'pending' })
-  status: string;
+  @Column({ type: 'varchar', length: 15, nullable: true })
+  status?: string;
 }

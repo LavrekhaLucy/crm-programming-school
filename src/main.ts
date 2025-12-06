@@ -2,9 +2,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-// import { SwaggerHelper } from './common/helpers/swagger.helper';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from './configs/config.type';
+import { SwaggerHelper } from './common/helpers/swagger.helper';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,7 +28,7 @@ async function bootstrap() {
     }),
   );
   const document = SwaggerModule.createDocument(app, config);
-  // SwaggerHelper.setDefaultResponses(document);
+  SwaggerHelper.setDefaultResponses(document);
   SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {
       docExpansion: 'list',

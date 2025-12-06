@@ -8,50 +8,61 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { TransformHelper } from '../../../../../common/helpers/transform.helper';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto {
+  @ApiProperty({ example: 'Alice' })
   @IsString()
   @Length(1, 25)
   @Transform(TransformHelper.trim)
   name: string;
 
+  @ApiProperty({ example: 'Smith' })
   @IsString()
   @Length(1, 25)
   @Transform(TransformHelper.trim)
   surname: string;
 
+  @ApiProperty({ example: 'Alice@gmail.com' })
   @IsEmail()
   @Length(1, 100)
   @Transform(TransformHelper.trim)
   email: string;
 
+  @ApiProperty({ example: '123456789' })
   @IsString()
   @Length(1, 12)
   @Transform(TransformHelper.trim)
   phone: string;
 
+  @ApiProperty({ example: 25 })
   @IsInt()
   @Min(0)
   age: number;
 
+  @ApiProperty({ example: 'FC' })
   @IsString()
   @Length(1, 10)
   @Transform(TransformHelper.trim)
   course: string;
 
+  @ApiProperty({ example: 'Online' })
   @IsString()
   @Length(1, 15)
   @Transform(TransformHelper.trim)
   course_format: string;
 
+  @ApiProperty({ example: 'VIP' })
   @IsString()
   @Length(1, 100)
   @Transform(TransformHelper.trim)
   course_type: string;
 
+  @ApiProperty({ example: 1000 })
   @IsInt()
   sum: number;
 
+  @ApiProperty({ example: 1000 })
   @IsOptional()
   @IsInt()
   alreadyPaid?: number;

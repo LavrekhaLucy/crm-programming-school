@@ -12,7 +12,10 @@ import { OrdersService } from './services/order.service';
 import { CreateOrderDto } from './models/dto/req/create-order.dto';
 import { OrderEntity } from '../../database/entities/orders/order.entity';
 import { UpdateOrderDto } from './models/dto/req/update-order.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { ResponseOrderDto } from './models/dto/res/response-order.dto';
 
+@ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
@@ -23,7 +26,7 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(): Promise<OrderEntity[]> {
+  findAll(): Promise<ResponseOrderDto[]> {
     return this.ordersService.findAll();
   }
 
@@ -41,7 +44,7 @@ export class OrdersController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.ordersService.remove(id);
+  delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.ordersService.delete(id);
   }
 }

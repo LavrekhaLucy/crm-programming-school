@@ -9,33 +9,36 @@ import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 export class OrdersService {
   constructor(
     @InjectRepository(OrderEntity)
-    private readonly orderRepo: Repository<OrderEntity>,
+    private readonly orderRepository: Repository<OrderEntity>,
   ) {}
 
   async create(dto: CreateOrderDto): Promise<OrderEntity> {
-    const order = this.orderRepo.create(dto);
-    return this.orderRepo.save(order);
+    const newOrder = this.orderRepository.create(dto);
+    return this.orderRepository.save(newOrder);
   }
 
   async findAll(): Promise<OrderEntity[]> {
-    return this.orderRepo.find();
+    return this.orderRepository.find();
   }
 
   async findOne(id: number): Promise<OrderEntity> {
-    const order = await this.orderRepo.findOne({ where: { id } });
-    if (!order) throw new NotFoundException(`Order #${id} not found`);
+    const order = await this.orderRepository.findOne({ where: { id } });
+    if (!order) {
+      throw new NotFoundException(`Order #${id} not found`);
+    }
     return order;
   }
 
   async update(id: number, dto: UpdateOrderDto): Promise<OrderEntity> {
-    const order = await this.findOne(id);
-    Object.assign(order, dto);
-    return this.orderRepo.save(order);
+    await this.orderRepository.update(id, dto);
+    return this.findOne(id);
   }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.orderRepo.delete(id);
-    if (result.affected === 0)
+  async delete(id: number): Promise<void> {
+    const result = await this.orderRepository.delete(id);
+
+    if (!result) {
       throw new NotFoundException(`Order #${id} not found`);
+    }
   }
 }
