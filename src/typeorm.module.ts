@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as path from 'node:path';
 
 @Module({
   imports: [
@@ -12,6 +13,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: 'crm-programming-school',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
+      migrationsRun: false,
+      migrations: [path.join(process.cwd(), 'src/database/migrations/*.ts')],
     }),
   ],
 })

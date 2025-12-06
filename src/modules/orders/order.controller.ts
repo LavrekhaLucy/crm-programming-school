@@ -1,19 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Param,
   Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
   ParseIntPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
 import { OrdersService } from './services/order.service';
 import { CreateOrderDto } from './models/dto/req/create-order.dto';
 import { OrderEntity } from '../../database/entities/orders/order.entity';
 import { UpdateOrderDto } from './models/dto/req/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { ResponseOrderDto } from './models/dto/res/response-order.dto';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -26,7 +25,7 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(): Promise<ResponseOrderDto[]> {
+  findAll(): Promise<OrderEntity[]> {
     return this.ordersService.findAll();
   }
 

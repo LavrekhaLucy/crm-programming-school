@@ -1,8 +1,7 @@
-import { IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ResponseOrderDto {
-  @ApiProperty({ example: 'Alice' })
+  @ApiProperty({ example: 1 })
   id: number;
 
   @ApiProperty({ example: 'Alice' })
@@ -35,12 +34,12 @@ export class ResponseOrderDto {
   @ApiProperty({ example: 1000 })
   alreadyPaid?: number;
 
-  @IsOptional()
+  @ApiProperty({ example: 'facebook', nullable: true })
   utm?: string;
 
-  @IsOptional()
+  @ApiProperty({ example: 'Call after 6PM', nullable: true })
   msg?: string;
 
-  @IsOptional()
+  @ApiProperty({ example: 'NEW', nullable: true })
   status?: string;
 }
