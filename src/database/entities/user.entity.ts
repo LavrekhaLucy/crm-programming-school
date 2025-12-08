@@ -12,8 +12,8 @@ export class UserEntity extends CreateUpdateModel {
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 125, nullable: true })
-  password: string;
+  @Column({ type: 'varchar', length: 100 })
+  passwordHash: string;
 
   @IsEnum(UserRoleEnum)
   @Column({ type: 'enum', enum: UserRoleEnum, default: 'manager' })
