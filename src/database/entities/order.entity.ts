@@ -1,6 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { CreateUpdateModel } from '../models/create-update.model';
-import { TableNameEnum } from '../enums/table-name.enum';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { CreateUpdateModel } from './models/create-update.model';
+import { TableNameEnum } from './enums/table-name.enum';
+import { CoursesEnum } from './enums/courses.enum';
+import { FormatsEnum } from './enums/formats.enum';
+import { TypesEnum } from './enums/types.enum';
+import { StatusesEnum } from './enums/statuses.enum';
 
 @Entity(TableNameEnum.ORDERS)
 export class OrderEntity extends CreateUpdateModel {
@@ -23,13 +27,16 @@ export class OrderEntity extends CreateUpdateModel {
   age?: number;
 
   @Column({ type: 'varchar', length: 10, nullable: true })
-  course?: string;
+  course?: CoursesEnum;
 
   @Column({ type: 'varchar', length: 15, nullable: true })
-  course_format?: string;
+  course_format?: FormatsEnum;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
-  course_type?: string;
+  course_type?: TypesEnum;
+
+  @Column({ type: 'varchar', length: 15, nullable: true })
+  status?: StatusesEnum;
 
   @Column({ type: 'int', nullable: true })
   sum?: number;
@@ -43,6 +50,18 @@ export class OrderEntity extends CreateUpdateModel {
   @Column({ type: 'varchar', length: 100, nullable: true })
   msg?: string;
 
-  @Column({ type: 'varchar', length: 15, nullable: true })
-  status?: string;
+  // @Column({ nullable: true })
+  // group_name: string;
+  //
+  // @Column({ nullable: true })
+  // manager_id: number;
+  //
+  // @ManyToOne(() => UserEntity, (entity) => entity.orders, {
+  //   onDelete: 'SET NULL',
+  // })
+  // @JoinColumn({ name: 'manager_id' })
+  // manager: UserEntity;
+  //
+  // @OneToMany(() => CommentEntity, (entity) => entity.order)
+  // comments?: CommentEntity[];
 }

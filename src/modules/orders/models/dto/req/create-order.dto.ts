@@ -9,6 +9,10 @@ import {
 import { Transform } from 'class-transformer';
 import { TransformHelper } from '../../../../../common/helpers/transform.helper';
 import { ApiProperty } from '@nestjs/swagger';
+import { CoursesEnum } from '../../../../../database/entities/enums/courses.enum';
+import { FormatsEnum } from '../../../../../database/entities/enums/formats.enum';
+import { TypesEnum } from '../../../../../database/entities/enums/types.enum';
+import { StatusesEnum } from '../../../../../database/entities/enums/statuses.enum';
 
 export class CreateOrderDto {
   @ApiProperty({ example: 'Alice' })
@@ -44,19 +48,19 @@ export class CreateOrderDto {
   @IsString()
   @Length(1, 10)
   @Transform(TransformHelper.trim)
-  course: string;
+  course: CoursesEnum;
 
   @ApiProperty({ example: 'Online' })
   @IsString()
   @Length(1, 15)
   @Transform(TransformHelper.trim)
-  course_format: string;
+  course_format: FormatsEnum;
 
   @ApiProperty({ example: 'VIP' })
   @IsString()
   @Length(1, 100)
   @Transform(TransformHelper.trim)
-  course_type: string;
+  course_type: TypesEnum;
 
   @ApiProperty({ example: 1000 })
   @IsInt()
@@ -82,5 +86,5 @@ export class CreateOrderDto {
   @IsOptional()
   @IsString()
   @Length(0, 15)
-  status?: string;
+  status?: StatusesEnum;
 }

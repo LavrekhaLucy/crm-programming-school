@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './configs/configuration';
 import { OrdersModule } from './modules/orders/order.module';
 import { UsersController } from './modules/users/users.controller';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersController } from './modules/users/users.controller';
     }),
     TypeormModule,
     OrdersModule,
+    AuthModule,
   ],
   controllers: [UsersController],
   providers: [],
