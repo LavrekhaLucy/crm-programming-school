@@ -10,7 +10,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  login(@Request() req: AuthRequest) {
+  login(@Request() req: AuthRequest): Promise<{ access_token: string }> {
     return this.authService.login(req.user);
   }
 }

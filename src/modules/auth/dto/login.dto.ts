@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 
 export class LoginDto {
   @IsString()
-  name: string;
+  username: string;
 
   @IsString()
   password: string;

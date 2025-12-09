@@ -20,7 +20,7 @@ export class UserEntity extends CreateUpdateModel {
   @Column({ type: 'enum', enum: UserRoleEnum, default: 'manager' })
   role: UserRoleEnum;
 
-  @Column({ type: 'varchar', length: 25 })
+  @Column({ type: 'varchar', length: 25, unique: true })
   username: string;
 
   @Column({ type: 'varchar', length: 25 })
