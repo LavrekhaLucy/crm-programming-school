@@ -1,8 +1,15 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/create-update.model';
 import { IsEnum } from 'class-validator';
 import { UserRoleEnum } from './enums/user-role.enum';
+import * as bcrypt from 'bcrypt';
 import { TokenEntity } from './token.entity';
 
 @Entity(TableNameEnum.USERS)
@@ -14,14 +21,14 @@ export class UserEntity extends CreateUpdateModel {
   email: string;
 
   @Column({ type: 'varchar', length: 100 })
-  passwordHash: string;
+  password: string;
 
   @IsEnum(UserRoleEnum)
   @Column({ type: 'enum', enum: UserRoleEnum, default: 'manager' })
   role: UserRoleEnum;
 
-  @Column({ type: 'varchar', length: 25 })
-  name: string;
+  @Column({ type: 'varchar', length: 25, unique: true })
+  username: string;
 
   @Column({ type: 'varchar', length: 25 })
   surname: string;
@@ -46,4 +53,13 @@ export class UserEntity extends CreateUpdateModel {
   //
   // @OneToMany(() => CommentEntity, (entity) => entity.user)
   // comments: CommentEntity[];
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }
