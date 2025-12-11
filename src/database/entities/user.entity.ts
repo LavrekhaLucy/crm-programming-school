@@ -1,8 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/create-update.model';
 import { IsEnum } from 'class-validator';
 import { UserRoleEnum } from './enums/user-role.enum';
+import { TokenEntity } from './token.entity';
 
 @Entity(TableNameEnum.USERS)
 export class UserEntity extends CreateUpdateModel {
@@ -36,6 +37,9 @@ export class UserEntity extends CreateUpdateModel {
 
   @Column({ type: 'boolean', default: false })
   isAdultAccepted: boolean;
+
+  @OneToMany(() => TokenEntity, (token: TokenEntity) => token.user)
+  tokens: TokenEntity[];
 
   // @OneToMany(() => OrderEntity, (entity) => entity.manager)
   // orders: OrderEntity[];
