@@ -7,17 +7,21 @@ import { LoginDto } from './dto/login.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenEntity } from '../../database/entities/token.entity';
 import { ConfigService } from '@nestjs/config';
+import { ITokens } from './interfaces/token.interface';
+import { RefreshTokenDto } from './models/refresh-token.dto';
+import { IJwtPayload } from '../users/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
-  private accessTokenExpiresIn: number;
-  private refreshTokenExpiresIn: number;
+  private readonly accessTokenExpiresIn: number;
+  private readonly refreshTokenExpiresIn: number;
+
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     @InjectRepository(TokenEntity)
-    private tokenRepository: Repository<TokenEntity>,
-    private jwtService: JwtService,
+    private readonly tokenRepository: Repository<TokenEntity>,
+    private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
     this.accessTokenExpiresIn =
@@ -31,14 +35,93 @@ export class AuthService {
     return this.userRepository.save(user);
   }
 
-  async login(loginDto: LoginDto): Promise<{ access_token: string }> {
+  async login(loginDto: LoginDto): Promise<ITokens> {
     const user = await this.validateUser(loginDto.username, loginDto.password);
     const jti = Math.random().toString(36).substring(2);
     const payload = { userId: user.id, username: user.username, jti };
-
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: `${this.accessTokenExpiresIn}s`,
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: `${this.refreshTokenExpiresIn}s`,
+    });
+    await this.saveTokens(
+      user,
+      accessToken,
+      refreshToken,
+      this.accessTokenExpiresIn,
+      this.refreshTokenExpiresIn,
+      jti,
+    );
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken,
+      refreshToken,
     };
+  }
+
+  async refresh(refreshTokenDto: RefreshTokenDto): Promise<ITokens> {
+    const { refreshToken } = refreshTokenDto;
+    try {
+      this.jwtService.verify<IJwtPayload>(refreshToken);
+      const tokenEntity = await this.tokenRepository.findOne({
+        where: { refreshToken, IsBlocked: false },
+        relations: ['user'],
+      });
+      if (!tokenEntity || tokenEntity.refreshTokenExpiresAt < new Date()) {
+        throw new UnauthorizedException('Invalid or expired refresh token');
+      }
+      tokenEntity.IsBlocked = true;
+      await this.tokenRepository.save(tokenEntity);
+
+      const jti = Math.random().toString(36).substring(2);
+      const payload = {
+        userId: tokenEntity.user.id,
+        username: tokenEntity.user.username,
+        jti,
+      };
+      const newAccessToken = this.jwtService.sign(payload, {
+        expiresIn: `${this.accessTokenExpiresIn}s`,
+      });
+      const newRefreshToken = this.jwtService.sign(payload, {
+        expiresIn: `${this.refreshTokenExpiresIn}s`,
+      });
+      await this.saveTokens(
+        tokenEntity.user,
+        newAccessToken,
+        newRefreshToken,
+        this.accessTokenExpiresIn,
+        this.refreshTokenExpiresIn,
+        jti,
+      );
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+      };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+  }
+
+  private async saveTokens(
+    user: UserEntity,
+    accessToken: string,
+    refreshToken: string,
+    accessTokenExpiresIn: number,
+    refreshTokenExpiresIn: number,
+    jti: string,
+  ): Promise<void> {
+    const tokenEntity = this.tokenRepository.create({
+      accessToken,
+      refreshToken,
+      accessTokenExpiresAt: new Date(Date.now() + accessTokenExpiresIn * 1000),
+      refreshTokenExpiresAt: new Date(
+        Date.now() + refreshTokenExpiresIn * 1000,
+      ),
+      user,
+      jti,
+    });
+    await this.tokenRepository.save(tokenEntity);
   }
 
   private async validateUser(
@@ -52,19 +135,4 @@ export class AuthService {
     }
     return user;
   }
-  //   private async saveTokens(
-  //       const tokenEntity = this.tokenRepository.create(
-  //           user: UserEntity,
-  //   accessToken:string,
-  //   refreshToken:string,
-  //   accessTokenExpiresIn:number,
-  //   refreshTokenExpiresIn:number,
-  //   jti:string,
-  // )Promise<void >{
-  //         this.tokenRepository.create({
-  //           accessToken,
-  //           refreshToken,
-  //           accessTokenExpiresAt:new Date(Date.now()+this.accessTokenExpiresIn*1000),
-  //         })
-  //   }
 }
