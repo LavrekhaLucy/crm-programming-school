@@ -11,6 +11,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import type { UserRequest } from '../users/interfaces/user-request.interface';
 import { AuthGuard } from '@nestjs/passport';
+import { RefreshTokenDto } from './models/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +25,16 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Post('refresh')
+  async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.refresh(refreshTokenDto);
+  }
+
+  @Post('logout')
+  async logout(@Body() refreshTokenDto: RefreshTokenDto) {
+    return this.authService.logOut(refreshTokenDto);
   }
 
   @UseGuards(AuthGuard('jwt'))

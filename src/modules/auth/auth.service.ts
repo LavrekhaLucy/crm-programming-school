@@ -103,6 +103,17 @@ export class AuthService {
     }
   }
 
+  async logOut(refreshTokenDto: RefreshTokenDto): Promise<void> {
+    const { refreshToken } = refreshTokenDto;
+    const tokenEntity = await this.tokenRepository.findOne({
+      where: { refreshToken, IsBlocked: false },
+    });
+    if (tokenEntity) {
+      tokenEntity.IsBlocked = true;
+      await this.tokenRepository.save(tokenEntity);
+    }
+  }
+
   private async saveTokens(
     user: UserEntity,
     accessToken: string,
