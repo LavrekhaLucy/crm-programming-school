@@ -25,9 +25,9 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {
     this.accessTokenExpiresIn =
-      this.configService.get<number>('ACCESS_TOKEN_EXPIRATION') || 0;
+      this.configService.get<number>('ACCESS_TOKEN_EXPIRATION_TIME') || 0;
     this.refreshTokenExpiresIn =
-      this.configService.get<number>('REFRESH_TOKEN_EXPIRATION') || 0;
+      this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_TIME') || 0;
   }
 
   async register(registerDto: RegisterDto): Promise<UserEntity> {

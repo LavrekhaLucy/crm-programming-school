@@ -6,6 +6,7 @@ import configuration from './configs/configuration';
 import { OrdersModule } from './modules/orders/order.module';
 import { UsersController } from './modules/users/users.controller';
 import { AuthModule } from './modules/auth/auth.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -16,8 +17,8 @@ import { AuthModule } from './modules/auth/auth.module';
     TypeormModule,
     OrdersModule,
     AuthModule,
+    SharedModule,
   ],
   controllers: [UsersController],
-  providers: [],
 })
 export class AppModule {}
