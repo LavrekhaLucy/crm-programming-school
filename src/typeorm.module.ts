@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SharedModule } from './shared/shared.module';
 import { EnvService } from './shared/env.service';
+import path from 'node:path';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { EnvService } from './shared/env.service';
         database: envService.mysqlDatabase,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false,
-        // migrations: [path.join(process.cwd(), 'src/database/migrations/*.ts')],
+        migrations: [path.join(process.cwd(), 'src/database/migrations/*.ts')],
       }),
       inject: [EnvService],
     }),
