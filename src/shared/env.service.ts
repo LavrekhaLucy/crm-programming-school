@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EnvService {
-  public readonly dbType: string;
+  public readonly db_Type: string;
   public readonly mysqlHost: string;
   public readonly mysqlPort: number;
   public readonly mysqlDatabase: string;
@@ -17,7 +17,7 @@ export class EnvService {
   public readonly refreshTokenExpirationTime: number;
 
   constructor(private configService: ConfigService) {
-    this.dbType = this.configService.get<string>('TYPE') || 'mysql';
+    this.db_Type = this.configService.get<string>('TYPE') || 'mysql';
     this.mysqlHost = this.configService.get<string>('MYSQL_HOST') || '';
     this.mysqlPort = this.configService.get<number>('MYSQL_PORT', 3306);
     this.mysqlDatabase = this.configService.get<string>(

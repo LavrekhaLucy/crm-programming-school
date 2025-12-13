@@ -8,7 +8,7 @@ import { EnvService } from './shared/env.service';
     TypeOrmModule.forRootAsync({
       imports: [SharedModule],
       useFactory: (envService: EnvService) => ({
-        type: envService.dbType as 'mysql',
+        type: envService.db_Type as 'mysql',
         host: envService.mysqlHost,
         port: envService.mysqlPort,
         username: envService.mysqlUser,

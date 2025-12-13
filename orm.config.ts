@@ -6,7 +6,7 @@ const configService = new ConfigService();
 const envService = new EnvService(configService);
 
 export default new DataSource({
-  type: envService.dbType as 'mysql',
+  type: envService.db_Type as 'mysql',
   host: envService.mysqlHost,
   port: envService.mysqlPort,
   username: envService.mysqlUser,
