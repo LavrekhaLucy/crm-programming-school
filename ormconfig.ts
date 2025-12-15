@@ -1,7 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { EnvService } from './src/shared/env.service';
 import { DataSource } from 'typeorm';
-import path from 'node:path';
 
 const configService = new ConfigService();
 const envService = new EnvService(configService);
@@ -15,5 +14,5 @@ export default new DataSource({
   database: envService.mysqlDatabase,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
-  migrations: [path.join(process.cwd(), 'src/database/migrations/*.ts')],
+  migrations: [__dirname + '/src/database/migrations/*{.ts,.js}'],
 });
