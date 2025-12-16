@@ -14,18 +14,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     @InjectRepository(TokenEntity)
     private readonly tokenRepository: Repository<TokenEntity>,
   ) {
-    const jwtSecret = configService.get<string>('JWT_SECRET') || '';
+    const jwtAccessSecret =
+      configService.get<string>('JWT_ACCESS_SECRET') || '';
 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtSecret,
+      secretOrKey: jwtAccessSecret,
     });
   }
 
   async validate(payload: IJwtPayload): Promise<IJwtPayload> {
     const tokenEntity = await this.tokenRepository.findOne({
-      where: { jti: payload.jti, IsBlocked: false },
+      where: { jti: payload.jti, isBlocked: false },
       relations: ['user'],
     });
     if (!tokenEntity) {

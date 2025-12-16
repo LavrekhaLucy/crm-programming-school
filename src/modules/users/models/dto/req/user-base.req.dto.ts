@@ -15,12 +15,12 @@ export class BaseUserReqDto {
   @IsString()
   @Length(3, 50)
   @Transform(TransformHelper.trim)
-  name: string;
+  name?: string;
 
   @IsString()
   @Length(3, 50)
   @Transform(TransformHelper.trim)
-  surname: string;
+  surname?: string;
 
   @IsString()
   @Length(3, 50)
@@ -42,7 +42,7 @@ export class BaseUserReqDto {
 
   @ApiProperty({ example: 'manager' })
   @IsEnum(UserRoleEnum)
-  role: UserRoleEnum;
+  role?: UserRoleEnum;
 
   @ApiProperty({ required: false })
   @IsOptional()

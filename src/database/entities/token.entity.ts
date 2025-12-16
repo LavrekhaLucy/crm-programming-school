@@ -20,14 +20,14 @@ export class TokenEntity extends CreateUpdateModel {
   @Column()
   refreshToken: string;
 
-  @Column()
+  @Column({ type: 'datetime', precision: 6 })
   accessTokenExpiresAt: Date;
 
-  @Column()
+  @Column({ type: 'datetime', precision: 6 })
   refreshTokenExpiresAt: Date;
 
-  @Column()
-  IsBlocked: boolean;
+  @Column({ type: 'boolean', default: false })
+  isBlocked: boolean;
 
   @Column({ unique: true })
   jti: string;
@@ -36,6 +36,6 @@ export class TokenEntity extends CreateUpdateModel {
   userId: number;
 
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.tokens)
-  @JoinColumn({ name: 'userId' }) // Явно вказуємо назву колонки для FK
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 }

@@ -12,7 +12,7 @@ export class EnvService {
   public readonly mysqlPassword: string;
   public readonly mysqlRootPassword: string;
 
-  public readonly jwtSecret: string;
+  public readonly jwtAccessSecret: string;
   public readonly jwtExpirationTime: number;
   public readonly accessTokenExpirationTime: number;
   public readonly refreshTokenExpirationTime: number;
@@ -29,7 +29,8 @@ export class EnvService {
     this.mysqlPassword = this.configService.get<string>('MYSQL_PASSWORD') || '';
     this.mysqlRootPassword =
       this.configService.get<string>('MYSQL_ROOT_PASSWORD') || '';
-    this.jwtSecret = this.configService.get<string>('JWT_SECRET') || '';
+    this.jwtAccessSecret =
+      this.configService.get<string>('JWT_ACCESS_SECRET') || '';
     this.jwtExpirationTime =
       this.configService.get<number>('JWT_EXPIRATION_TIME') || 3600;
     this.accessTokenExpirationTime =

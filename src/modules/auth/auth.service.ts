@@ -64,13 +64,13 @@ export class AuthService {
     try {
       this.jwtService.verify<IJwtPayload>(refreshToken);
       const tokenEntity = await this.tokenRepository.findOne({
-        where: { refreshToken, IsBlocked: false },
+        where: { refreshToken, isBlocked: false },
         relations: ['user'],
       });
       if (!tokenEntity || tokenEntity.refreshTokenExpiresAt < new Date()) {
         throw new UnauthorizedException('Invalid or expired refresh token');
       }
-      tokenEntity.IsBlocked = true;
+      tokenEntity.isBlocked = true;
       await this.tokenRepository.save(tokenEntity);
 
       const jti = Math.random().toString(36).substring(2);
@@ -106,10 +106,10 @@ export class AuthService {
   async logOut(refreshTokenDto: RefreshTokenDto): Promise<void> {
     const { refreshToken } = refreshTokenDto;
     const tokenEntity = await this.tokenRepository.findOne({
-      where: { refreshToken, IsBlocked: false },
+      where: { refreshToken, isBlocked: false },
     });
     if (tokenEntity) {
-      tokenEntity.IsBlocked = true;
+      tokenEntity.isBlocked = true;
       await this.tokenRepository.save(tokenEntity);
     }
   }
