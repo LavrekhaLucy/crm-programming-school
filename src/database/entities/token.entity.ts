@@ -1,8 +1,16 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserEntity } from './user.entity';
+import { TableNameEnum } from './enums/table-name.enum';
+import { CreateUpdateModel } from './models/create-update.model';
 
-@Entity()
-export class TokenEntity {
+@Entity(TableNameEnum.TOKENS)
+export class TokenEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -21,9 +29,13 @@ export class TokenEntity {
   @Column()
   IsBlocked: boolean;
 
-  @Column()
+  @Column({ unique: true })
   jti: string;
 
+  @Column()
+  userId: number;
+
   @ManyToOne(() => UserEntity, (user: UserEntity) => user.tokens)
+  @JoinColumn({ name: 'userId' }) // Явно вказуємо назву колонки для FK
   user: UserEntity;
 }

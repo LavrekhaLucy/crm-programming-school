@@ -31,6 +31,9 @@ export class UserEntity extends CreateUpdateModel {
   username: string;
 
   @Column({ type: 'varchar', length: 25 })
+  name: string;
+
+  @Column({ type: 'varchar', length: 25 })
   surname: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
@@ -47,12 +50,6 @@ export class UserEntity extends CreateUpdateModel {
 
   @OneToMany(() => TokenEntity, (token: TokenEntity) => token.user)
   tokens: TokenEntity[];
-
-  // @OneToMany(() => OrderEntity, (entity) => entity.manager)
-  // orders: OrderEntity[];
-  //
-  // @OneToMany(() => CommentEntity, (entity) => entity.user)
-  // comments: CommentEntity[];
 
   @BeforeInsert()
   async hashPassword() {

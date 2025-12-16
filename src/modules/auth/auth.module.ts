@@ -6,9 +6,10 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../../database/entities/user.entity';
-import { TokenEntity } from '../../database/entities/token.entity';
+// import { TokenEntity } from '../../database/entities/token.entity';
 import { SharedModule } from '../../shared/shared.module';
 import { EnvService } from '../../shared/env.service';
+import { TokenEntity } from '../../database/entities/token.entity';
 
 @Module({
   imports: [
