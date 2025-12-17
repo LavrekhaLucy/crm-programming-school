@@ -5,7 +5,17 @@ export class CreateTokens1765846179338 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE \`tokens\` (\`created_at\` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6), \`updated_at\` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`id\` int NOT NULL AUTO_INCREMENT, \`accessToken\` varchar(255) NOT NULL, \`refreshToken\` varchar(255) NOT NULL, \`accessTokenExpiresAt\` datetime NOT NULL, \`refreshTokenExpiresAt\` datetime NOT NULL, \`IsBlocked\` tinyint NOT NULL, \`jti\` varchar(255) NOT NULL, \`userId\` int NOT NULL, UNIQUE INDEX \`IDX_7d4251c84698d0633156759f5e\` (\`jti\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`tokens\` (
+    \`created_at\` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6),
+    \`updated_at\` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    \`id\` int NOT NULL AUTO_INCREMENT,
+    \`accessToken\` varchar(255) NOT NULL,
+    \`refreshToken\` varchar(255) NOT NULL,
+    \`accessTokenExpiresAt\` datetime NOT NULL,
+    \`refreshTokenExpiresAt\` datetime NOT NULL,
+    \`IsBlocked\` tinyint NOT NULL,
+    \`jti\` varchar(255) NOT NULL,
+    \`userId\` int NOT NULL, UNIQUE INDEX \`IDX_7d4251c84698d0633156759f5e\` (\`jti\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `ALTER TABLE \`users\` ADD \`updated_at\` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)`,

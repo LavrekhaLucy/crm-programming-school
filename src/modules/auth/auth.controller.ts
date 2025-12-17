@@ -9,7 +9,7 @@ import {
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import type { UserRequest } from '../users/interfaces/user-request.interface';
+import type { UserRequest } from './interfaces/user-request.interface';
 import { AuthGuard } from '@nestjs/passport';
 import { RefreshTokenDto } from './models/refresh-token.dto';
 

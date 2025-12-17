@@ -13,6 +13,6 @@ export default new DataSource({
   password: envService.mysqlPassword,
   database: envService.mysqlDatabase,
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: false,
   migrations: [__dirname + '/src/database/migrations/*{.ts,.js}'],
+  synchronize: false,
 });

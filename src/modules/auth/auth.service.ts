@@ -9,7 +9,7 @@ import { TokenEntity } from '../../database/entities/token.entity';
 import { ConfigService } from '@nestjs/config';
 import { ITokens } from './interfaces/token.interface';
 import { RefreshTokenDto } from './models/refresh-token.dto';
-import { IJwtPayload } from '../users/interfaces/jwt-payload.interface';
+import { IJwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {

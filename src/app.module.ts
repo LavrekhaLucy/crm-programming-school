@@ -20,5 +20,11 @@ import { SharedModule } from './shared/shared.module';
     SharedModule,
   ],
   controllers: [UsersController],
+  // providers: [
+  //   {
+  //     provide: APP_FILTER,
+  //     useClass: GlobalExceptionFilter,
+  //   },
+  // ],
 })
 export class AppModule {}
