@@ -9,6 +9,7 @@ import { UserEntity } from '../../database/entities/user.entity';
 import { SharedModule } from '../../shared/shared.module';
 import { EnvService } from '../../shared/env.service';
 import { TokenEntity } from '../../database/entities/token.entity';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -27,6 +28,6 @@ import { TokenEntity } from '../../database/entities/token.entity';
     TypeOrmModule.forFeature([UserEntity, TokenEntity]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

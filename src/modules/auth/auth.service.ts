@@ -28,6 +28,10 @@ export class AuthService {
       this.configService.get<number>('ACCESS_TOKEN_EXPIRATION_TIME') || 0;
     this.refreshTokenExpiresIn =
       this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_TIME') || 0;
+    console.log('JWT Config:', {
+      access: this.accessTokenExpiresIn,
+      refresh: this.refreshTokenExpiresIn,
+    });
   }
 
   async register(registerDto: RegisterDto): Promise<UserEntity> {
@@ -97,8 +101,8 @@ export class AuthService {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
       };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
+      console.log(e);
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
