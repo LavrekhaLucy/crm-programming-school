@@ -17,6 +17,9 @@ export class EnvService {
   public readonly accessTokenExpirationTime: number;
   public readonly refreshTokenExpirationTime: number;
 
+  public readonly adminEmail: string;
+  public readonly adminPassword: string;
+
   constructor(private configService: ConfigService) {
     this.db_Type = this.configService.get<string>('TYPE') || 'mysql';
     this.mysqlHost = this.configService.get<string>('MYSQL_HOST') || '';
@@ -37,5 +40,7 @@ export class EnvService {
       this.configService.get<number>('ACCESS_TOKEN_EXPIRATION_TIME') || 600;
     this.refreshTokenExpirationTime =
       this.configService.get<number>('REFRESH_TOKEN_EXPIRATION_TIME') || 1200;
+    this.adminEmail = this.configService.get<string>('ADMIN_EMAIL') || '';
+    this.adminPassword = this.configService.get<string>('ADMIN_PASSWORD') || '';
   }
 }

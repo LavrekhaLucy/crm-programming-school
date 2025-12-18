@@ -7,6 +7,8 @@ import {
   Matches,
   IsEnum,
   IsBoolean,
+  IsEmail,
+  MaxLength,
 } from 'class-validator';
 import { TransformHelper } from '../../../../../common/helpers/transform.helper';
 import { UserRoleEnum } from '../../../../../database/entities/enums/user-role.enum';
@@ -28,16 +30,18 @@ export class BaseUserReqDto {
   username: string;
 
   @ApiProperty({ example: 'test@gmail.com' })
-  @IsString()
-  @Length(5, 300)
-  @Matches(/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/)
+  @IsEmail()
+  @MaxLength(320)
   @Transform(TransformHelper.trim)
   email: string;
 
   @ApiProperty({ example: '123qwe!@#QWE' })
   @IsString()
   @Length(8, 300)
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&]).{8,}$/)
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&]).*$/, {
+    message:
+      'Password must contain at least one letter, one number and one special character',
+  })
   password: string;
 
   @ApiProperty({ example: 'manager' })
