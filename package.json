@@ -8,6 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "seed": "ts-node src/seed.ts",
     "start:docker-compose": "docker compose -f docker-compose.yml up --build",
     "start": "nest start",
     "start:dev": "nest start --watch",
