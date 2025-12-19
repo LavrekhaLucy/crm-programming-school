@@ -28,10 +28,6 @@ export class AuthService {
       this.configService.get<number>('JWT_ACCESS_EXPIRES_IN') || 0;
     this.refreshTokenExpiresIn =
       this.configService.get<number>('JWT_REFRESH_EXPIRES_IN') || 0;
-    console.log('JWT Config:', {
-      access: this.accessTokenExpiresIn,
-      refresh: this.refreshTokenExpiresIn,
-    });
   }
 
   async register(registerDto: RegisterDto): Promise<UserEntity> {
@@ -42,7 +38,12 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<ITokens> {
     const user = await this.validateUser(loginDto);
     const jti = Math.random().toString(36).substring(2);
-    const payload = { userId: user.id, username: user.username, jti };
+    const payload = {
+      userId: user.id,
+      username: user.username,
+      jti,
+      role: user.role,
+    };
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: `${this.accessTokenExpiresIn}s`,
     });
