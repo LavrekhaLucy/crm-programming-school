@@ -40,7 +40,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<ITokens> {
-    const user = await this.validateUser(loginDto.username, loginDto.password);
+    const user = await this.validateUser(loginDto);
     const jti = Math.random().toString(36).substring(2);
     const payload = { userId: user.id, username: user.username, jti };
     const accessToken = this.jwtService.sign(payload, {
@@ -139,15 +139,22 @@ export class AuthService {
     await this.tokenRepository.save(tokenEntity);
   }
 
-  private async validateUser(
-    username: string,
-    password: string,
-  ): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ username });
+  private async validateUser(loginDto: LoginDto): Promise<UserEntity> {
+    const { login, password } = loginDto;
 
-    if (!user || !(await user.validatePassword(password))) {
+    const user = await this.userRepository.findOne({
+      where: [{ username: login }, { email: login }],
+    });
+
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    const isPasswordValid = await user.validatePassword(password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     return user;
   }
 }
