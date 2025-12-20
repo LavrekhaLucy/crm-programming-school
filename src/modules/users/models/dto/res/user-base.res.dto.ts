@@ -9,9 +9,6 @@ export class UserBaseResDto {
   email: string;
 
   @ApiProperty()
-  password: string;
-
-  @ApiProperty()
   role: UserRoleEnum;
 
   @ApiProperty()
@@ -19,9 +16,6 @@ export class UserBaseResDto {
 
   @ApiProperty()
   avatarUrl: string | null;
-
-  @ApiProperty()
-  isVerified: boolean;
 
   @ApiProperty()
   locale: string;
