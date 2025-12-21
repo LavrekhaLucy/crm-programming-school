@@ -16,17 +16,13 @@ import { OrderEntity } from '../../database/entities/order.entity';
 import { CreateManagerDto } from '../users/models/dto/req/create-manager.req.dto';
 import { UserEntity } from '../../database/entities/user.entity';
 import { OrdersStatsDto } from '../orders/models/dto/req/order-stats.dto';
-import { UserService } from '../users/services/user.service';
 import { UserResDto } from '../users/models/dto/res/user.res.dto';
 
 @Controller('admin')
 @UseGuards(RolesGuard)
 @Roles(UserRoleEnum.ADMIN)
 export class AdminController {
-  constructor(
-    private readonly adminService: AdminService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly adminService: AdminService) {}
 
   @Get('dashboard')
   getDashboard() {
@@ -39,7 +35,7 @@ export class AdminController {
   createManager(
     @Body() createManagerDto: CreateManagerDto,
   ): Promise<UserEntity> {
-    return this.userService.create(createManagerDto);
+    return this.adminService.createManager(createManagerDto);
   }
 
   @Get('users')
