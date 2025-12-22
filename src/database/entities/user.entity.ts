@@ -11,6 +11,7 @@ import { IsEnum } from 'class-validator';
 import { UserRoleEnum } from './enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
 import { TokenEntity } from './token.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity(TableNameEnum.USERS)
 export class UserEntity extends CreateUpdateModel {
@@ -20,7 +21,8 @@ export class UserEntity extends CreateUpdateModel {
   @Column({ type: 'varchar', length: 100, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Exclude()
+  @Column({ type: 'varchar', length: 100, select: false })
   password: string;
 
   @IsEnum(UserRoleEnum)

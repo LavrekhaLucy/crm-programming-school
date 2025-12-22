@@ -27,8 +27,11 @@ export class AdminService {
     return this.usersService.findAll();
   }
 
-  disableUser(userId: number): Promise<UserEntity> {
+  disableUser(userId: number): Promise<UserResDto> {
     return this.usersService.disable(userId);
+  }
+  enableUser(userId: number): Promise<UserResDto> {
+    return this.usersService.enable(userId);
   }
 
   // заявки (orders)

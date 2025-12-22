@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
@@ -7,6 +8,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -21,6 +23,7 @@ import { CreateManagerResDto } from '../users/models/dto/res/create-manager.res.
 
 @Controller('admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 @Roles(UserRoleEnum.ADMIN)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -45,8 +48,13 @@ export class AdminController {
   }
 
   @Patch('users/:id/disable')
-  disable(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
+  disable(@Param('id', ParseIntPipe) id: number): Promise<UserResDto> {
     return this.adminService.disableUser(id);
+  }
+
+  @Patch('users/:id/enable')
+  enable(@Param('id', ParseIntPipe) id: number): Promise<UserResDto> {
+    return this.adminService.enableUser(id);
   }
 
   @Get('orders')
