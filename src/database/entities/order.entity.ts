@@ -1,5 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { CreateUpdateModel } from './models/create-update.model';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { TableNameEnum } from './enums/table-name.enum';
 import { CoursesEnum } from './enums/courses.enum';
 import { FormatsEnum } from './enums/formats.enum';
@@ -7,7 +11,7 @@ import { TypesEnum } from './enums/types.enum';
 import { StatusesEnum } from './enums/statuses.enum';
 
 @Entity(TableNameEnum.ORDERS)
-export class OrderEntity extends CreateUpdateModel {
+export class OrderEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -34,6 +38,9 @@ export class OrderEntity extends CreateUpdateModel {
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   course_type?: TypesEnum;
+
+  @CreateDateColumn({ type: 'datetime', nullable: true })
+  created_at?: Date;
 
   @Column({ type: 'varchar', length: 15, nullable: true })
   status?: StatusesEnum;

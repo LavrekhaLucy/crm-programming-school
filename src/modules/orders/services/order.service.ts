@@ -6,6 +6,7 @@ import { CreateOrderDto } from '../models/dto/req/create-order.dto';
 import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 import { OrdersStatsDto } from '../models/dto/req/order-stats.dto';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
+import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -19,7 +20,7 @@ export class OrdersService {
     return this.orderRepository.save(newOrder);
   }
 
-  async findAll(): Promise<OrderEntity[]> {
+  async findAll(): Promise<ResponseOrderDto[]> {
     return this.orderRepository.find();
   }
 

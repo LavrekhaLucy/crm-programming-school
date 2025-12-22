@@ -3,11 +3,11 @@ import { OrdersService } from '../orders/services/order.service';
 import { UserService } from '../users/services/user.service';
 import { UserEntity } from '../../database/entities/user.entity';
 import { OrdersStatsDto } from '../orders/models/dto/req/order-stats.dto';
-import { OrderEntity } from '../../database/entities/order.entity';
 import { UserResDto } from '../users/models/dto/res/user.res.dto';
-import { CreateManagerDto } from '../users/models/dto/req/create-manager.req.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ResponseOrderDto } from '../orders/models/dto/res/response-order.dto';
+import { CreateManagerResDto } from '../users/models/dto/res/create-manager.res.dto';
 
 @Injectable()
 export class AdminService {
@@ -19,8 +19,8 @@ export class AdminService {
   ) {}
 
   // користувачі
-  createManager(createManagerDto: CreateManagerDto): Promise<UserEntity> {
-    const manager = this.adminRepository.create(createManagerDto);
+  createManager(createManagerResDto: CreateManagerResDto): Promise<UserEntity> {
+    const manager = this.adminRepository.create(createManagerResDto);
     return this.adminRepository.save(manager);
   }
   getAllUsers(): Promise<UserResDto[]> {
@@ -32,7 +32,7 @@ export class AdminService {
   }
 
   // заявки (orders)
-  getAllOrders(): Promise<OrderEntity[]> {
+  getAllOrders(): Promise<ResponseOrderDto[]> {
     return this.ordersService.findAll();
   }
 

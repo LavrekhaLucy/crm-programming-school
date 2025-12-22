@@ -8,6 +8,7 @@ import { UsersController } from './modules/users/users.controller';
 import { AuthModule } from './modules/auth/auth.module';
 import { SharedModule } from './shared/shared.module';
 import { UsersModule } from './modules/users/users.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     SharedModule,
     UsersModule,
+    AdminModule,
   ],
   controllers: [UsersController],
   // providers: [
