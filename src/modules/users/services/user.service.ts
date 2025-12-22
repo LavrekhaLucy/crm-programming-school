@@ -21,7 +21,7 @@ export class UserService {
     return await this.userRepository.findOneBy({ username });
   }
 
-  async findAll(): Promise<UserResDto[]> {
+  async findAll(): Promise<UserBaseResDto[]> {
     return await this.userRepository.find({});
   }
 

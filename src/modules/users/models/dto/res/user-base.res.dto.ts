@@ -2,16 +2,16 @@ import { UserRoleEnum } from '../../../../../database/entities/enums/user-role.e
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserBaseResDto {
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Alice@gmail.com' })
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'admin' })
   role: UserRoleEnum;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Alice' })
   name: string;
 
   @ApiProperty()

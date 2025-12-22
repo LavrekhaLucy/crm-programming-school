@@ -19,7 +19,7 @@ import { OrdersStatsDto } from '../orders/models/dto/req/order-stats.dto';
 import { UserResDto } from '../users/models/dto/res/user.res.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ResponseOrderDto } from '../orders/models/dto/res/response-order.dto';
-import { CreateManagerResDto } from '../users/models/dto/res/create-manager.res.dto';
+import { CreateManagerResDto } from './models/dto/res/create-manager.res.dto';
 
 @Controller('admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
