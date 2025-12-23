@@ -14,12 +14,12 @@ import { TransformHelper } from '../../../../../common/helpers/transform.helper'
 import { UserRoleEnum } from '../../../../../database/entities/enums/user-role.enum';
 
 export class BaseUserReqDto {
-  @IsString()
+  @ApiProperty({ example: 'John' })
   @Length(3, 50)
   @Transform(TransformHelper.trim)
   name?: string;
 
-  @IsString()
+  @ApiProperty({ example: 'Doe' })
   @Length(3, 50)
   @Transform(TransformHelper.trim)
   surname?: string;
@@ -36,7 +36,6 @@ export class BaseUserReqDto {
   email: string;
 
   @ApiProperty({ example: '123qwe!@#QWE' })
-  @IsString()
   @Length(8, 300)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&]).*$/, {
     message:

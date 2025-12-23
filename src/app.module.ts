@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { SharedModule } from './shared/shared.module';
 import { UsersModule } from './modules/users/users.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { APP_FILTER } from '@nestjs/core';
+import { GlobalExceptionFilter } from './common/filters/global-filter';
 
 @Module({
   imports: [
@@ -24,11 +26,11 @@ import { AdminModule } from './modules/admin/admin.module';
     AdminModule,
   ],
   controllers: [UsersController],
-  // providers: [
-  //   {
-  //     provide: APP_FILTER,
-  //     useClass: GlobalExceptionFilter,
-  //   },
-  // ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

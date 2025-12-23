@@ -1,15 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../../database/entities/user.entity';
-import { RegisterDto } from './dto/register.dto';
 import { Repository } from 'typeorm';
-import { LoginDto } from './dto/login.dto';
+import { LoginReqDto } from './dto/req/login.req.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenEntity } from '../../database/entities/token.entity';
 import { ConfigService } from '@nestjs/config';
 import { ITokens } from './interfaces/token.interface';
 import { RefreshTokenDto } from './models/refresh-token.dto';
 import { IJwtPayload } from './interfaces/jwt-payload.interface';
+import { RegisterReqDto } from './dto/req/register.req.dto';
+import { UserResDto } from '../users/models/dto/res/user.res.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,12 +31,22 @@ export class AuthService {
       this.configService.get<number>('JWT_REFRESH_EXPIRES_IN') || 0;
   }
 
-  async register(registerDto: RegisterDto): Promise<UserEntity> {
-    const user = this.userRepository.create(registerDto);
-    return this.userRepository.save(user);
+  async register(registerReqDto: RegisterReqDto): Promise<UserResDto> {
+    const user = this.userRepository.create(registerReqDto);
+    const saved = await this.userRepository.save(user);
+
+    return {
+      id: saved.id,
+      email: saved.email,
+      role: saved.role,
+      name: saved.name,
+      avatarUrl: saved.avatarUrl,
+      locale: saved.locale,
+      isAdultAccepted: saved.isAdultAccepted,
+    };
   }
 
-  async login(loginDto: LoginDto): Promise<ITokens> {
+  async login(loginDto: LoginReqDto): Promise<ITokens> {
     const user = await this.validateUser(loginDto);
     const jti = Math.random().toString(36).substring(2);
     const payload = {
@@ -140,7 +151,7 @@ export class AuthService {
     await this.tokenRepository.save(tokenEntity);
   }
 
-  private async validateUser(loginDto: LoginDto): Promise<UserEntity> {
+  private async validateUser(loginDto: LoginReqDto): Promise<UserEntity> {
     const { login, password } = loginDto;
 
     const user = await this.userRepository.findOne({
