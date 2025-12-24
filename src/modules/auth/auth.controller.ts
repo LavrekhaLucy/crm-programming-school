@@ -13,7 +13,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { RefreshTokenDto } from './models/refresh-token.dto';
 import { UserRequest } from './interfaces/user-request.interface';
 import { RegisterReqDto } from './dto/req/register.req.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

@@ -2,6 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { TableNameEnum } from './enums/table-name.enum';
@@ -9,11 +11,13 @@ import { CoursesEnum } from './enums/courses.enum';
 import { FormatsEnum } from './enums/formats.enum';
 import { TypesEnum } from './enums/types.enum';
 import { StatusesEnum } from './enums/statuses.enum';
+import { UserEntity } from './user.entity';
+import { GroupEntity } from './group.entity';
 
 @Entity(TableNameEnum.ORDERS)
 export class OrderEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  id: string;
 
   @Column({ type: 'varchar', length: 25, nullable: true })
   name?: string;
@@ -57,17 +61,23 @@ export class OrderEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   msg?: string;
 
-  // @Column({ nullable: true })
-  // group_name: string;
-  //
-  // @Column({ nullable: true })
-  // manager_id: number;
-  //
-  // @ManyToOne(() => UserEntity, (entity) => entity.orders, {
-  //   onDelete: 'SET NULL',
-  // })
-  // @JoinColumn({ name: 'manager_id' })
-  // manager: UserEntity;
+  @ManyToOne(() => UserEntity, (user) => user.orders, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn({
+    name: 'manager_id',
+    foreignKeyConstraintName: 'fk_orders_manager',
+  })
+  manager: UserEntity;
+
+  @ManyToOne(() => GroupEntity, (group) => group.orders, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'group_id' })
+  group: GroupEntity;
+
   //
   // @OneToMany(() => CommentEntity, (entity) => entity.order)
   // comments?: CommentEntity[];

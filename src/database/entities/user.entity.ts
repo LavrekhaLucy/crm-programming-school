@@ -12,6 +12,7 @@ import { UserRoleEnum } from './enums/user-role.enum';
 import * as bcrypt from 'bcrypt';
 import { TokenEntity } from './token.entity';
 import { Exclude } from 'class-transformer';
+import { OrderEntity } from './order.entity';
 
 @Entity(TableNameEnum.USERS)
 export class UserEntity extends CreateUpdateModel {
@@ -52,6 +53,9 @@ export class UserEntity extends CreateUpdateModel {
 
   @OneToMany(() => TokenEntity, (token: TokenEntity) => token.user)
   tokens: TokenEntity[];
+
+  @OneToMany(() => OrderEntity, (order) => order.manager)
+  orders: OrderEntity[];
 
   @BeforeInsert()
   async hashPassword() {

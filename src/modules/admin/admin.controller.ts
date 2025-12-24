@@ -20,7 +20,9 @@ import { UserResDto } from '../users/models/dto/res/user.res.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ResponseOrderDto } from '../orders/models/dto/res/response-order.dto';
 import { CreateManagerResDto } from './models/dto/res/create-manager.res.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Admin')
 @Controller('admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
