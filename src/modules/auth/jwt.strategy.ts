@@ -24,17 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // async validate(payload: IJwtPayload): Promise<IJwtPayload> {
-  //   const tokenEntity = await this.tokenRepository.findOne({
-  //     where: { jti: payload.jti, isBlocked: false },
-  //     relations: ['user'],
-  //   });
-  //   if (!tokenEntity) {
-  //     throw new UnauthorizedException('Token is blocked or invalid');
-  //   }
-  //   return payload;
-  // }
-
   async validate(payload: IJwtPayload) {
     const tokenEntity = await this.tokenRepository.findOne({
       where: { jti: payload.jti, isBlocked: false },
@@ -45,6 +34,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Token is blocked or invalid');
     }
 
-    return tokenEntity.user; // ✅ КРИТИЧНО
+    return tokenEntity.user;
   }
 }

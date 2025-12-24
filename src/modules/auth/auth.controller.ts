@@ -1,17 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginReqDto } from './dto/req/login.req.dto';
-
-import { AuthGuard } from '@nestjs/passport';
 import { RefreshTokenDto } from './models/refresh-token.dto';
-import { UserRequest } from './interfaces/user-request.interface';
 import { RegisterReqDto } from './dto/req/register.req.dto';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -40,9 +30,9 @@ export class AuthController {
     return this.authService.logOut(refreshTokenDto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('profile')
-  getProfile(@Request() req: UserRequest) {
-    return req.user;
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get('profile')
+  // getProfile(@Request() req: UserRequest) {
+  //   return req.user;
+  // }
 }

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from '../../../database/entities/order.entity';
@@ -24,12 +28,33 @@ export class OrdersService {
     return this.orderRepository.find();
   }
 
-  async findOne(id: number): Promise<OrderEntity> {
+  async findOne(id: string): Promise<OrderEntity> {
     const order = await this.orderRepository.findOneBy({ id });
     if (!order) {
       throw new NotFoundException(`Order #${id} not found`);
     }
     return order;
+  }
+
+  // async assignManager(orderId: string, managerId: number) {
+  //   return await this.orderRepository.update(orderId, {
+  //     manager: { id: managerId },
+  //   });
+  // }
+  async assignManager(orderId: string, managerId: number) {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['manager'],
+    });
+
+    if (order.manager) {
+      throw new BadRequestException('This order already has a manager.');
+    }
+
+    return await this.orderRepository.update(orderId, {
+      manager: { id: managerId },
+      status: StatusesEnum.INWORK,
+    });
   }
 
   async getStatsByStatus(): Promise<OrdersStatsDto[]> {
@@ -62,12 +87,12 @@ export class OrdersService {
       .filter((item) => item.count > 0);
   }
 
-  async update(id: number, dto: UpdateOrderDto): Promise<OrderEntity> {
+  async update(id: string, dto: UpdateOrderDto): Promise<OrderEntity> {
     await this.orderRepository.update({ id }, dto);
     return this.orderRepository.findOneBy({ id });
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const result = await this.orderRepository.delete(id);
 
     if (!result) {

@@ -18,6 +18,22 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
+  // // Отримати список усіх менеджерів для випадаючого списку
+  // async findAllManagers(): Promise<UserBaseResDto[]> {
+  //   return await this.userRepository.find({
+  //     select: ['id', 'name', 'surname', 'email'],
+  //     order: { surname: 'ASC' },
+  //   });
+  // }
+  //
+  // Отримати одного менеджера з його замовленнями
+  async getManagerOrders(userId: number): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['orders'],
+    });
+  }
+
   async findOne(username: string): Promise<UserEntity | null> {
     return await this.userRepository.findOneBy({ username });
   }
