@@ -18,28 +18,18 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  // // Отримати список усіх менеджерів для випадаючого списку
-  // async findAllManagers(): Promise<UserBaseResDto[]> {
-  //   return await this.userRepository.find({
-  //     select: ['id', 'name', 'surname', 'email'],
-  //     order: { surname: 'ASC' },
-  //   });
-  // }
-  //
-  // Отримати одного менеджера з його замовленнями
-  async getManagerOrders(userId: number): Promise<UserEntity> {
+  async findById(managerId: number): Promise<UserEntity> {
     return await this.userRepository.findOne({
-      where: { id: userId },
+      where: { id: managerId },
       relations: ['orders'],
     });
   }
 
-  async findOne(username: string): Promise<UserEntity | null> {
-    return await this.userRepository.findOneBy({ username });
-  }
-
   async findAll(): Promise<UserBaseResDto[]> {
-    return await this.userRepository.find({});
+    return await this.userRepository.find({
+      select: ['id', 'name', 'surname', 'email'],
+      order: { surname: 'ASC' },
+    });
   }
 
   async update(id: number, dto: UpdateUserReqDto): Promise<UserEntity> {

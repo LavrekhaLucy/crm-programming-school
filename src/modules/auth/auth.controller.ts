@@ -29,10 +29,4 @@ export class AuthController {
   async logout(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.logOut(refreshTokenDto);
   }
-
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get('profile')
-  // getProfile(@Request() req: UserRequest) {
-  //   return req.user;
-  // }
 }

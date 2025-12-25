@@ -11,12 +11,14 @@ import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 import { OrdersStatsDto } from '../models/dto/req/order-stats.dto';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
+import { UserService } from '../../users/services/user.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(OrderEntity)
     private readonly orderRepository: Repository<OrderEntity>,
+    private readonly userService: UserService,
   ) {}
 
   async create(dto: CreateOrderDto): Promise<OrderEntity> {
@@ -36,12 +38,24 @@ export class OrdersService {
     return order;
   }
 
-  // async assignManager(orderId: string, managerId: number) {
-  //   return await this.orderRepository.update(orderId, {
-  //     manager: { id: managerId },
-  //   });
-  // }
   async assignManager(orderId: string, managerId: number) {
+    const order = await this.orderRepository.findOne({
+      where: { id: orderId },
+    });
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const manager = await this.userService.findById(managerId);
+    if (!manager) {
+      throw new NotFoundException('Manager not found');
+    }
+
+    order.manager = manager;
+    return this.orderRepository.save(order);
+  }
+
+  async takeOrder(orderId: string, managerId: number) {
     const order = await this.orderRepository.findOne({
       where: { id: orderId },
       relations: ['manager'],
@@ -68,7 +82,6 @@ export class OrdersService {
     const rows: Array<{ status: string; count: string | number }> =
       await qb.getRawMany();
 
-    // Повертаємо тільки ті статуси, які є в результаті запиту (без нулів)
     return rows
       .map((r) => {
         const rawCount = r.count;
