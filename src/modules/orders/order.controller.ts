@@ -33,16 +33,19 @@ export class OrdersController {
   create(@Body() dto: CreateOrderDto): Promise<OrderEntity> {
     return this.ordersService.create(dto);
   }
+
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Get()
   findAll(): Promise<ResponseOrderDto[]> {
     return this.ordersService.findAll();
   }
+
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Get(':id')
   findOne(@Param('id') id: string): Promise<OrderEntity> {
     return this.ordersService.findOne(id);
   }
+
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Patch(':id')
   update(
@@ -59,11 +62,13 @@ export class OrdersController {
   ) {
     return await this.ordersService.assignManager(orderId, managerId);
   }
+
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Patch(':id/take')
   async takeOrder(@Param('id') id: string, @Req() req: UserRequest) {
     return await this.ordersService.takeOrder(id, req.user.userId);
   }
+
   @Roles(UserRoleEnum.ADMIN)
   @Delete(':id')
   delete(@Param('id') id: string): Promise<void> {

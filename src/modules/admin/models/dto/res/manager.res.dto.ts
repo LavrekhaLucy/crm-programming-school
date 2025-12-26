@@ -1,5 +1,6 @@
 import { IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserRoleEnum } from '../../../../../database/entities/enums/user-role.enum';
 
 export class ManagerResDto {
   @ApiProperty({ example: 'test@gmail.com' })
@@ -16,4 +17,7 @@ export class ManagerResDto {
 
   @IsString()
   surname?: string;
+
+  @ApiProperty({ example: 'manager' })
+  role: UserRoleEnum;
 }

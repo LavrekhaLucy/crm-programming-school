@@ -25,6 +25,8 @@ export class RolesGuard implements CanActivate {
     if (!role) {
       return false;
     }
+    console.log('USER FROM JWT:', request.user);
+    console.log('REQUIRED ROLES:', requiredRoles);
 
     return requiredRoles.includes(role);
   }

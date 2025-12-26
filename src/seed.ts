@@ -19,18 +19,20 @@ async function bootstrap() {
   });
 
   if (!adminExists) {
-    await userRepo.save(
-      userRepo.create({
-        email: adminEmail,
-        password: 'admin',
-        role: UserRoleEnum.ADMIN,
-        username: 'admin',
-        name: 'Admin',
-        surname: 'System',
-        isActive: true,
-        isAdultAccepted: true,
-      }),
-    );
+    const admin = userRepo.create({
+      email: adminEmail,
+      password: 'admin',
+      role: UserRoleEnum.ADMIN,
+      username: 'admin',
+      name: 'Admin',
+      surname: 'System',
+      isActive: true,
+      isAdultAccepted: true,
+    });
+
+    await userRepo.save(admin);
+  } else {
+    console.log('Admin already exists, skipping seed');
   }
 
   await app.close();

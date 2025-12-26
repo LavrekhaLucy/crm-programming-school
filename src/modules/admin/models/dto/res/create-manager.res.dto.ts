@@ -11,4 +11,6 @@ export class CreateManagerResDto extends PickType(ManagerResDto, [
   'name',
 
   'surname',
+
+  'role',
 ]) {}
