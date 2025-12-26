@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { TableNameEnum } from './enums/table-name.enum';
@@ -13,6 +14,7 @@ import { TypesEnum } from './enums/types.enum';
 import { StatusesEnum } from './enums/statuses.enum';
 import { UserEntity } from './user.entity';
 import { GroupEntity } from './group.entity';
+import { CommentEntity } from './comment.entity';
 
 @Entity(TableNameEnum.ORDERS)
 export class OrderEntity {
@@ -78,7 +80,6 @@ export class OrderEntity {
   @JoinColumn({ name: 'group_id' })
   group: GroupEntity;
 
-  //
-  // @OneToMany(() => CommentEntity, (entity) => entity.order)
-  // comments?: CommentEntity[];
+  @OneToMany(() => CommentEntity, (comment) => comment.order)
+  comments: CommentEntity[];
 }

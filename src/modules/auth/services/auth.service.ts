@@ -1,16 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from '../../database/entities/user.entity';
+import { UserEntity } from '../../../database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { LoginReqDto } from './dto/req/login.req.dto';
+import { LoginReqDto } from '../dto/req/login.req.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TokenEntity } from '../../database/entities/token.entity';
+import { TokenEntity } from '../../../database/entities/token.entity';
 import { ConfigService } from '@nestjs/config';
-import { ITokens } from './interfaces/token.interface';
-import { RefreshTokenDto } from './models/refresh-token.dto';
-import { IJwtPayload } from './interfaces/jwt-payload.interface';
-import { RegisterReqDto } from './dto/req/register.req.dto';
-import { UserResDto } from '../users/models/dto/res/user.res.dto';
+import { ITokens } from '../interfaces/token.interface';
+import { RefreshTokenDto } from '../models/refresh-token.dto';
+import { IJwtPayload } from '../interfaces/jwt-payload.interface';
+import { RegisterReqDto } from '../dto/req/register.req.dto';
+import { UserResDto } from '../../users/models/dto/res/user.res.dto';
 
 @Injectable()
 export class AuthService {

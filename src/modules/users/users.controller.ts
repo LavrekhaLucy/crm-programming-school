@@ -30,11 +30,13 @@ export class UsersController {
   async getProfile(@Request() req: UserRequest) {
     return await this.userService.findById(req.user.userId);
   }
+
   @Roles(UserRoleEnum.ADMIN)
   @Post()
   create(@Body() baseUserReqDto: BaseUserReqDto): Promise<UserEntity> {
     return this.userService.create(baseUserReqDto);
   }
+
   @Roles(UserRoleEnum.ADMIN)
   @Delete(':id')
   delete(@Param('id') id: number): Promise<void> {

@@ -1,26 +1,33 @@
-// import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-// import { CreateUpdateModel } from './models/create-update.model';
-// import { TableNameEnum } from './enums/table-name.enum';
-//
-// @Entity(TableNameEnum.COMMENT)
-// export class CommentEntity extends CreateUpdateModel {
-//   @PrimaryGeneratedColumn('increment')
-//   id: number;
-//
-//   @Column('text')
-//   text: string;
-//
-//   @Column()
-//   order_id: number;
-//
-//   @Column()
-//   user_id: number;
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CreateUpdateModel } from './models/create-update.model';
+import { TableNameEnum } from './enums/table-name.enum';
+import { OrderEntity } from './order.entity';
+import { UserEntity } from './user.entity';
 
-// @ManyToOne(() => OrderEntity, (entity) => entity.comments)
-// @JoinColumn({ name: 'order_id' })
-// order: OrderEntity;
-//
-// @ManyToOne(() => UserEntity, (entity) => entity.comments)
-// @JoinColumn({ name: 'user_id' })
-// user: UserEntity;
-// }
+@Entity(TableNameEnum.COMMENT)
+export class CommentEntity extends CreateUpdateModel {
+  @PrimaryGeneratedColumn('increment')
+  id: number;
+
+  @Column('text')
+  text: string;
+
+  @ManyToOne(() => OrderEntity, (order) => order.comments, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  @JoinColumn({ name: 'order_id' })
+  order: OrderEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.comments, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
+}

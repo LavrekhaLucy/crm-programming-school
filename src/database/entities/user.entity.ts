@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { TokenEntity } from './token.entity';
 import { Exclude } from 'class-transformer';
 import { OrderEntity } from './order.entity';
+import { CommentEntity } from './comment.entity';
 
 @Entity(TableNameEnum.USERS)
 export class UserEntity extends CreateUpdateModel {
@@ -56,6 +57,9 @@ export class UserEntity extends CreateUpdateModel {
 
   @OneToMany(() => OrderEntity, (order) => order.manager)
   orders: OrderEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.user)
+  comments: CommentEntity[];
 
   @BeforeInsert()
   async hashPassword() {

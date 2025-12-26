@@ -4,7 +4,7 @@ export enum TableNameEnum {
   TOKENS = 'tokens',
   REVIEW = 'review',
   FAVORITE = 'favorite',
-  COMMENT = 'comment',
+  COMMENT = 'comments',
   NEWS = 'news',
   TOPCATEGORY = 'top_category',
   VIEWSTAT = 'view_stat',
