@@ -27,7 +27,7 @@ export class UsersController {
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Get('profile')
-  async getProfile(@Request() req: UserRequest) {
+  async getProfile(@Request() req: UserRequest): Promise<UserEntity> {
     return await this.userService.findById(req.user.userId);
   }
 
