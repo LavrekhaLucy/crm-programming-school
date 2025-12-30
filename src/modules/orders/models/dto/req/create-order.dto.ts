@@ -45,19 +45,19 @@ export class CreateOrderDto {
   age: number;
 
   @ApiProperty({ example: 'FC' })
-  @IsString()
+  // @IsString()
   @Length(1, 10)
   @Transform(TransformHelper.trim)
   course: CoursesEnum;
 
   @ApiProperty({ example: 'Online' })
-  @IsString()
+  // @IsString()
   @Length(1, 15)
   @Transform(TransformHelper.trim)
   course_format: FormatsEnum;
 
   @ApiProperty({ example: 'VIP' })
-  @IsString()
+  // @IsString()
   @Length(1, 100)
   @Transform(TransformHelper.trim)
   course_type: TypesEnum;

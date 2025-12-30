@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './services/order.service';
 import { CreateOrderDto } from './models/dto/req/create-order.dto';
-import { OrderEntity } from '../../database/entities/order.entity';
 import { UpdateOrderDto } from './models/dto/req/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ResponseOrderDto } from './models/dto/res/response-order.dto';
@@ -30,7 +29,7 @@ export class OrdersController {
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Post()
-  create(@Body() dto: CreateOrderDto): Promise<OrderEntity> {
+  create(@Body() dto: CreateOrderDto): Promise<ResponseOrderDto> {
     return this.ordersService.create(dto);
   }
 
@@ -42,7 +41,7 @@ export class OrdersController {
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<OrderEntity> {
+  findOne(@Param('id') id: string): Promise<ResponseOrderDto> {
     return this.ordersService.findOne(id);
   }
 
@@ -51,12 +50,12 @@ export class OrdersController {
   update(
     @Param('id') id: string,
     @Body() dto: UpdateOrderDto,
-  ): Promise<OrderEntity> {
+  ): Promise<ResponseOrderDto> {
     return this.ordersService.update(id, dto);
   }
   @Roles(UserRoleEnum.ADMIN)
   @Patch(':id/assign/:managerId')
-  async assign(
+  async assignManager(
     @Param('id') orderId: string,
     @Param('managerId', ParseIntPipe) managerId: number,
   ) {

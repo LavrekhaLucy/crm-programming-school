@@ -22,7 +22,7 @@ export class OrdersService {
     private readonly entityManager: EntityManager,
   ) {}
 
-  async create(dto: CreateOrderDto): Promise<OrderEntity> {
+  async create(dto: CreateOrderDto): Promise<ResponseOrderDto> {
     const newOrder = this.orderRepository.create(dto);
     return this.orderRepository.save(newOrder);
   }
@@ -31,7 +31,7 @@ export class OrdersService {
     return this.orderRepository.find();
   }
 
-  async findOne(id: string): Promise<OrderEntity> {
+  async findOne(id: string): Promise<ResponseOrderDto> {
     const order = await this.orderRepository.findOneBy({ id });
     if (!order) {
       throw new NotFoundException(`Order #${id} not found`);
@@ -112,7 +112,7 @@ export class OrdersService {
       .filter((item) => item.count > 0);
   }
 
-  async update(id: string, dto: UpdateOrderDto): Promise<OrderEntity> {
+  async update(id: string, dto: UpdateOrderDto): Promise<ResponseOrderDto> {
     const result = await this.orderRepository.update({ id }, dto);
     if (!result.affected) {
       throw new NotFoundException(`Order #${id} not found`);
