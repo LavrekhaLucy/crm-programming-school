@@ -1,7 +1,6 @@
 import { AdminController } from './admin.controller';
 import { Test } from '@nestjs/testing';
 import { AdminService } from './services/admin.service';
-// import { UserEntity } from '../../database/entities/user.entity';
 import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
 import { UserBaseResDto } from '../users/models/dto/res/user-base.res.dto';
 import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
@@ -17,22 +16,6 @@ describe(AdminController.name, () => {
     getAllOrders: jest.Mock;
     getOrdersStats: jest.Mock;
   };
-
-  // const mockUserEntity: Partial<UserEntity> = {
-  //   id: 1,
-  //   email: 'email',
-  //   password: 'password',
-  //   name: 'name',
-  //   surname: 'surname',
-  //   username: 'username',
-  //   role: UserRoleEnum.MANAGER,
-  //   avatarUrl: null,
-  //   isActive: true,
-  //   locale: 'en',
-  //   isAdultAccepted: true,
-  //   created_at: new Date('2024-01-01'),
-  //   updated_at: new Date('2024-01-01'),
-  // } as UserEntity;
 
   const mockUserBaseResDto: UserBaseResDto = {
     id: 1,
@@ -109,7 +92,6 @@ describe(AdminController.name, () => {
       expect(result).toEqual([mockUserBaseResDto]);
     });
   });
-
   describe('disableUser', () => {
     it('should disable user', async () => {
       const userId = 1;
@@ -164,7 +146,6 @@ describe(AdminController.name, () => {
       expect(mockAdminService.getAllOrders).toHaveBeenCalledTimes(1);
     });
   });
-
   describe('getOrdersStats', () => {
     it('should call adminService.getOrdersStats', async () => {
       const mockOrdersStatsDto = {

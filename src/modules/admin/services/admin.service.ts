@@ -19,10 +19,13 @@ export class AdminService {
   ) {}
 
   // користувачі
-  createManager(createManagerResDto: CreateManagerResDto): Promise<UserEntity> {
+  createManager(
+    createManagerResDto: CreateManagerResDto,
+  ): Promise<UserBaseResDto> {
     const manager = this.adminRepository.create(createManagerResDto);
     return this.adminRepository.save(manager);
   }
+
   getAllUsers(): Promise<UserBaseResDto[]> {
     return this.usersService.findAll();
   }

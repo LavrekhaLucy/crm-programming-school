@@ -26,7 +26,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Body() refreshTokenDto: RefreshTokenDto) {
+  async logOut(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.logOut(refreshTokenDto);
   }
 }

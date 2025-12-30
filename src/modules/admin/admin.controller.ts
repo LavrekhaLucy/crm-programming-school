@@ -14,13 +14,13 @@ import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { AdminService } from './services/admin.service';
-import { UserEntity } from '../../database/entities/user.entity';
 import { OrdersStatsDto } from '../orders/models/dto/req/order-stats.dto';
 import { UserResDto } from '../users/models/dto/res/user.res.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ResponseOrderDto } from '../orders/models/dto/res/response-order.dto';
 import { CreateManagerResDto } from './models/dto/res/create-manager.res.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { UserBaseResDto } from '../users/models/dto/res/user-base.res.dto';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -40,7 +40,7 @@ export class AdminController {
   @Post('managers')
   createManager(
     @Body() createManagerResDto: CreateManagerResDto,
-  ): Promise<UserEntity> {
+  ): Promise<UserBaseResDto> {
     return this.adminService.createManager(createManagerResDto);
   }
 
