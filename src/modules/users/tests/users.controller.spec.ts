@@ -1,9 +1,9 @@
-import { UsersController } from './users.controller';
+import { UsersController } from '../users.controller';
 import { Test } from '@nestjs/testing';
-import { UserService } from './services/user.service';
-import { UserEntity } from '../../database/entities/user.entity';
-import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
-import { UserRequest } from '../auth/interfaces/user-request.interface';
+import { UserService } from '../services/user.service';
+import { UserEntity } from '../../../database/entities/user.entity';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
+import { UserRequest } from '../../auth/interfaces/user-request.interface';
 
 describe(UsersController.name, () => {
   let usersController: UsersController;
