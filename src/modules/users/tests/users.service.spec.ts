@@ -5,6 +5,9 @@ import { mockUserRepository } from '../__mocks__/user-repository.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { mockUserEntity } from '../__mocks__/user-entity.mock';
 import { mockBaseUserReqDto } from '../__mocks__/user-base-dto.mock';
+import { UserEntity } from '../../../database/entities/user.entity';
+import { mockUserResDto } from '../__mocks__/user-res-dto.mock';
+import { DeleteResult } from 'typeorm';
 
 describe('UsersService', () => {
   let service: UserService;
@@ -50,7 +53,6 @@ describe('UsersService', () => {
     });
     expect(result).toEqual(mockUserEntity);
   });
-
   it('should find all users', async () => {
     repository.find.mockResolvedValue([mockUserEntity]);
 
@@ -75,17 +77,66 @@ describe('UsersService', () => {
     expect(repository.findOneBy).toHaveBeenCalledWith({ id: 1 });
     expect(result).toEqual(mockUserEntity);
   });
+  it('should disable a user', async () => {
+    const disabledUser = { ...mockUserEntity, isActive: false } as UserEntity;
+    repository.findOneBy.mockResolvedValue(mockUserEntity);
+    repository.save.mockResolvedValue(disabledUser);
 
-  //
-  // it('should disable a user', async () => {
-  //   const disabledUser = { ...mockUserEntity, isActive: false }; // <-- повний entity
-  //   repository.findOneBy.mockResolvedValue(mockUserEntity);
-  //   repository.save.mockResolvedValue(disabledUser);
-  //
-  //   const result = await service.disable(1);
-  //
-  //   expect(repository.findOneBy).toHaveBeenCalledWith({ id: 1 });
-  //   expect(repository.save).toHaveBeenCalledWith(disabledUser);
-  //   expect(result).toEqual(disabledUser);
-  // });
+    const result = await service.disable(1);
+
+    expect(repository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+    expect(repository.save).toHaveBeenCalledWith(disabledUser);
+    expect(result).toEqual(mockUserResDto);
+  });
+  it('should throw NotFoundException when disabling a non-existing user', async () => {
+    repository.findOneBy.mockResolvedValue(null);
+
+    await expect(service.disable(999)).rejects.toThrow('User #999 not found');
+
+    expect(repository.findOneBy).toHaveBeenCalledWith({ id: 999 });
+    expect(repository.save).not.toHaveBeenCalled();
+  });
+  it('should enable a user', async () => {
+    const enabledUser = { ...mockUserEntity, isActive: true } as UserEntity;
+    repository.findOneBy.mockResolvedValue(mockUserEntity);
+    repository.save.mockResolvedValue(enabledUser);
+
+    const result = await service.enable(1);
+
+    expect(repository.findOneBy).toHaveBeenCalledWith({ id: 1 });
+    expect(repository.save).toHaveBeenCalledWith(enabledUser);
+    expect(result).toEqual(mockUserResDto);
+  });
+  it('should throw NotFoundException when enabling a non-existing user', async () => {
+    repository.findOneBy.mockResolvedValue(null);
+
+    await expect(service.enable(999)).rejects.toThrow('User #999 not found');
+
+    expect(repository.findOneBy).toHaveBeenCalledWith({ id: 999 });
+    expect(repository.save).not.toHaveBeenCalled();
+  });
+  it('should delete a user', async () => {
+    const deleteResult: DeleteResult = {
+      raw: [],
+      affected: 1,
+    };
+
+    repository.delete.mockResolvedValue(deleteResult);
+
+    await expect(service.delete(1)).resolves.not.toThrow();
+
+    expect(repository.delete).toHaveBeenCalledWith(1);
+  });
+  it('should throw NotFoundException when deleting a non-existing user', async () => {
+    const deleteResult: DeleteResult = {
+      raw: [],
+      affected: 0,
+    };
+
+    repository.delete.mockResolvedValue(deleteResult);
+
+    await expect(service.delete(999)).rejects.toThrow('User #999 not found');
+
+    expect(repository.delete).toHaveBeenCalledWith(999);
+  });
 });
