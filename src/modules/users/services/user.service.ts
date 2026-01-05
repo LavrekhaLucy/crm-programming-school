@@ -1,18 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '../../../database/entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserReqDto } from '../models/dto/req/update-user.req.dto';
 import { UserBaseResDto } from '../models/dto/res/user-base.res.dto';
 import { UserResDto } from '../models/dto/res/user.res.dto';
 import { BaseUserReqDto } from '../models/dto/req/user-base.req.dto';
 import { UserRepository } from '../../repository/services/user.repository';
+import { UserMapper } from '../user.mapper';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: UserRepository,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
   async create(baseUserReqDto: BaseUserReqDto): Promise<UserEntity> {
     const newUser = this.userRepository.create(baseUserReqDto);
     return await this.userRepository.save(newUser);
@@ -43,18 +40,21 @@ export class UserService {
       throw new NotFoundException(`User #${id} not found`);
     }
     user.isActive = false;
-    return this.userRepository.save(user);
+    const updatedUser = await this.userRepository.save(user);
+
+    return UserMapper.toResDto(updatedUser);
   }
 
   async enable(id: number): Promise<UserResDto> {
     const user = await this.userRepository.findOneBy({ id });
-
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }
 
     user.isActive = true;
-    return this.userRepository.save(user);
+    const updatedUser = await this.userRepository.save(user);
+
+    return UserMapper.toResDto(updatedUser);
   }
 
   async delete(id: number): Promise<void> {

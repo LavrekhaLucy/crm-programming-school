@@ -1,5 +1,5 @@
 import { MockServiceType } from '../../../../test/types/mock-service.type';
-import { UserRepository } from '../services/user.repository';
+import { UserRepository } from '../../repository/services/user.repository';
 
 export const mockUserRepository: MockServiceType<Partial<UserRepository>> = {
   create: jest.fn(),

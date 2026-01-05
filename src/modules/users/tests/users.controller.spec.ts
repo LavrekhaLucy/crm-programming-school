@@ -1,42 +1,15 @@
 import { UsersController } from '../users.controller';
 import { Test } from '@nestjs/testing';
 import { UserService } from '../services/user.service';
-import { UserEntity } from '../../../database/entities/user.entity';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { UserRequest } from '../../auth/interfaces/user-request.interface';
+import { mockUserEntity } from '../__mocks__/user-entity.mock';
+import { mockBaseUserReqDto } from '../__mocks__/user-base-dto.mock';
+import { mockUserService } from '../__mocks__/user-service.mock';
 
 describe(UsersController.name, () => {
   let usersController: UsersController;
 
-  let mockUserService: {
-    create: jest.Mock;
-    findById: jest.Mock;
-    delete: jest.Mock;
-  };
-
-  const mockUserEntity: Partial<UserEntity> = {
-    id: 1,
-    email: 'email',
-    password: 'password',
-    name: 'name',
-    surname: 'surname',
-    username: 'username',
-    role: UserRoleEnum.MANAGER,
-    avatarUrl: null,
-    isActive: true,
-    locale: 'en',
-    isAdultAccepted: true,
-    created_at: new Date('2024-01-01'),
-    updated_at: new Date('2024-01-01'),
-  } as UserEntity;
-
   beforeEach(async () => {
-    mockUserService = {
-      create: jest.fn(),
-      findById: jest.fn(),
-      delete: jest.fn(),
-    };
-
     const module = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
@@ -70,18 +43,7 @@ describe(UsersController.name, () => {
 
   describe('create', () => {
     it('should create and return user', async () => {
-      const mockBaseUserReqDto = {
-        email: 'email',
-        password: 'password',
-        name: 'name',
-        surname: 'surname',
-        username: 'username',
-        role: UserRoleEnum.MANAGER,
-      };
-
-      jest
-        .spyOn(mockUserService, 'create')
-        .mockResolvedValue(mockUserEntity as UserEntity);
+      jest.spyOn(mockUserService, 'create').mockResolvedValue(mockUserEntity);
 
       const result = await usersController.create(mockBaseUserReqDto);
       expect(result).toEqual(mockUserEntity);
