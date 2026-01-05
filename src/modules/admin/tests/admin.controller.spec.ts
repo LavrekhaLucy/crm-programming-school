@@ -1,9 +1,9 @@
-import { AdminController } from './admin.controller';
+import { AdminController } from '../admin.controller';
 import { Test } from '@nestjs/testing';
-import { AdminService } from './services/admin.service';
-import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
-import { UserBaseResDto } from '../users/models/dto/res/user-base.res.dto';
-import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
+import { AdminService } from '../services/admin.service';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
+import { UserBaseResDto } from '../../users/models/dto/res/user-base.res.dto';
+import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 
 describe(AdminController.name, () => {
   let adminController: AdminController;
