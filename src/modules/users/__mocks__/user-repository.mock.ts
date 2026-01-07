@@ -9,4 +9,5 @@ export const mockUserRepository: MockServiceType<Partial<UserRepository>> = {
   findOneBy: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
+  createQueryBuilder: jest.fn(),
 };

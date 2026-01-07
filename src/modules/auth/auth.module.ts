@@ -4,12 +4,11 @@ import { AuthController } from './auth.controller';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from '../../database/entities/user.entity';
 import { SharedModule } from '../../shared/shared.module';
 import { EnvService } from '../../shared/env.service';
-import { TokenEntity } from '../../database/entities/token.entity';
 import { JwtStrategy } from './jwt.strategy';
+import { TokenRepository } from '../repository/services/token.repository';
+import { UserRepository } from '../repository/services/user.repository';
 
 @Module({
   imports: [
@@ -25,9 +24,8 @@ import { JwtStrategy } from './jwt.strategy';
       }),
       inject: [EnvService],
     }),
-    TypeOrmModule.forFeature([UserEntity, TokenEntity]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, UserRepository, TokenRepository],
 })
 export class AuthModule {}

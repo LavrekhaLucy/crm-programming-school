@@ -1,41 +1,16 @@
 import { AdminController } from '../admin.controller';
 import { Test } from '@nestjs/testing';
 import { AdminService } from '../services/admin.service';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
-import { UserBaseResDto } from '../../users/models/dto/res/user-base.res.dto';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
+import { mockAdminService } from '../__mocks__/admin-service.mock';
+import { mockCreateManagerResDto } from '../__mocks__/create-manager-res.dto.mock';
+import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
+import { mockResponseOrderDto } from '../../orders/__mocks__/res-order-dto.mock';
 
 describe(AdminController.name, () => {
   let adminController: AdminController;
 
-  let mockAdminService: {
-    createManager: jest.Mock;
-    getAllUsers: jest.Mock;
-    disableUser: jest.Mock;
-    enableUser: jest.Mock;
-    getAllOrders: jest.Mock;
-    getOrdersStats: jest.Mock;
-  };
-
-  const mockUserBaseResDto: UserBaseResDto = {
-    id: 1,
-    email: 'email',
-    name: 'name',
-    role: UserRoleEnum.MANAGER,
-    avatarUrl: null,
-    locale: 'en',
-    isAdultAccepted: true,
-  };
-
   beforeEach(async () => {
-    mockAdminService = {
-      createManager: jest.fn(),
-      getAllUsers: jest.fn(),
-      disableUser: jest.fn(),
-      enableUser: jest.fn(),
-      getAllOrders: jest.fn(),
-      getOrdersStats: jest.fn(),
-    };
     const module = await Test.createTestingModule({
       controllers: [AdminController],
       providers: [
@@ -57,15 +32,6 @@ describe(AdminController.name, () => {
 
   describe('createManager', () => {
     it('should create a manager', async () => {
-      const mockCreateManagerResDto = {
-        id: 1,
-        email: 'email',
-        name: 'name',
-        surname: 'surname',
-        username: 'username',
-        password: 'password',
-        role: UserRoleEnum.MANAGER,
-      };
       jest
         .spyOn(mockAdminService, 'createManager')
         .mockResolvedValue(mockCreateManagerResDto);
@@ -84,12 +50,12 @@ describe(AdminController.name, () => {
     it('should return all users', async () => {
       jest
         .spyOn(mockAdminService, 'getAllUsers')
-        .mockResolvedValue([mockUserBaseResDto]);
+        .mockResolvedValue([mockUserResDto]);
 
       const result = await adminController.getAllUsers();
 
       expect(mockAdminService.getAllUsers).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([mockUserBaseResDto]);
+      expect(result).toEqual([mockUserResDto]);
     });
   });
   describe('disableUser', () => {
@@ -98,13 +64,13 @@ describe(AdminController.name, () => {
 
       jest
         .spyOn(mockAdminService, 'disableUser')
-        .mockResolvedValue(mockUserBaseResDto);
+        .mockResolvedValue(mockUserResDto);
 
       const result = await adminController.disable(userId);
 
       expect(mockAdminService.disableUser).toHaveBeenCalledTimes(1);
       expect(mockAdminService.disableUser).toHaveBeenCalledWith(userId);
-      expect(result).toEqual(mockUserBaseResDto);
+      expect(result).toEqual(mockUserResDto);
     });
   });
   describe('enableUser', () => {
@@ -112,13 +78,13 @@ describe(AdminController.name, () => {
       const userId = 1;
       jest
         .spyOn(mockAdminService, 'enableUser')
-        .mockResolvedValue(mockUserBaseResDto);
+        .mockResolvedValue(mockUserResDto);
 
       const result = await adminController.enable(userId);
 
       expect(mockAdminService.enableUser).toHaveBeenCalledTimes(1);
       expect(mockAdminService.enableUser).toHaveBeenCalledWith(userId);
-      expect(result).toEqual(mockUserBaseResDto);
+      expect(result).toEqual(mockUserResDto);
     });
   });
   describe('getDashboard', () => {
@@ -129,15 +95,6 @@ describe(AdminController.name, () => {
   });
   describe('getAllOrders', () => {
     it('should call adminService.getAllOrders', async () => {
-      const mockResponseOrderDto = {
-        id: 1,
-        items: [],
-        totalPrice: 100,
-        status: 'pending',
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-01-01'),
-      };
-
       jest
         .spyOn(mockAdminService, 'getAllOrders')
         .mockResolvedValue([mockResponseOrderDto]);

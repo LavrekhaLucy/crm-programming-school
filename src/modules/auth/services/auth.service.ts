@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../../../database/entities/user.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { LoginReqDto } from '../dto/req/login.req.dto';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager } from '@nestjs/typeorm';
 import { TokenEntity } from '../../../database/entities/token.entity';
 import { ConfigService } from '@nestjs/config';
 import { ITokens } from '../interfaces/token.interface';
@@ -11,6 +11,8 @@ import { RefreshTokenDto } from '../models/refresh-token.dto';
 import { IJwtPayload } from '../interfaces/jwt-payload.interface';
 import { RegisterReqDto } from '../dto/req/register.req.dto';
 import { UserResDto } from '../../users/models/dto/res/user.res.dto';
+import { UserRepository } from '../../repository/services/user.repository';
+import { TokenRepository } from '../../repository/services/token.repository';
 
 @Injectable()
 export class AuthService {
@@ -18,10 +20,8 @@ export class AuthService {
   private readonly refreshTokenExpiresIn: number;
 
   constructor(
-    @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
-    @InjectRepository(TokenEntity)
-    private readonly tokenRepository: Repository<TokenEntity>,
+    private userRepository: UserRepository,
+    private readonly tokenRepository: TokenRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectEntityManager()
