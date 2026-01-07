@@ -1,31 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { OrdersService } from '../../orders/services/order.service';
 import { UserService } from '../../users/services/user.service';
-import { UserEntity } from '../../../database/entities/user.entity';
 import { OrdersStatsDto } from '../../orders/models/dto/req/order-stats.dto';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { ResponseOrderDto } from '../../orders/models/dto/res/response-order.dto';
-import { CreateManagerResDto } from '../models/dto/res/create-manager.res.dto';
 import { UserBaseResDto } from '../../users/models/dto/res/user-base.res.dto';
+import { CreateManagerReqDto } from '../models/dto/req/create-manager.req.dto';
 
 @Injectable()
 export class AdminService {
   constructor(
     private readonly usersService: UserService,
     private readonly ordersService: OrdersService,
-    @InjectRepository(UserEntity)
-    private readonly adminRepository: Repository<UserEntity>,
   ) {}
 
   // користувачі
   createManager(
-    createManagerResDto: CreateManagerResDto,
+    createManagerReqDto: CreateManagerReqDto,
   ): Promise<UserBaseResDto> {
-    const manager = this.adminRepository.create(createManagerResDto);
-    return this.adminRepository.save(manager);
+    return this.usersService.create(createManagerReqDto);
   }
-
   getAllUsers(): Promise<UserBaseResDto[]> {
     return this.usersService.findAll();
   }

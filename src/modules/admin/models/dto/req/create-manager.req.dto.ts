@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { TransformHelper } from '../../../../../common/helpers/transform.helper';
 
-export class CreateManagerDto {
+export class CreateManagerReqDto {
   @ApiProperty({ example: 'test@gmail.com' })
   @IsEmail()
   @MaxLength(320)
