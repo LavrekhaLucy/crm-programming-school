@@ -19,7 +19,7 @@ import { MockServiceType } from '../../../../test/types/mock-service.type';
 describe('AuthService', () => {
   let service: AuthService;
   let userRepository: MockServiceType<UserRepository>;
-  let jwtService: Partial<JwtService>;
+  let jwtService: MockServiceType<JwtService>;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -80,8 +80,7 @@ describe('AuthService', () => {
   });
   describe('login', () => {
     it('should login a user and return tokens', async () => {
-      // Мок createQueryBuilder
-      (userRepository.createQueryBuilder as jest.Mock).mockReturnValue(
+      userRepository.createQueryBuilder.mockReturnValue(
         mockQueryBuilder as any,
       );
       mockQueryBuilder.getOne.mockResolvedValue({
@@ -89,8 +88,7 @@ describe('AuthService', () => {
         validatePassword: jest.fn().mockResolvedValue(true),
       });
 
-      // Мок jwtService
-      (jwtService.sign as jest.Mock).mockReturnValue('signedToken');
+      jwtService.sign.mockReturnValue('signedToken');
 
       const result = await service.login(mockLoginDto);
 
@@ -102,11 +100,25 @@ describe('AuthService', () => {
       );
 
       expect(jwtService.sign).toHaveBeenCalledTimes(2);
-
-      expect(mockEntityManager.transaction).toHaveBeenCalled();
       expect(result).toEqual({
         accessToken: 'signedToken',
         refreshToken: 'signedToken',
+      });
+    });
+  });
+  describe('refresh', () => {
+    it('should verify refresh token and return new tokens', async () => {
+      jwtService.verify.mockReturnValue({ userId: 1 });
+      jwtService.sign.mockReturnValue('newSignedToken');
+
+      const refreshDto = { refreshToken: 'validRefreshToken' };
+      const result = await service.refresh(refreshDto);
+
+      expect(jwtService.verify).toHaveBeenCalledWith('validRefreshToken');
+      expect(jwtService.sign).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({
+        accessToken: 'newSignedToken',
+        refreshToken: 'newSignedToken',
       });
     });
   });

@@ -1,22 +1,19 @@
-import { EntityManager, Repository } from 'typeorm';
-import { TokenEntity } from '../../../database/entities/token.entity';
+import { EntityManager } from 'typeorm';
+import { mockTokenRepository } from '../../auth/__mocks__/token-repository.mock';
 
 type FakeEntityManager = Pick<EntityManager, 'getRepository'>;
 
-export const mockEntityManager: {
-  transaction: <T>(
-    runInTransaction: (manager: FakeEntityManager) => Promise<T>,
-  ) => Promise<T>;
-} = {
-  transaction: async <T>(
-    runInTransaction: (manager: FakeEntityManager) => Promise<T>,
-  ): Promise<T> => {
-    const fakeManager: FakeEntityManager = {
-      getRepository: jest.fn().mockReturnValue({
-        create: jest.fn().mockReturnValue({} as TokenEntity),
-        save: jest.fn().mockResolvedValue({} as TokenEntity),
-      } as Partial<Repository<TokenEntity>> as Repository<TokenEntity>),
-    };
-    return await runInTransaction(fakeManager);
-  },
+export const mockEntityManager = {
+  transaction: jest
+    .fn()
+    .mockImplementation(
+      async <T>(
+        runInTransaction: (manager: FakeEntityManager) => Promise<T>,
+      ): Promise<T> => {
+        const fakeManager: FakeEntityManager = {
+          getRepository: jest.fn().mockReturnValue(mockTokenRepository),
+        };
+        return await runInTransaction(fakeManager);
+      },
+    ),
 };
