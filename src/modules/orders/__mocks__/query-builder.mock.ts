@@ -4,4 +4,6 @@ export const mockQueryBuilder = {
   groupBy: jest.fn().mockReturnThis(),
   orderBy: jest.fn().mockReturnThis(),
   getRawMany: jest.fn(),
+  where: jest.fn().mockReturnThis(),
+  getOne: jest.fn(),
 };

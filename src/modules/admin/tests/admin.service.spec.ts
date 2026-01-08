@@ -8,6 +8,7 @@ import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { mockResponseOrderDto } from '../../orders/__mocks__/res-order-dto.mock';
 import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock';
+import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -35,13 +36,13 @@ describe('AdminService', () => {
   });
   describe('createManager', () => {
     it('should delegate createManager to UserService.create', async () => {
-      mockUserService.create.mockResolvedValue({ id: 1 });
+      mockUserService.create.mockResolvedValue(mockUserEntity);
 
       const result = await service.createManager(mockCreateManagerReqDto);
       expect(mockUserService.create).toHaveBeenCalledWith(
         mockCreateManagerReqDto,
       );
-      expect(result).toEqual({ id: 1 });
+      expect(result).toEqual(mockUserEntity);
     });
   });
   describe('getAllUsers', () => {
