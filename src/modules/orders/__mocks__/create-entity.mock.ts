@@ -4,8 +4,7 @@ import { TypesEnum } from '../../../database/entities/enums/types.enum';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { OrderEntity } from '../../../database/entities/order.entity';
 
-export const mockResponseOrderDto = {
-  id: '1',
+export const mockCreatedEntity = {
   name: 'name',
   surname: 'surname',
   email: 'email',

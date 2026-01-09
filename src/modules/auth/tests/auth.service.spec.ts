@@ -2,25 +2,17 @@ import { AuthService } from '../services/auth.service';
 import { Test } from '@nestjs/testing';
 import { UserRepository } from '../../repository/services/user.repository';
 import { mockUserRepository } from '../../users/__mocks__/user-repository.mock';
-import { mockEntityManager } from '../../orders/__mocks__/entity-manager.mock';
-import { EntityManager } from 'typeorm';
-import { TokenRepository } from '../../repository/services/token.repository';
 import { mockTokenRepository } from '../__mocks__/token-repository.mock';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { mockJwtService } from '../__mocks__/jwt-service.mock';
-import { mockConfigService } from '../__mocks__/config-service.mock';
 import { mockBaseUserReqDto } from '../../users/__mocks__/user-base-dto.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { mockLoginDto } from '../__mocks__/login-dto.mock';
-import {
-  mockQueryBuilder,
-  mockUser,
-  validatePasswordMock,
-} from '../../orders/__mocks__/query-builder.mock';
+import { mockQueryBuilder } from '../../orders/__mocks__/query-builder.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
+import { mockUser, validatePasswordMock } from '../__mocks__/user.mock';
+import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -29,29 +21,7 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        {
-          provide: UserRepository,
-          useValue: mockUserRepository,
-        },
-        {
-          provide: TokenRepository,
-          useValue: mockTokenRepository,
-        },
-        {
-          provide: JwtService,
-          useValue: mockJwtService,
-        },
-        {
-          provide: ConfigService,
-          useValue: mockConfigService,
-        },
-        {
-          provide: EntityManager,
-          useValue: mockEntityManager,
-        },
-      ],
+      providers: [...usersModuleProviders, AuthService],
     }).compile();
 
     service = module.get(AuthService);

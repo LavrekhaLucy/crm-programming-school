@@ -3,8 +3,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { EntityManager } from 'typeorm';
 import { OrderEntity } from '../../../database/entities/order.entity';
 import { CreateOrderDto } from '../models/dto/req/create-order.dto';
 import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
@@ -12,12 +12,12 @@ import { OrdersStatsDto } from '../models/dto/req/order-stats.dto';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 import { UserEntity } from '../../../database/entities/user.entity';
+import { OrdersRepository } from '../../repository/services/orders.repository';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    @InjectRepository(OrderEntity)
-    private readonly orderRepository: Repository<OrderEntity>,
+    private readonly orderRepository: OrdersRepository,
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
   ) {}

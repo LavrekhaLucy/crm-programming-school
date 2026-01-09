@@ -2,10 +2,8 @@ import { CoursesEnum } from '../../../database/entities/enums/courses.enum';
 import { FormatsEnum } from '../../../database/entities/enums/formats.enum';
 import { TypesEnum } from '../../../database/entities/enums/types.enum';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
-import { OrderEntity } from '../../../database/entities/order.entity';
 
-export const mockResponseOrderDto = {
-  id: '1',
+export const mockCreateOrderDto = {
   name: 'name',
   surname: 'surname',
   email: 'email',
@@ -19,4 +17,4 @@ export const mockResponseOrderDto = {
   utm: 'utm',
   msg: 'msg',
   status: StatusesEnum.NEW,
-} as OrderEntity;
+};

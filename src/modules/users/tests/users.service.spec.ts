@@ -1,13 +1,13 @@
 import { Test } from '@nestjs/testing';
 import { UserService } from '../services/user.service';
 import { UserRepository } from '../../repository/services/user.repository';
-import { mockUserRepository } from '../__mocks__/user-repository.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { mockUserEntity } from '../__mocks__/user-entity.mock';
 import { mockBaseUserReqDto } from '../__mocks__/user-base-dto.mock';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { mockUserResDto } from '../__mocks__/user-res-dto.mock';
 import { DeleteResult } from 'typeorm';
+import { usersModuleProviders } from '../__mocks__/users-module.mock';
 
 describe('UsersService', () => {
   let service: UserService;
@@ -15,13 +15,7 @@ describe('UsersService', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        UserService,
-        {
-          provide: UserRepository,
-          useValue: mockUserRepository,
-        },
-      ],
+      providers: [...usersModuleProviders, UserService],
     }).compile();
 
     service = module.get(UserService);

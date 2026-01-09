@@ -1,14 +1,14 @@
-import { OrdersController } from './order.controller';
-import { OrdersService } from './services/order.service';
+import { OrdersController } from '../order.controller';
+import { OrdersService } from '../services/order.service';
 import { Test } from '@nestjs/testing';
-import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
-import { CoursesEnum } from '../../database/entities/enums/courses.enum';
-import { FormatsEnum } from '../../database/entities/enums/formats.enum';
-import { TypesEnum } from '../../database/entities/enums/types.enum';
-import { CreateOrderDto } from './models/dto/req/create-order.dto';
-import { ResponseOrderDto } from './models/dto/res/response-order.dto';
-import { UpdateOrderDto } from './models/dto/req/update-order.dto';
-import { UserRequest } from '../auth/interfaces/user-request.interface';
+import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
+import { CoursesEnum } from '../../../database/entities/enums/courses.enum';
+import { FormatsEnum } from '../../../database/entities/enums/formats.enum';
+import { TypesEnum } from '../../../database/entities/enums/types.enum';
+import { CreateOrderDto } from '../models/dto/req/create-order.dto';
+import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
+import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
+import { UserRequest } from '../../auth/interfaces/user-request.interface';
 
 describe(OrdersController.name, () => {
   let ordersController: OrdersController;

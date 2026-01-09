@@ -1,7 +1,5 @@
 import { Test } from '@nestjs/testing';
 import { AdminService } from '../services/admin.service';
-import { UserService } from '../../users/services/user.service';
-import { OrdersService } from '../../orders/services/order.service';
 import { mockUserService } from '../../users/__mocks__/user-service.mock';
 import { mockOrdersService } from '../../orders/__mocks__/orders-service.mock';
 import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
@@ -9,23 +7,14 @@ import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { mockResponseOrderDto } from '../../orders/__mocks__/res-order-dto.mock';
 import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
+import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 
 describe('AdminService', () => {
   let service: AdminService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [
-        AdminService,
-        {
-          provide: UserService,
-          useValue: mockUserService,
-        },
-        {
-          provide: OrdersService,
-          useValue: mockOrdersService,
-        },
-      ],
+      providers: [...usersModuleProviders, AdminService],
     }).compile();
 
     service = module.get(AdminService);

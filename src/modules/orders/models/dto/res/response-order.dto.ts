@@ -1,4 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CoursesEnum } from '../../../../../database/entities/enums/courses.enum';
+import { FormatsEnum } from '../../../../../database/entities/enums/formats.enum';
+import { TypesEnum } from '../../../../../database/entities/enums/types.enum';
+import { StatusesEnum } from '../../../../../database/entities/enums/statuses.enum';
 
 export class ResponseOrderDto {
   @ApiProperty({ example: 1 })
@@ -20,13 +24,13 @@ export class ResponseOrderDto {
   age?: number;
 
   @ApiProperty({ example: 'FC' })
-  course?: string;
+  course?: CoursesEnum;
 
   @ApiProperty({ example: 'Online' })
-  course_format?: string;
+  course_format?: FormatsEnum;
 
   @ApiProperty({ example: 'VIP' })
-  course_type?: string;
+  course_type?: TypesEnum;
 
   @ApiProperty({ example: 1000 })
   sum?: number;
@@ -41,5 +45,5 @@ export class ResponseOrderDto {
   msg?: string;
 
   @ApiProperty({ example: 'NEW', nullable: true })
-  status?: string;
+  status?: StatusesEnum;
 }
