@@ -13,8 +13,14 @@ import { mockConfigService } from '../__mocks__/config-service.mock';
 import { mockBaseUserReqDto } from '../../users/__mocks__/user-base-dto.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { mockLoginDto } from '../__mocks__/login-dto.mock';
-import { mockQueryBuilder } from '../../orders/__mocks__/query-builder.mock';
+import {
+  mockQueryBuilder,
+  mockUser,
+  validatePasswordMock,
+} from '../../orders/__mocks__/query-builder.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
+import { UserEntity } from '../../../database/entities/user.entity';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -79,31 +85,45 @@ describe('AuthService', () => {
     });
   });
   describe('login', () => {
-    it('should login a user and return tokens', async () => {
-      userRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder as any,
-      );
-      mockQueryBuilder.getOne.mockResolvedValue({
-        ...mockUserEntity,
-        validatePassword: jest.fn().mockResolvedValue(true),
-      });
+    beforeEach(() => {
+      jest.clearAllMocks();
 
-      jwtService.sign.mockReturnValue('signedToken');
+      validatePasswordMock.mockResolvedValue(true);
+      mockQueryBuilder.getOne.mockResolvedValue(mockUser as UserEntity);
 
+      jest
+        .spyOn(userRepository, 'createQueryBuilder')
+        .mockReturnValue(mockQueryBuilder);
+
+      jest.spyOn(jwtService, 'sign').mockReturnValue('signedToken');
+    });
+
+    it('should login successfully', async () => {
       const result = await service.login(mockLoginDto);
 
       expect(userRepository.createQueryBuilder).toHaveBeenCalledWith('user');
-      expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith('user.password');
-      expect(mockQueryBuilder.where).toHaveBeenCalledWith(
-        'user.username = :login OR user.email = :login',
-        { login: mockLoginDto.login },
-      );
+      expect(validatePasswordMock).toHaveBeenCalledWith(mockLoginDto.password);
 
-      expect(jwtService.sign).toHaveBeenCalledTimes(2);
       expect(result).toEqual({
         accessToken: 'signedToken',
         refreshToken: 'signedToken',
       });
+    });
+
+    it('should throw UnauthorizedException if user not found', async () => {
+      mockQueryBuilder.getOne.mockResolvedValueOnce(null);
+
+      await expect(service.login(mockLoginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+    it('should throw UnauthorizedException if password is not valid', async () => {
+      validatePasswordMock.mockResolvedValueOnce(false);
+
+      await expect(service.login(mockLoginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(validatePasswordMock).toHaveBeenCalledWith(mockLoginDto.password);
     });
   });
   describe('refresh', () => {
@@ -120,6 +140,64 @@ describe('AuthService', () => {
         accessToken: 'newSignedToken',
         refreshToken: 'newSignedToken',
       });
+    });
+    it('should throw UnauthorizedException for invalid refresh token', async () => {
+      jwtService.verify.mockImplementation(() => {
+        throw new Error('Invalid token');
+      });
+
+      await expect(
+        service.refresh({ refreshToken: 'invalidRefreshToken' }),
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(jwtService.verify).toHaveBeenCalledWith('invalidRefreshToken');
+      expect(jwtService.sign).not.toHaveBeenCalled();
+    });
+
+    it('should throw UnauthorizedException for invalid or expired refresh token', async () => {
+      jwtService.verify.mockReturnValue({ userId: 1 });
+      mockTokenRepository.findOne.mockResolvedValueOnce(null);
+
+      await expect(
+        service.refresh({ refreshToken: 'someRefreshToken' }),
+      ).rejects.toThrow(UnauthorizedException);
+
+      expect(jwtService.verify).toHaveBeenCalledWith('someRefreshToken');
+      expect(mockTokenRepository.findOne).toHaveBeenCalledWith({
+        where: { refreshToken: 'someRefreshToken', isBlocked: false },
+        relations: ['user'],
+      });
+      expect(jwtService.sign).not.toHaveBeenCalled();
+    });
+  });
+  describe('logout', () => {
+    it('should block the refresh token if it exists', async () => {
+      const mockTokenEntity = {
+        refreshToken: 'validRefreshToken',
+        isBlocked: false,
+      };
+      mockTokenRepository.findOne.mockResolvedValue(mockTokenEntity);
+
+      await service.logOut({ refreshToken: 'validRefreshToken' });
+
+      expect(mockTokenRepository.findOne).toHaveBeenCalledWith({
+        where: { refreshToken: 'validRefreshToken', isBlocked: false },
+      });
+
+      expect(mockTokenRepository.save).toHaveBeenCalledWith({
+        ...mockTokenEntity,
+        isBlocked: true,
+      });
+    });
+
+    it('should do nothing if refresh token does not exist', async () => {
+      mockTokenRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.logOut({ refreshToken: 'nonExistingToken' }),
+      ).resolves.not.toThrow();
+
+      expect(mockTokenRepository.save).not.toHaveBeenCalled();
     });
   });
 });

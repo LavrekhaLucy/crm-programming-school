@@ -86,8 +86,11 @@ export class AuthService {
 
     return this.entityManager.transaction(async (manager) => {
       const tokenRepository = manager.getRepository(TokenEntity);
-
-      this.jwtService.verify<IJwtPayload>(refreshToken);
+      try {
+        this.jwtService.verify<IJwtPayload>(refreshToken);
+      } catch {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
 
       const tokenEntity = await tokenRepository.findOne({
         where: { refreshToken, isBlocked: false },

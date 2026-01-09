@@ -10,4 +10,7 @@ export const mockTokenRepository = {
     refreshTokenExpiresAt: new Date(Date.now() + 10000),
     user: mockUserEntity,
   }),
+  blockRefreshToken: jest
+    .fn()
+    .mockResolvedValue({ refreshToken: 'validRefreshToken' }),
 };
