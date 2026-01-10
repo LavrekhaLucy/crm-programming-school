@@ -13,6 +13,7 @@ import { UserEntity } from '../../../database/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { mockUser, validatePasswordMock } from '../__mocks__/user.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
+import { SelectQueryBuilder } from 'typeorm';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -54,18 +55,27 @@ describe('AuthService', () => {
       });
     });
   });
+
   describe('login', () => {
+    let userQB: jest.Mocked<SelectQueryBuilder<UserEntity>>;
     beforeEach(() => {
       jest.clearAllMocks();
 
-      validatePasswordMock.mockResolvedValue(true);
-      mockQueryBuilder.getOne.mockResolvedValue(mockUser as UserEntity);
-
+      userQB = mockQueryBuilder<UserEntity>();
       jest
         .spyOn(userRepository, 'createQueryBuilder')
-        .mockReturnValue(mockQueryBuilder);
+        .mockReturnValue(
+          mockQueryBuilder as unknown as SelectQueryBuilder<UserEntity>,
+        );
 
-      jest.spyOn(jwtService, 'sign').mockReturnValue('signedToken');
+      if (userRepository.manager) {
+        jest
+          .spyOn(userRepository.manager, 'createQueryBuilder')
+          .mockReturnValue(userQB);
+      }
+
+      validatePasswordMock.mockResolvedValue(true);
+      userQB.getOne.mockResolvedValue(mockUser as UserEntity);
     });
 
     it('should login successfully', async () => {
@@ -81,7 +91,8 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
-      mockQueryBuilder.getOne.mockResolvedValueOnce(null);
+      const userQB = mockQueryBuilder<UserEntity>();
+      userQB.getOne.mockResolvedValueOnce(null);
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(
         UnauthorizedException,
@@ -96,6 +107,7 @@ describe('AuthService', () => {
       expect(validatePasswordMock).toHaveBeenCalledWith(mockLoginDto.password);
     });
   });
+
   describe('refresh', () => {
     it('should verify refresh token and return new tokens', async () => {
       jwtService.verify.mockReturnValue({ userId: 1 });

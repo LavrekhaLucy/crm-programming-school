@@ -4,7 +4,7 @@ import { UserEntity } from '../../../database/entities/user.entity';
 import { TokenEntity } from '../../../database/entities/token.entity';
 import { mockOrderRepository } from './order-repository.mock';
 import { mockUserRepository } from '../../users/__mocks__/user-repository.mock';
-import { FindOneOptions } from 'typeorm';
+import { EntityTarget, FindOneOptions } from 'typeorm';
 
 type FakeRepository<T> = {
   findOne?: jest.Mock<Promise<T | null>, [FindOneOptions<T>]>;
@@ -12,7 +12,7 @@ type FakeRepository<T> = {
   save?: jest.Mock<Promise<T>, [T]>;
 };
 type FakeEntityManager = {
-  getRepository: <T>(entity: new () => T) => FakeRepository<T>;
+  getRepository: <T>(entity: EntityTarget<T>) => FakeRepository<T>;
 };
 
 export const mockEntityManager = {
@@ -32,7 +32,7 @@ export const mockEntityManager = {
             if (entity === OrderEntity) return mockOrderRepository as unknown;
             if (entity === UserEntity) return mockUserRepository as unknown;
             if (entity === TokenEntity) return mockTokenRepository;
-            throw new Error(`No repository for ${entity?.name}`);
+            throw new Error(`No repository for given entity`);
           }),
         };
 
@@ -40,3 +40,17 @@ export const mockEntityManager = {
       },
     ),
 };
+// export const mockEntityManager = {
+//   transaction: jest.fn().mockImplementation(async (callback) => {
+//     // В NestJS/TypeORM транзакція передає manager
+//     const fakeManager = {
+//       getRepository: jest.fn((entity) => {
+//         // Навіть якщо сервіс просить OrderEntity, ми повертаємо наш розширений мок
+//         if (entity === OrderEntity) return mockOrderRepository;
+//         if (entity === UserEntity) return mockUserRepository;
+//         if (entity === TokenEntity) return mockTokenRepository;
+//       }),
+//     };
+//     return await callback(fakeManager);
+//   }),
+// };
