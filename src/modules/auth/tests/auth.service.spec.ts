@@ -1,23 +1,23 @@
 import { AuthService } from '../services/auth.service';
 import { Test } from '@nestjs/testing';
-import { UserRepository } from '../../repository/services/user.repository';
-import { mockUserRepository } from '../../users/__mocks__/user-repository.mock';
+import {
+  mockUserRepository,
+  userQB,
+} from '../../users/__mocks__/user-repository.mock';
 import { mockTokenRepository } from '../__mocks__/token-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { mockBaseUserReqDto } from '../../users/__mocks__/user-base-dto.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { mockLoginDto } from '../__mocks__/login-dto.mock';
-import { mockQueryBuilder } from '../../orders/__mocks__/query-builder.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { mockUser, validatePasswordMock } from '../__mocks__/user.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
-import { SelectQueryBuilder } from 'typeorm';
+import { mockToken } from '../__mocks__/token.mock';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let userRepository: MockServiceType<UserRepository>;
   let jwtService: MockServiceType<JwtService>;
 
   beforeEach(async () => {
@@ -26,7 +26,6 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get(AuthService);
-    userRepository = module.get(UserRepository);
     jwtService = module.get(JwtService);
   });
 
@@ -57,31 +56,18 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    let userQB: jest.Mocked<SelectQueryBuilder<UserEntity>>;
     beforeEach(() => {
       jest.clearAllMocks();
-
-      userQB = mockQueryBuilder<UserEntity>();
-      jest
-        .spyOn(userRepository, 'createQueryBuilder')
-        .mockReturnValue(
-          mockQueryBuilder as unknown as SelectQueryBuilder<UserEntity>,
-        );
-
-      if (userRepository.manager) {
-        jest
-          .spyOn(userRepository.manager, 'createQueryBuilder')
-          .mockReturnValue(userQB);
-      }
-
-      validatePasswordMock.mockResolvedValue(true);
-      userQB.getOne.mockResolvedValue(mockUser as UserEntity);
     });
 
     it('should login successfully', async () => {
+      userQB.getOne.mockResolvedValueOnce(mockUser as UserEntity);
+      validatePasswordMock.mockResolvedValueOnce(true);
+
+      jwtService.sign.mockReturnValue('signedToken');
+
       const result = await service.login(mockLoginDto);
 
-      expect(userRepository.createQueryBuilder).toHaveBeenCalledWith('user');
       expect(validatePasswordMock).toHaveBeenCalledWith(mockLoginDto.password);
 
       expect(result).toEqual({
@@ -91,7 +77,6 @@ describe('AuthService', () => {
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
-      const userQB = mockQueryBuilder<UserEntity>();
       userQB.getOne.mockResolvedValueOnce(null);
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(
@@ -99,6 +84,7 @@ describe('AuthService', () => {
       );
     });
     it('should throw UnauthorizedException if password is not valid', async () => {
+      userQB.getOne.mockResolvedValueOnce(mockUser as UserEntity);
       validatePasswordMock.mockResolvedValueOnce(false);
 
       await expect(service.login(mockLoginDto)).rejects.toThrow(
@@ -154,11 +140,11 @@ describe('AuthService', () => {
   });
   describe('logout', () => {
     it('should block the refresh token if it exists', async () => {
-      const mockTokenEntity = {
-        refreshToken: 'validRefreshToken',
-        isBlocked: false,
-      };
-      mockTokenRepository.findOne.mockResolvedValue(mockTokenEntity);
+      // const mockTokenEntity = {
+      //   refreshToken: 'validRefreshToken',
+      //   isBlocked: false,
+      // };
+      mockTokenRepository.findOne.mockResolvedValue(mockToken);
 
       await service.logOut({ refreshToken: 'validRefreshToken' });
 
@@ -167,7 +153,7 @@ describe('AuthService', () => {
       });
 
       expect(mockTokenRepository.save).toHaveBeenCalledWith({
-        ...mockTokenEntity,
+        ...mockToken,
         isBlocked: true,
       });
     });

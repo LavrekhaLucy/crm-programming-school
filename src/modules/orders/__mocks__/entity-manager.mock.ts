@@ -40,17 +40,3 @@ export const mockEntityManager = {
       },
     ),
 };
-// export const mockEntityManager = {
-//   transaction: jest.fn().mockImplementation(async (callback) => {
-//     // В NestJS/TypeORM транзакція передає manager
-//     const fakeManager = {
-//       getRepository: jest.fn((entity) => {
-//         // Навіть якщо сервіс просить OrderEntity, ми повертаємо наш розширений мок
-//         if (entity === OrderEntity) return mockOrderRepository;
-//         if (entity === UserEntity) return mockUserRepository;
-//         if (entity === TokenEntity) return mockTokenRepository;
-//       }),
-//     };
-//     return await callback(fakeManager);
-//   }),
-// };

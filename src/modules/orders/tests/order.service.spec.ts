@@ -17,6 +17,7 @@ import { mockEntityManager } from '../__mocks__/entity-manager.mock';
 import { mockUpdateResult } from '../__mocks__/update-result.mock';
 import { mockQueryBuilder } from '../__mocks__/query-builder.mock';
 import { SelectQueryBuilder } from 'typeorm';
+import { mockUpdateOrderDto } from '../__mocks__/update-order-dto.mock';
 
 describe('OrderService', () => {
   let service: OrdersService;
@@ -123,7 +124,6 @@ describe('OrderService', () => {
       );
     });
   });
-
   describe('takeOrder', () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -144,6 +144,16 @@ describe('OrderService', () => {
         manager: { id: 43 },
         status: StatusesEnum.INWORK,
       });
+    });
+
+    it('should throw NotFoundException if order not found', async () => {
+      mockOrderRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.takeOrder('missingOrder', 42)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(mockOrderRepository.update).not.toHaveBeenCalled();
     });
 
     it('should throw BadRequestException if order already has a manager', async () => {
@@ -169,6 +179,9 @@ describe('OrderService', () => {
         { status: StatusesEnum.NEW, count: '10' },
         { status: StatusesEnum.INWORK, count: 5 },
         { status: StatusesEnum.AGREE, count: '0' },
+        { status: StatusesEnum.DISAGREE, count: null },
+        { status: StatusesEnum.NEW, count: undefined },
+        { status: StatusesEnum.INWORK, count: 'abc' },
       ];
 
       const orderQB = mockQueryBuilder<OrderEntity>();
@@ -215,6 +228,64 @@ describe('OrderService', () => {
 
       expect(result).toEqual([]);
       expect(result).toHaveLength(0);
+    });
+  });
+
+  describe('update', () => {
+    it('should update order and return updated order', async () => {
+      const orderId = 'orderId';
+
+      mockOrderRepository.update.mockResolvedValue(mockUpdateResult);
+      mockOrderRepository.findOneBy.mockResolvedValue(mockUpdateOrderDto);
+
+      const result = await service.update(orderId, mockCreateOrderDto);
+
+      expect(mockOrderRepository.update).toHaveBeenCalledWith(
+        { id: orderId },
+        mockCreateOrderDto,
+      );
+      expect(mockOrderRepository.findOneBy).toHaveBeenCalledWith({
+        id: orderId,
+      });
+      expect(result).toEqual(mockUpdateOrderDto);
+    });
+
+    it('should throw NotFoundException if order not found', async () => {
+      const orderId = 'missingOrder';
+
+      mockOrderRepository.update.mockResolvedValue({
+        ...mockUpdateResult,
+        affected: 0,
+      });
+
+      await expect(
+        service.update(orderId, { status: StatusesEnum.DISAGREE }),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockOrderRepository.findOneBy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete order successfully', async () => {
+      const orderId = 'order1';
+
+      mockOrderRepository.delete.mockResolvedValue(mockUpdateResult);
+
+      await expect(service.delete(orderId)).resolves.not.toThrow();
+
+      expect(mockOrderRepository.delete).toHaveBeenCalledWith(orderId);
+    });
+
+    it('should throw NotFoundException if order not found', async () => {
+      const orderId = 'missingOrder';
+
+      mockOrderRepository.delete.mockResolvedValue({
+        ...mockUpdateResult,
+        affected: 0,
+      });
+
+      await expect(service.delete(orderId)).rejects.toThrow(NotFoundException);
     });
   });
 });

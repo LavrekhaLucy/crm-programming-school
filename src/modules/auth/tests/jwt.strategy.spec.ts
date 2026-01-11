@@ -5,6 +5,8 @@ import { IJwtPayload } from '../interfaces/jwt-payload.interface';
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 import { Test } from '@nestjs/testing';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
+import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
+import { mockToken } from '../__mocks__/token.mock';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
@@ -25,17 +27,34 @@ describe('JwtStrategy', () => {
 
     jest.clearAllMocks();
   });
+  // it('should use JWT_ACCESS_SECRET from config', () => {
+  //   mockConfigService.get.mockReturnValue('mySecret');
+  //
+  //   strategy = new JwtStrategy(mockConfigService, mockTokenRepository);
+  //
+  //   expect(mockConfigService.get).toHaveBeenCalledWith('JWT_ACCESS_SECRET');
+  //   expect(strategy).toBeInstanceOf(JwtStrategy);
+  // });
+  //
+  // it('should fallback to empty string if JWT_ACCESS_SECRET is not set', () => {
+  //   mockConfigService.get.mockReturnValue(undefined);
+  //
+  //   strategy = new JwtStrategy(
+  //     mockConfigService as unknown as ConfigService,
+  //     mockTokenRepository as unknown as TokenRepository,
+  //   );
+  //
+  //   expect(mockConfigService.get).toHaveBeenCalledWith('JWT_ACCESS_SECRET');
+  //   expect(strategy).toBeInstanceOf(JwtStrategy);
+  // });
+
   describe('when token is validate', () => {
     it('should return user if token is valid', async () => {
-      const mockUser = { id: 1, username: 'test' };
-      mockTokenRepository.findOne.mockResolvedValue({
-        user: mockUser,
-        isBlocked: false,
-      });
+      mockTokenRepository.findOne.mockResolvedValue(mockToken);
 
       const result = await strategy.validate(payload);
 
-      expect(result).toEqual(mockUser);
+      expect(result).toEqual(mockUserEntity);
       expect(mockTokenRepository.findOne).toHaveBeenCalledWith({
         where: { jti: '123', isBlocked: false },
         relations: ['user'],
