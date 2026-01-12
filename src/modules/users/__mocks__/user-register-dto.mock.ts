@@ -1,4 +1,4 @@
-export const mockBaseUserReqDto = {
+export const mockRegisterReqDto = {
   username: 'username',
   email: 'email',
   name: 'name',

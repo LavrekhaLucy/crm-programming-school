@@ -1,62 +1,21 @@
 import { OrdersController } from '../order.controller';
-import { OrdersService } from '../services/order.service';
 import { Test } from '@nestjs/testing';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
-import { CoursesEnum } from '../../../database/entities/enums/courses.enum';
-import { FormatsEnum } from '../../../database/entities/enums/formats.enum';
-import { TypesEnum } from '../../../database/entities/enums/types.enum';
-import { CreateOrderDto } from '../models/dto/req/create-order.dto';
 import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 import { UserRequest } from '../../auth/interfaces/user-request.interface';
+import { mockCreateOrderDto } from '../__mocks__/create-order-dto.mock';
+import { mockResponseOrderDto } from '../__mocks__/res-order-dto.mock';
+import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
+import { mockOrdersService } from '../__mocks__/orders-service.mock';
 
 describe(OrdersController.name, () => {
   let ordersController: OrdersController;
-  let mockOrdersService: {
-    create: jest.Mock;
-    findAll: jest.Mock;
-    findOne: jest.Mock;
-    update: jest.Mock;
-    assignManager: jest.Mock;
-    takeOrder: jest.Mock;
-    delete: jest.Mock;
-  };
-
-  const mockResponseOrderDto: ResponseOrderDto = {
-    id: 'order-id',
-    name: 'name',
-    surname: 'surname',
-    email: 'email',
-    phone: 'phone',
-    age: 30,
-    course: CoursesEnum.ALLCOURSES,
-    course_format: FormatsEnum.ALLFORMATS,
-    course_type: TypesEnum.ALLTYPES,
-    sum: 1000,
-    alreadyPaid: 1000,
-    utm: 'utm',
-    msg: 'msg',
-    status: StatusesEnum.ALLSTATUSES,
-  };
 
   beforeEach(async () => {
-    mockOrdersService = {
-      create: jest.fn(),
-      findAll: jest.fn(),
-      findOne: jest.fn(),
-      update: jest.fn(),
-      assignManager: jest.fn(),
-      takeOrder: jest.fn(),
-      delete: jest.fn(),
-    };
     const module = await Test.createTestingModule({
       controllers: [OrdersController],
-      providers: [
-        {
-          provide: OrdersService,
-          useValue: mockOrdersService,
-        },
-      ],
+      providers: [...usersModuleProviders],
     }).compile();
 
     ordersController = module.get<OrdersController>(OrdersController);
@@ -67,21 +26,6 @@ describe(OrdersController.name, () => {
   });
   describe('create', () => {
     it('should create order', async () => {
-      const mockCreateOrderDto: CreateOrderDto = {
-        name: 'name',
-        surname: 'surname',
-        email: 'email',
-        phone: 'phone',
-        age: 30,
-        course: CoursesEnum.ALLCOURSES,
-        course_format: FormatsEnum.ALLFORMATS,
-        course_type: TypesEnum.ALLTYPES,
-        sum: 1000,
-        alreadyPaid: 1000,
-        utm: 'utm',
-        msg: 'msg',
-      };
-
       const order = {
         id: 'order-id',
         ...mockCreateOrderDto,

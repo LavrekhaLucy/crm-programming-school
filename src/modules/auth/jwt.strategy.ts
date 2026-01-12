@@ -8,11 +8,15 @@ import { TokenRepository } from '../repository/services/token.repository';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly configService: ConfigService,
+    configService: ConfigService,
     private readonly tokenRepository: TokenRepository,
   ) {
-    const jwtAccessSecret =
-      configService.get<string>('JWT_ACCESS_SECRET') || '';
+    const jwtAccessSecret = configService.get<string>('JWT_ACCESS_SECRET');
+
+    if (!jwtAccessSecret) {
+      throw new Error('JWT_ACCESS_SECRET is not defined');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,

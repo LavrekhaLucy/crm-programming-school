@@ -1,11 +1,11 @@
 import { AdminController } from '../admin.controller';
 import { Test } from '@nestjs/testing';
-import { AdminService } from '../services/admin.service';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { mockAdminService } from '../__mocks__/admin-service.mock';
 import { mockCreateManagerResDto } from '../__mocks__/create-manager-res.dto.mock';
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { mockResponseOrderDto } from '../../orders/__mocks__/res-order-dto.mock';
+import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 
 describe(AdminController.name, () => {
   let adminController: AdminController;
@@ -13,12 +13,7 @@ describe(AdminController.name, () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       controllers: [AdminController],
-      providers: [
-        {
-          provide: AdminService,
-          useValue: mockAdminService,
-        },
-      ],
+      providers: [...usersModuleProviders],
     }).compile();
 
     adminController = module.get<AdminController>(AdminController);

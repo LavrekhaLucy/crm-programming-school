@@ -7,6 +7,9 @@ import { Test } from '@nestjs/testing';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { mockToken } from '../__mocks__/token.mock';
+import { mockConfigService } from '../__mocks__/config-service.mock';
+import { ConfigService } from '@nestjs/config';
+import { TokenRepository } from '../../repository/services/token.repository';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
@@ -19,6 +22,8 @@ describe('JwtStrategy', () => {
   };
 
   beforeEach(async () => {
+    mockConfigService.get.mockReturnValue('super-secret-key');
+
     const module = await Test.createTestingModule({
       providers: [...usersModuleProviders, JwtStrategy],
     }).compile();
@@ -27,28 +32,32 @@ describe('JwtStrategy', () => {
 
     jest.clearAllMocks();
   });
-  // it('should use JWT_ACCESS_SECRET from config', () => {
-  //   mockConfigService.get.mockReturnValue('mySecret');
-  //
-  //   strategy = new JwtStrategy(mockConfigService, mockTokenRepository);
-  //
-  //   expect(mockConfigService.get).toHaveBeenCalledWith('JWT_ACCESS_SECRET');
-  //   expect(strategy).toBeInstanceOf(JwtStrategy);
-  // });
-  //
-  // it('should fallback to empty string if JWT_ACCESS_SECRET is not set', () => {
-  //   mockConfigService.get.mockReturnValue(undefined);
-  //
-  //   strategy = new JwtStrategy(
-  //     mockConfigService as unknown as ConfigService,
-  //     mockTokenRepository as unknown as TokenRepository,
-  //   );
-  //
-  //   expect(mockConfigService.get).toHaveBeenCalledWith('JWT_ACCESS_SECRET');
-  //   expect(strategy).toBeInstanceOf(JwtStrategy);
-  // });
+
+  it('should be defined and initialized with correct secret', () => {
+    const tempStrategy = new JwtStrategy(
+      mockConfigService as unknown as ConfigService,
+      mockTokenRepository as unknown as TokenRepository,
+    );
+    expect(mockConfigService.get).toHaveBeenCalledWith('JWT_ACCESS_SECRET');
+
+    expect(tempStrategy).toBeDefined();
+  });
+
+  it('should throw an error if JWT_ACCESS_SECRET is missing', () => {
+    mockConfigService.get.mockReturnValue(undefined);
+
+    expect(() => {
+      new JwtStrategy(
+        mockConfigService as unknown as ConfigService,
+        mockTokenRepository as unknown as TokenRepository,
+      );
+    }).toThrow('JWT_ACCESS_SECRET is not defined');
+  });
 
   describe('when token is validate', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
     it('should return user if token is valid', async () => {
       mockTokenRepository.findOne.mockResolvedValue(mockToken);
 

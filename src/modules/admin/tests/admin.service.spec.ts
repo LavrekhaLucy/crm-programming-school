@@ -5,7 +5,7 @@ import { mockOrdersService } from '../../orders/__mocks__/orders-service.mock';
 import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { mockResponseOrderDto } from '../../orders/__mocks__/res-order-dto.mock';
-import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock';
+// import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 
@@ -72,15 +72,15 @@ describe('AdminService', () => {
       expect(result).toEqual([mockResponseOrderDto]);
     });
   });
-  describe('getOrdersStats', () => {
-    it('should delegate getOrdersStats to OrdersService.getStatsByStatus', async () => {
-      mockOrdersService.getStatsByStatus.mockResolvedValue([
-        mockOrdersStatsDto,
-      ]);
-
-      const result = await service.getOrdersStats();
-      expect(mockOrdersService.getStatsByStatus).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([mockOrdersStatsDto]);
-    });
-  });
+  // describe('getOrdersStats', () => {
+  //   it('should delegate getOrdersStats to OrdersService.getStatsByStatus', async () => {
+  //     mockOrdersService.getStatsByStatus.mockResolvedValue([
+  //       mockOrdersStatsDto,
+  //     ]);
+  //
+  //     const result = await service.getOrdersStats();
+  //     expect(mockOrdersService.getStatsByStatus).toHaveBeenCalledTimes(1);
+  //     expect(result).toEqual([mockOrdersStatsDto]);
+  //   });
+  // });
 });

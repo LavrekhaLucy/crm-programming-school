@@ -15,6 +15,8 @@ import { EntityManager } from 'typeorm';
 import { mockEntityManager } from '../../orders/__mocks__/entity-manager.mock';
 import { OrdersRepository } from '../../repository/services/orders.repository';
 import { mockOrderRepository } from '../../orders/__mocks__/order-repository.mock';
+import { AuthService } from '../../auth/services/auth.service';
+import { mockAuthService } from '../../auth/__mocks__/auth-service.mock';
 
 export const usersModuleProviders: Provider[] = [
   {
@@ -48,5 +50,9 @@ export const usersModuleProviders: Provider[] = [
   {
     provide: EntityManager,
     useValue: mockEntityManager,
+  },
+  {
+    provide: AuthService,
+    useValue: mockAuthService,
   },
 ];

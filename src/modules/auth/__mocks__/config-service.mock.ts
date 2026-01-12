@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 
-export const mockConfigService = {
-  get: jest.fn((key: string) => {
-    if (key === 'JWT_ACCESS_SECRET') return 'mySecret';
-  }),
-} as unknown as ConfigService;
+export const mockConfigService: Pick<ConfigService, 'get'> & {
+  get: jest.Mock;
+} = {
+  get: jest.fn(),
+};

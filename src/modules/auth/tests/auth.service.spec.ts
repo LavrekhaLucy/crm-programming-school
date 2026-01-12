@@ -140,10 +140,6 @@ describe('AuthService', () => {
   });
   describe('logout', () => {
     it('should block the refresh token if it exists', async () => {
-      // const mockTokenEntity = {
-      //   refreshToken: 'validRefreshToken',
-      //   isBlocked: false,
-      // };
       mockTokenRepository.findOne.mockResolvedValue(mockToken);
 
       await service.logOut({ refreshToken: 'validRefreshToken' });
