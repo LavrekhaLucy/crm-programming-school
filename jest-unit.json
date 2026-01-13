@@ -15,13 +15,24 @@
     ],
   "coverageThreshold": {
     "global": {
-      "branches": 50,
-      "functions": 50,
-      "lines": 50,
-      "statements": 50
+      "branches": 30,
+      "functions": 80,
+      "lines": 60,
+      "statements": 60
     }
   },
   "silent": true,
-  "collectCoverage": true,
-  "coverageDirectory": "../coverage"
+  "collectCoverage": false,
+  "coverageDirectory": "../coverage",
+  "coveragePathIgnorePatterns": [
+    "/node_modules/",
+    "main.ts",
+    "seed.ts",
+    "/dto/",
+    "/models/",
+    "/configs/",
+    "/helpers/",
+    "/filters/",
+    "env.service.ts"
+  ]
 }

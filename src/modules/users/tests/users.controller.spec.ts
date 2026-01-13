@@ -1,10 +1,10 @@
 import { UsersController } from '../users.controller';
 import { Test } from '@nestjs/testing';
-import { UserService } from '../services/user.service';
 import { UserRequest } from '../../auth/interfaces/user-request.interface';
 import { mockUserEntity } from '../__mocks__/user-entity.mock';
 import { mockBaseUserReqDto } from '../__mocks__/user-base-dto.mock';
 import { mockUserService } from '../__mocks__/user-service.mock';
+import { usersModuleProviders } from '../__mocks__/users-module.mock';
 
 describe(UsersController.name, () => {
   let usersController: UsersController;
@@ -12,12 +12,7 @@ describe(UsersController.name, () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [
-        {
-          provide: UserService,
-          useValue: mockUserService,
-        },
-      ],
+      providers: [...usersModuleProviders],
     }).compile();
 
     usersController = module.get<UsersController>(UsersController);

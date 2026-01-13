@@ -230,7 +230,6 @@ describe('OrderService', () => {
       expect(result).toHaveLength(0);
     });
   });
-
   describe('update', () => {
     it('should update order and return updated order', async () => {
       const orderId = 'orderId';
@@ -265,7 +264,6 @@ describe('OrderService', () => {
       expect(mockOrderRepository.findOneBy).not.toHaveBeenCalled();
     });
   });
-
   describe('delete', () => {
     it('should delete order successfully', async () => {
       const orderId = 'order1';

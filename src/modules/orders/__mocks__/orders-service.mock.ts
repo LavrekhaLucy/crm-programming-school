@@ -6,4 +6,5 @@ export const mockOrdersService = {
   assignManager: jest.fn(),
   takeOrder: jest.fn(),
   delete: jest.fn(),
+  getStatsByStatus: jest.fn(),
 };
