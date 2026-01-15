@@ -1,6 +1,25 @@
 services:
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+#      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+       sh -c "npm run migration:run && npm run start:dev"
+
   db:
     image: mysql:8
+#  volumes:
+#    - ./mysql_db:/var/lib/mysql
+#
     environment:
       - MYSQL_DATABASE=crm-programming-school
 #      - MYSQL_USER=root
@@ -8,5 +27,12 @@ services:
       - MYSQL_ROOT_PASSWORD=rootroot
     ports:
       - '3307:3306'
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootroot"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
+
