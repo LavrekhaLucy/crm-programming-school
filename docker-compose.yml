@@ -15,6 +15,7 @@ services:
     command: >
        sh -c "npm run migration:run && npm run start:dev"
 
+
   db:
     image: mysql:8
 #  volumes:
@@ -33,6 +34,20 @@ services:
       start_period: 5s
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
+
+  seed:
+    build:
+      context: ./backend
+    working_dir: /app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: npm run seed
+#    command: sh wait-for-it.sh db:3306 --timeout=60 --strict -- npm run seed
+
+
 
   web:
     image: nginx:alpine

@@ -69,4 +69,8 @@ export class UserEntity extends CreateUpdateModel {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
+
+  async setPassword(password: string) {
+    this.password = await bcrypt.hash(password, 10);
+  }
 }

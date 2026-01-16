@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from './database/entities/user.entity';
 import { UserRoleEnum } from './database/entities/enums/user-role.enum';
 import { Repository } from 'typeorm';
+import { EnvService } from './shared/env.service';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
@@ -11,17 +12,19 @@ async function bootstrap() {
   const userRepo = app.get<Repository<UserEntity>>(
     getRepositoryToken(UserEntity),
   );
+  const envService = app.get(EnvService);
 
-  const adminEmail = 'admin@gmail.com';
+  const adminEmail = envService.adminEmail;
+  const adminPassword = envService.adminPassword;
 
   const adminExists = await userRepo.findOne({
     where: { email: adminEmail },
+    select: ['id'],
   });
 
   if (!adminExists) {
     const admin = userRepo.create({
       email: adminEmail,
-      password: 'admin',
       role: UserRoleEnum.ADMIN,
       username: 'admin',
       name: 'Admin',
@@ -30,6 +33,7 @@ async function bootstrap() {
       isAdultAccepted: true,
     });
 
+    await admin.setPassword(adminPassword);
     await userRepo.save(admin);
   } else {
     console.log('Admin already exists, skipping seed');
