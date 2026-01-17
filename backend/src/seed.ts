@@ -25,6 +25,7 @@ async function bootstrap() {
   if (!adminExists) {
     const admin = userRepo.create({
       email: adminEmail,
+      password: adminPassword,
       role: UserRoleEnum.ADMIN,
       username: 'admin',
       name: 'Admin',
@@ -33,7 +34,6 @@ async function bootstrap() {
       isAdultAccepted: true,
     });
 
-    await admin.setPassword(adminPassword);
     await userRepo.save(admin);
   } else {
     console.log('Admin already exists, skipping seed');
