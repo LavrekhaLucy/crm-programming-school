@@ -1,5 +1,6 @@
-import {useEffect, useState} from "react";
-import axios from "axios";
+// import {useEffect, useState} from "react";
+// import api from "./services/api.tsx";
+
 
 
 export interface Order {
@@ -10,23 +11,23 @@ export interface Order {
 }
 const App = () => {
     console.log('FRONTEND VERSION 123');
-    const [orders, setOrders]= useState<Order[]>([]);
-    useEffect(() => {
-        axios.get('/api/orders', {
-            headers: {
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJhYWpobzk1MTlrYSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2ODcwMDM0NCwiZXhwIjoxNzY4NzAzOTQ0fQ.5I6o9Dxn5RD3nT_Yl24d4D1EvogmJeODfTvEa4JLkKU`
-            }
-        })
-       .then(({data}) => setOrders(data))
-        .catch(console.error);
-    },[])
+    // const [orders, setOrders]= useState<Order[]>([]);
+    // useEffect(() => {
+    //     api.get('/api/orders', {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         }
+    //     })
+    //    .then(({data}) => setOrders(data))
+    //     .catch(console.error);
+    // },[])
 
     return (
         <div>
             <h1>Checking</h1>
-            {
-                orders.map(order =><div key={order.id}>{JSON.stringify(order)}</div>)
-            }
+            {/*{*/}
+            {/*    orders.map(order =><div key={order.id}>{JSON.stringify(order)}</div>)*/}
+            {/*}*/}
         </div>
     );
 };
