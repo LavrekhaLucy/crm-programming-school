@@ -1,12 +1,12 @@
 import axios from 'axios';
-import {apiToken, baseUrl} from "../components/res_constants/info.ts";
+import { baseUrl} from "../components/res_constants/info.ts";
 import type {IOrdersResponseModel} from "../models/IOrders/IOrdersResponseModel.ts";
 
 
 const axiosInstance = axios.create({
     baseURL: baseUrl,
     params: {},
-    headers: { Authorization: `Bearer ${apiToken}` },
+
 })
 axiosInstance.interceptors.request.use((request) => {
 
