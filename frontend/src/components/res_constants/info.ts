@@ -1,5 +1,3 @@
-const newBaseUrl='/api'
-export const baseUrl= newBaseUrl
 
-const ImageBaseUrl = ''
-export const imageUrl= ImageBaseUrl
+const newBaseUrl= import.meta.env.VITE_API_URL
+export const baseUrl= newBaseUrl
