@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { OrdersService } from '../../orders/services/order.service';
 import { UserService } from '../../users/services/user.service';
 import { OrdersStatsDto } from '../../orders/models/dto/req/order-stats.dto';
-import { ResponseOrderDto } from '../../orders/models/dto/res/response-order.dto';
 import { UserBaseResDto } from '../../users/models/dto/res/user-base.res.dto';
 import { CreateManagerReqDto } from '../models/dto/req/create-manager.req.dto';
 
@@ -31,9 +30,17 @@ export class AdminService {
   }
 
   // заявки (orders)
-  getAllOrders(): Promise<ResponseOrderDto[]> {
-    return this.ordersService.findAll();
-  }
+  // getAllOrders(): Promise<ResponseOrderDto[]> {
+  //   return this.ordersService.findAll();
+  // }
+  // async findAll(): Promise<PaginatedResponse<ResponseOrderDto>> {
+  //   const result = await this.ordersService.findAll();
+  //
+  //   return {
+  //     ...result,
+  //     data: this.orderMapper.toResponseMany(result.data),
+  //   };
+  // }
 
   getOrdersStats(): Promise<OrdersStatsDto[]> {
     return this.ordersService.getStatsByStatus();

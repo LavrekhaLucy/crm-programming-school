@@ -13,6 +13,7 @@ import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { OrdersRepository } from '../../repository/services/orders.repository';
+import { PaginatedResponse } from '../../../common/types/pagination.type';
 
 @Injectable()
 export class OrdersService {
@@ -27,8 +28,12 @@ export class OrdersService {
     return this.orderRepository.save(newOrder);
   }
 
-  async findAll(): Promise<ResponseOrderDto[]> {
-    return this.orderRepository.find();
+  async findAll(page = 1, limit = 10): Promise<PaginatedResponse<OrderEntity>> {
+    const [data, total] = await this.orderRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total, page, limit };
   }
 
   async findOne(id: string): Promise<ResponseOrderDto> {

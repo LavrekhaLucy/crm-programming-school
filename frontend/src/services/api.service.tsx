@@ -2,6 +2,7 @@ import axios from "axios";
 import type {ILoginData} from "../models/ILogin/ILoginData.ts";
 import type {ILoginResponse} from "../models/ILogin/ILoginResponse.ts";
 import {baseUrl} from "../components/res_constants/info.ts";
+import type {IOrdersResponseModel} from "../models/IOrders/IOrdersResponseModel.ts";
 
 
 export const axiosInstance = axios.create({
@@ -27,3 +28,10 @@ export const loginRequest = async (data: ILoginData): Promise<ILoginResponse> =>
     const response = await axiosInstance.post<ILoginResponse>("/auth/login", data);
     return response.data;
 };
+
+export const getOrders = async (page: number, limit = 25,):Promise<IOrdersResponseModel> => {
+    const {data}= await axiosInstance.get<IOrdersResponseModel>(`/api/orders`,{
+        params: {page,limit},
+    });
+    return data;
+}

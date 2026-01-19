@@ -4,7 +4,6 @@ import { mockUserService } from '../../users/__mocks__/user-service.mock';
 import { mockOrdersService } from '../../orders/__mocks__/orders-service.mock';
 import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
-import { mockResponseOrderDto } from '../../orders/__mocks__/res-order-dto.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock';
@@ -61,15 +60,6 @@ describe('AdminService', () => {
       const result = await service.enableUser(userId);
       expect(mockUserService.enable).toHaveBeenCalledWith(userId);
       expect(result).toEqual(mockUserResDto);
-    });
-  });
-  describe('getAllOrders', () => {
-    it('should delegate getAllOrders to OrdersService.findAll', async () => {
-      mockOrdersService.findAll.mockResolvedValue([mockResponseOrderDto]);
-
-      const result = await service.getAllOrders();
-      expect(mockOrdersService.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([mockResponseOrderDto]);
     });
   });
   describe('getOrdersStats', () => {

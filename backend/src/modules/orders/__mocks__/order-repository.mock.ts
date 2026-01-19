@@ -10,4 +10,5 @@ export const mockOrderRepository: MockServiceType<Partial<OrdersRepository>> = {
   update: jest.fn(),
   delete: jest.fn(),
   createQueryBuilder: jest.fn(),
+  findAndCount: jest.fn(),
 };

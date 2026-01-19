@@ -4,7 +4,6 @@ import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { mockAdminService } from '../__mocks__/admin-service.mock';
 import { mockCreateManagerResDto } from '../__mocks__/create-manager-res.dto.mock';
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
-import { mockResponseOrderDto } from '../../orders/__mocks__/res-order-dto.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 
 describe(AdminController.name, () => {
@@ -86,16 +85,6 @@ describe(AdminController.name, () => {
     it('should return dashboard message', () => {
       const result = adminController.getDashboard();
       expect(result).toEqual({ message: 'Admin dashboard доступний' });
-    });
-  });
-  describe('getAllOrders', () => {
-    it('should call adminService.getAllOrders', async () => {
-      jest
-        .spyOn(mockAdminService, 'getAllOrders')
-        .mockResolvedValue([mockResponseOrderDto]);
-
-      await adminController.getAllOrders();
-      expect(mockAdminService.getAllOrders).toHaveBeenCalledTimes(1);
     });
   });
   describe('getOrdersStats', () => {

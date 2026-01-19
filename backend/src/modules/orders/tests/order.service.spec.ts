@@ -18,6 +18,7 @@ import { mockUpdateResult } from '../__mocks__/update-result.mock';
 import { mockQueryBuilder } from '../__mocks__/query-builder.mock';
 import { SelectQueryBuilder } from 'typeorm';
 import { mockUpdateOrderDto } from '../__mocks__/update-order-dto.mock';
+import { mockOrderEntities } from '../__mocks__/mockOrderEntity';
 
 describe('OrderService', () => {
   let service: OrdersService;
@@ -48,15 +49,27 @@ describe('OrderService', () => {
     });
   });
   describe('findAll', () => {
-    it('should return an array of orders', async () => {
-      repository.find.mockResolvedValue([mockResponseOrderDto]);
+    it('should return paginated orders', async () => {
+      mockOrderRepository.findAndCount.mockResolvedValue([
+        mockOrderEntities,
+        mockOrderEntities.length,
+      ]);
 
-      const result = await service.findAll();
+      const result = await service.findAll(1, 10);
 
-      expect(repository.find).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([mockResponseOrderDto]);
+      expect(repository.findAndCount).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10,
+      });
+      expect(result).toEqual({
+        data: mockOrderEntities,
+        total: mockOrderEntities.length,
+        page: 1,
+        limit: 10,
+      });
     });
   });
+
   describe('findOne', () => {
     beforeEach(() => {
       jest.clearAllMocks();

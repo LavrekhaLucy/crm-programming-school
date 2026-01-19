@@ -1,11 +1,10 @@
+import { OrderEntity } from '../../../database/entities/order.entity';
 import { CoursesEnum } from '../../../database/entities/enums/courses.enum';
 import { FormatsEnum } from '../../../database/entities/enums/formats.enum';
 import { TypesEnum } from '../../../database/entities/enums/types.enum';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
-import { OrderEntity } from '../../../database/entities/order.entity';
-import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 
-export const mockResponseOrderDto = {
+export const mockOrderEntity: OrderEntity = {
   id: '1',
   name: 'name',
   surname: 'surname',
@@ -20,6 +19,8 @@ export const mockResponseOrderDto = {
   utm: 'utm',
   msg: 'msg',
   status: StatusesEnum.NEW,
-} as OrderEntity;
-
-export const mockResponseOrders: ResponseOrderDto[] = [mockResponseOrderDto];
+  manager: null,
+  group: null,
+  comments: [],
+};
+export const mockOrderEntities: OrderEntity[] = [mockOrderEntity];

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -35,8 +36,8 @@ export class OrdersController {
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Get()
-  findAll(): Promise<ResponseOrderDto[]> {
-    return this.ordersService.findAll();
+  findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.ordersService.findAll(+page, +limit);
   }
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)

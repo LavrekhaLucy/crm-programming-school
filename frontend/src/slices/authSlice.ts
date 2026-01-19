@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { loginRequest } from "../services/apiService";
+import { loginRequest } from "../services/api.service.tsx";
 import type { ILoginData } from "../models/ILogin/ILoginData";
 import {AxiosError} from "axios";
 
