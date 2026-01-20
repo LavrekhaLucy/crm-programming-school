@@ -15,7 +15,7 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
-
+    console.log("JWT token sent:", token);
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,8 +29,9 @@ export const loginRequest = async (data: ILoginData): Promise<ILoginResponse> =>
     return response.data;
 };
 
-export const getOrders = async (page: number, limit = 25,):Promise<IOrdersResponseModel> => {
-    const {data}= await axiosInstance.get<IOrdersResponseModel>(`/api/orders`,{
+
+export const getOrders = async (page: number, limit: number):Promise<IOrdersResponseModel> => {
+    const {data}= await axiosInstance.get<IOrdersResponseModel>(`/orders`,{
         params: {page,limit},
     });
     return data;

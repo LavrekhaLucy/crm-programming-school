@@ -9,10 +9,11 @@ type orderSliceType = {
     error: string | null;
 }
 
-const initOrdersSliceState: orderSliceType  = {pageData:null, loading: true, error: null};
+
+const initOrdersSliceState: orderSliceType  = {pageData:null, loading: false, error: null};
 
 
-const loadOrders = createAsyncThunk<
+export const loadOrders = createAsyncThunk<
     IOrdersResponseModel,
     { page: number; limit: number }>(
     'orders/loadOrders',
@@ -22,8 +23,6 @@ const loadOrders = createAsyncThunk<
 
     }
 );
-
-
 
 const ordersSlice = createSlice({
     name: 'orders',
@@ -45,5 +44,6 @@ const ordersSlice = createSlice({
             });
     },
 });
+export const ordersActions = {...ordersSlice.actions,loadOrders};
 
 export default ordersSlice.reducer;

@@ -1,9 +1,10 @@
+import OrdersList from "../components/ordersList/ordersList.tsx";
 
 
 const OrdersPage = () => {
     return (
         <div>
-            {/*<OrderComponent/>*/}
+            <OrdersList/>
 
         </div>
     );

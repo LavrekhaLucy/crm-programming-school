@@ -22,9 +22,16 @@ export const login = createAsyncThunk<string, ILoginData, { rejectValue: string 
     async (data: ILoginData, thunkAPI) => {
         try {
             const response = await loginRequest(data);
-            localStorage.setItem("token", response.token);
+            console.log("Login response:", response); // важливо побачити структуру
 
-            return response.token;
+            const token = response.accessToken;
+            console.log("Token saved to localStorage:", localStorage.getItem("token"));
+
+            if (!token) return thunkAPI.rejectWithValue("No token returned from server");
+            localStorage.setItem("token", response.accessToken);
+            console.log("Token saved to localStorage:", localStorage.getItem("token"));
+
+            return response.accessToken;
         } catch (e: unknown) {
             if (e instanceof AxiosError) {
                 if (e.response?.status === 401) {
@@ -40,7 +47,6 @@ export const login = createAsyncThunk<string, ILoginData, { rejectValue: string 
         }
     }
 );
-
 
 const authSlice = createSlice({
     name: "auth",
