@@ -14,15 +14,12 @@ export const OrderRow: FC<OrderRowProps> = ({ order }) => {
             <td className="px-3 py-2">{order.email ?? "null"}</td>
             <td className="px-3 py-2">{order.phone ?? "null"}</td>
             <td className="px-3 py-2 text-center">{order.age ?? "null"}</td>
-            <td className="px-3 py-2">{order.course}</td>
-            <td className="px-3 py-2">{order.course_format}</td>
-            <td className="px-3 py-2">{order.course_type}</td>
-
-            <td className="px-3 py-2">{order.status}</td>
+            <td className="px-3 py-2">{order.course ?? "null"}</td>
+            <td className="px-3 py-2">{order.course_format ?? "null"}</td>
+            <td className="px-3 py-2">{order.course_type ?? "null"}</td>
+            <td className="px-3 py-2">{order.status ?? "null"}</td>
             <td className="px-3 py-2">{order.sum ?? "null"}</td>
-            <td className="px-3 py-2 text-green-600">
-                {order.alreadyPaid ?? "null"}
-            </td>
+            <td className="px-3 py-2">{order.alreadyPaid ?? "null"}</td>
             <td className="px-3 py-2">{order.group ?.name ?? "null"}</td>
             <td className="px-3 py-2 text-gray-500">{order.created_at}</td>
             <td className="px-3 py-2">{order.manager?.name ?? "null"}</td>

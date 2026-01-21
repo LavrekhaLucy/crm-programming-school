@@ -1,5 +1,4 @@
 export enum TypesEnum {
-  ALLTYPES = 'all_types',
   PRO = 'pro',
   MINIMAL = 'minimal',
   PREMIUM = 'premium',

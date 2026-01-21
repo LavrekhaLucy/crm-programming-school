@@ -1,5 +1,4 @@
 export const StatusesEnum ={
-  ALLSTATUSES : 'all_statuses',
   INWORK : 'in_work',
   NEW : 'new',
   AGREE : 'agree',

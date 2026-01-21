@@ -1,5 +1,4 @@
 export const FormatsEnum = {
-  ALLFORMATS : 'all_formats',
   STATIC : 'static',
   ONLINE : 'online',
 } as const;

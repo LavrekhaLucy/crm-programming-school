@@ -1,5 +1,4 @@
 export enum CoursesEnum {
-  ALLCOURSES = 'all_courses',
   FS = 'fs',
   QACX = 'qacx',
   JCX = 'jcx',
