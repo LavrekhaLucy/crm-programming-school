@@ -1,10 +1,10 @@
-import OrdersList from "../components/ordersList/ordersList.tsx";
+import OrdersTable from "../components/ordersTable/ordersTable.tsx";
 
 
 const OrdersPage = () => {
     return (
         <div>
-            <OrdersList/>
+            <OrdersTable/>
 
         </div>
     );

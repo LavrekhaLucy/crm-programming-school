@@ -38,7 +38,7 @@ const Login = () => {
     console.log('Sending login:', { login: email, password });
     try {
       await dispatch(login({ login: email, password })).unwrap();
-      navigate("/orders");
+      navigate("/app/orders");
     } catch (e: unknown) {
       if (e instanceof Error) {
       alert(e || "Incorrect login or password");
