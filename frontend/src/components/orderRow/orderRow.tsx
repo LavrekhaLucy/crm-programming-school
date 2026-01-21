@@ -18,12 +18,7 @@ export const OrderRow: FC<OrderRowProps> = ({ order }) => {
             <td className="px-3 py-2">{order.course_format}</td>
             <td className="px-3 py-2">{order.course_type}</td>
 
-            <td className="px-3 py-2">
-        <span className="rounded bg-yellow-100 px-2 py-1 text-xs text-yellow-800">
-          {order.status}
-        </span>
-            </td>
-
+            <td className="px-3 py-2">{order.status}</td>
             <td className="px-3 py-2">{order.sum ?? "null"}</td>
             <td className="px-3 py-2 text-green-600">
                 {order.alreadyPaid ?? "null"}

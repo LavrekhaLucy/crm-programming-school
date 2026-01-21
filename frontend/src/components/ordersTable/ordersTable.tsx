@@ -12,16 +12,18 @@ const OrdersTable = () => {
     const dispatch = useAppDispatch();
     const pageData = useAppSelector((state) => state.orderStoreSlice.pageData);
     const loading = useAppSelector((state) => state.orderStoreSlice.loading);
-    const token = useAppSelector((state) => state.authStoreSlice.token);
+
 
     const [searchParams] = useSearchParams({ page: '1' });
     const page = Number(searchParams.get('page') ?? 1);
     const limit = ORDERS_PER_PAGE;
 
     useEffect(() => {
-        if (!token) return;
         dispatch(ordersActions.loadOrders({ page, limit }));
-    }, [dispatch, page, limit, token]);
+    }, [dispatch, page, limit]);
+
+    console.log("pageData:", pageData);
+    console.log("orders:", pageData?.data);
 
     if (loading && !pageData) {
         return <div>Loading orders...</div>;
