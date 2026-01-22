@@ -7,7 +7,8 @@ type OrderRowProps = {
 
 export const OrderRow: FC<OrderRowProps> = ({ order }) => {
     return (
-        <tr className="hover:bg-green-50">
+
+        <tr className="hover:bg-green-600 hover:text-white even:bg-gray-200 ">
             <td className="px-3 py-2">{order.id}</td>
             <td className="px-3 py-2 font-medium">{order.name ?? "null"}</td>
             <td className="px-3 py-2">{order.surname ?? "null"}</td>
@@ -21,7 +22,7 @@ export const OrderRow: FC<OrderRowProps> = ({ order }) => {
             <td className="px-3 py-2">{order.sum ?? "null"}</td>
             <td className="px-3 py-2">{order.alreadyPaid ?? "null"}</td>
             <td className="px-3 py-2">{order.group ?.name ?? "null"}</td>
-            <td className="px-3 py-2 text-gray-500">{order.created_at}</td>
+            <td className="px-3 py-2">{order.created_at}</td>
             <td className="px-3 py-2">{order.manager?.name ?? "null"}</td>
         </tr>
     );
