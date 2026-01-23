@@ -8,6 +8,7 @@ const baseBtn =
     "hover:bg-green-600 transition-colors " +
     "disabled:bg-green-200 disabled:cursor-not-allowed";
 
+
 interface PaginationProps {
     totalPages: number;
     siblings?: number;
@@ -15,7 +16,7 @@ interface PaginationProps {
 
 export const Pagination: React.FC<PaginationProps> = ({
                                                           totalPages,
-                                                          siblings = 1,
+                                                          siblings = 2,
                                                       }) => {
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -39,8 +40,8 @@ export const Pagination: React.FC<PaginationProps> = ({
     if (paginationRange.length === 0) return null;
 
     return (
-        <nav aria-label="Pagination">
-            <ul style={{ display: "flex", gap: 8, listStyle: "none", padding: 0 }}>
+        <nav aria-label="Pagination" className="flex justify-center mt-6">
+            <ul className="flex gap-2 list-none p-0">
                 {/* Prev */}
                 <li>
                     <button className={baseBtn}
@@ -76,6 +77,8 @@ export const Pagination: React.FC<PaginationProps> = ({
                             </button>
                         </li>
                     );
+
+
                 })}
 
                 {/* Next */}
@@ -88,6 +91,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                         {">"}
                     </button>
                 </li>
+
             </ul>
         </nav>
     );

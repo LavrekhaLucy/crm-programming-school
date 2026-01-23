@@ -11,7 +11,7 @@ interface UsePaginationParams {
 export const usePagination = ({
                                   currentPage,
                                   totalPages,
-                                  siblings = 1,
+                                  siblings = 2,
                               }: UsePaginationParams): PaginationItem[] => {
     return useMemo(() => {
         if (totalPages <= 1) return [];
@@ -21,24 +21,20 @@ export const usePagination = ({
         const firstPage = 1;
         const lastPage = totalPages;
 
-        const startPage = Math.max(currentPage - siblings, 5);
-        const endPage = Math.min(currentPage + siblings, totalPages - 1);
+        const leftSibling = Math.max(currentPage - siblings, firstPage + 1);
+        const rightSibling = Math.min(currentPage + siblings, lastPage - 1);
 
         range.push(firstPage);
-
-        if (startPage >= 7) {
+        if (leftSibling > firstPage + 1) {
             range.push("dots");
         }
-
-        for (let page = startPage; page <= endPage; page++) {
+        for (let page = leftSibling; page <= rightSibling; page++) {
             range.push(page);
         }
-
-        if (endPage < totalPages - 1) {
+        if (rightSibling < lastPage - 1) {
             range.push("dots");
         }
-
-        if (totalPages > 1) {
+        if (lastPage !== firstPage) {
             range.push(lastPage);
         }
 
