@@ -55,35 +55,15 @@ describe('OrderService', () => {
     });
   });
   describe('findAll', () => {
-    // it('should return paginated orders', async () => {
-    //   mockOrderRepository.findAndCount.mockResolvedValue([
-    //     mockOrderEntities,
-    //     mockOrderEntities.length,
-    //   ]);
-    //
-    //   const result = await service.findAll(1, 10);
-    //
-    //   expect(repository.findAndCount).toHaveBeenCalledWith({
-    //     skip: 0,
-    //     take: 10,
-    //   });
-    //   expect(result).toEqual({
-    //     data: mockOrderEntities,
-    //     total: mockOrderEntities.length,
-    //     page: 1,
-    //     limit: 10,
-    //   });
-    // });
-
     it('should return paginated orders', async () => {
       const orders = mockOrderEntities;
-      const skipSpy = jest.spyOn(qb, 'skip');
-      const takeSpy = jest.spyOn(qb, 'take');
+      // const skipSpy = jest.spyOn(qb, 'skip');
+      // const takeSpy = jest.spyOn(qb, 'take');
       qb.getManyAndCount.mockResolvedValue([orders, 1]);
 
       const query: OrdersQueryDto = {
-        name: 'John',
-        surname: 'Smith',
+        name: 'john',
+        surname: 'smith',
         email: 'test@mail.com',
         phone: '1234567890',
         startDate: '2026-01-01',
@@ -98,18 +78,18 @@ describe('OrderService', () => {
       const result = await service.findAll(query, 1);
 
       expect(repository.createQueryBuilder).toHaveBeenCalledWith('order');
-      expect(skipSpy).toHaveBeenCalledWith(0);
-      expect(takeSpy).toHaveBeenCalledWith(25);
+      expect(jest.spyOn(qb, 'skip')).toHaveBeenCalledWith(0);
+      expect(jest.spyOn(qb, 'take')).toHaveBeenCalledWith(25);
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
         'order.name LIKE :name',
         {
-          name: `%John%`,
+          name: `%john%`,
         },
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
         'order.surname LIKE :surname',
         {
-          surname: `%Smith%`,
+          surname: `%smith%`,
         },
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
@@ -126,13 +106,11 @@ describe('OrderService', () => {
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
         'order.created_at >= :startDate',
-        { startDate: `%2026-01-01%` },
+        { startDate: '2026-01-01' },
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
         'order.created_at <= :endDate',
-        {
-          endDate: `%2026-01-31%`,
-        },
+        { endDate: '2026-01-31' },
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
         'order.course = :course',

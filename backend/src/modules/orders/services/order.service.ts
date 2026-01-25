@@ -60,23 +60,30 @@ export class OrdersService {
     const qb = this.orderRepository.createQueryBuilder('order');
 
     // TEXT FILTERS (LIKE)
-    if (name) qb.andWhere('order.name LIKE :name', { name: `%${name}%` });
+    if (name)
+      qb.andWhere('order.name LIKE :name', { name: `%${name.toLowerCase()}%` });
 
     if (surname)
-      qb.andWhere('order.surname LIKE :surname', { surname: `%${surname}%` });
+      qb.andWhere('order.surname LIKE :surname', {
+        surname: `%${surname.toLowerCase()}%`,
+      });
 
-    if (email) qb.andWhere('order.email LIKE :email', { email: `%${email}%` });
+    if (email)
+      qb.andWhere('order.email LIKE :email', {
+        email: `%${email.toLowerCase()}%`,
+      });
 
-    if (phone) qb.andWhere('order.phone LIKE :phone', { phone: `%${phone}%` });
+    if (phone)
+      qb.andWhere('order.phone LIKE :phone', {
+        phone: `%${phone.toLowerCase()}%`,
+      });
 
     if (startDate) {
-      qb.andWhere('order.created_at >= :startDate', {
-        startDate: `%${startDate}%`,
-      });
+      qb.andWhere('order.created_at >= :startDate', { startDate });
     }
 
     if (endDate) {
-      qb.andWhere('order.created_at <= :endDate', { endDate: `%${endDate}%` });
+      qb.andWhere('order.created_at <= :endDate', { endDate });
     }
 
     // SELECT FILTERS
