@@ -16,11 +16,13 @@ import { CreateOrderDto } from './models/dto/req/create-order.dto';
 import { UpdateOrderDto } from './models/dto/req/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ResponseOrderDto } from './models/dto/res/response-order.dto';
-import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
 import { UserRequest } from '../auth/interfaces/user-request.interface';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { OrdersQueryDto } from './models/dto/req/orders-query.dto';
+import { CurrentUser } from '../../common/decorators/user.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('OrdersList')
@@ -36,8 +38,8 @@ export class OrdersController {
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Get()
-  findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.ordersService.findAll(+page, +limit);
+  findAll(@Query() query: OrdersQueryDto, @CurrentUser('id') userId: number) {
+    return this.ordersService.findAll(query, userId);
   }
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)

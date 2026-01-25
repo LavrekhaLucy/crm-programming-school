@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+
 import { AdminService } from './services/admin.service';
 import { OrdersStatsDto } from '../orders/models/dto/req/order-stats.dto';
 import { UserResDto } from '../users/models/dto/res/user.res.dto';
@@ -20,6 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CreateManagerResDto } from './models/dto/res/create-manager.res.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { UserBaseResDto } from '../users/models/dto/res/user-base.res.dto';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('Admin')
 @Controller('admin')

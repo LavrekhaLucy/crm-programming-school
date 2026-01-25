@@ -1,6 +1,6 @@
 import React from "react";
 import { useSearchParams } from "react-router-dom";
-import {usePagination} from "../hook/usePagination.ts";
+import {usePagination} from "../hooks/usePagination.ts";
 
 const baseBtn =
     "w-9 h-9 rounded-full flex items-center justify-center " +

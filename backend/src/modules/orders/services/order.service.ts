@@ -14,6 +14,9 @@ import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { OrdersRepository } from '../../repository/services/orders.repository';
 import { PaginatedResponse } from '../../../common/types/pagination.type';
+import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
+import { OrderSortField } from '../../../database/entities/enums/order-sort-field.enum';
+import { SortOrder } from '../../../database/entities/enums/sort-order.enum';
 
 @Injectable()
 export class OrdersService {
@@ -28,12 +31,87 @@ export class OrdersService {
     return this.orderRepository.save(newOrder);
   }
 
-  async findAll(page = 1, limit = 10): Promise<PaginatedResponse<OrderEntity>> {
-    const [data, total] = await this.orderRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
-    return { data, total, page, limit };
+  async findAll(
+    query: OrdersQueryDto,
+    userId: number,
+  ): Promise<PaginatedResponse<OrderEntity>> {
+    const {
+      page = '1',
+      limit = '25',
+      sortBy = OrderSortField.CREATED_AT,
+      sortOrder = SortOrder.DESC,
+
+      name,
+      surname,
+      email,
+      phone,
+      startDate,
+      endDate,
+
+      course,
+      course_format,
+      course_type,
+      status,
+      group,
+
+      onlyMine,
+    } = query;
+
+    const qb = this.orderRepository.createQueryBuilder('order');
+
+    // TEXT FILTERS (LIKE)
+    if (name) qb.andWhere('order.name LIKE :name', { name: `%${name}%` });
+
+    if (surname)
+      qb.andWhere('order.surname LIKE :surname', { surname: `%${surname}%` });
+
+    if (email) qb.andWhere('order.email LIKE :email', { email: `%${email}%` });
+
+    if (phone) qb.andWhere('order.phone LIKE :phone', { phone: `%${phone}%` });
+
+    if (startDate) {
+      qb.andWhere('order.created_at >= :startDate', {
+        startDate: `%${startDate}%`,
+      });
+    }
+
+    if (endDate) {
+      qb.andWhere('order.created_at <= :endDate', { endDate: `%${endDate}%` });
+    }
+
+    // SELECT FILTERS
+    if (course) qb.andWhere('order.course = :course', { course });
+
+    if (course_format)
+      qb.andWhere('order.course_format = :course_format', { course_format });
+
+    if (course_type)
+      qb.andWhere('order.course_type = :course_type', { course_type });
+
+    if (status) qb.andWhere('order.status = :status', { status });
+
+    if (group) qb.andWhere('order.group = :group', { group });
+
+    // CHECKBOX
+    if (onlyMine === 'true') {
+      qb.andWhere('order.managerId = :userId', { userId });
+    }
+
+    // SORTING (SAFE)
+    qb.orderBy(`order.${sortBy}`, sortOrder);
+
+    // PAGINATION
+    qb.skip((+page - 1) * +limit);
+    qb.take(+limit);
+
+    const [data, total] = await qb.getManyAndCount();
+
+    return {
+      data,
+      total,
+      page: +page,
+      limit: +limit,
+    };
   }
 
   async findOne(id: string): Promise<ResponseOrderDto> {
@@ -94,7 +172,7 @@ export class OrdersService {
       .select('o.status', 'status')
       .addSelect('COUNT(o.id)', 'count')
       .groupBy('o.status')
-      .orderBy('count', 'DESC');
+      .orderBy('COUNT(o.id)', 'DESC');
 
     const rows: Array<{ status: string; count: string | number }> =
       await qb.getRawMany();

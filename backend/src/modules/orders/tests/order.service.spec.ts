@@ -18,18 +18,24 @@ import { mockUpdateResult } from '../__mocks__/update-result.mock';
 import { mockQueryBuilder } from '../__mocks__/query-builder.mock';
 import { SelectQueryBuilder } from 'typeorm';
 import { mockUpdateOrderDto } from '../__mocks__/update-order-dto.mock';
+import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
 import { mockOrderEntities } from '../__mocks__/mockOrderEntity';
 
 describe('OrderService', () => {
   let service: OrdersService;
   let repository: MockServiceType<OrdersRepository>;
+  let qb: jest.Mocked<SelectQueryBuilder<OrderEntity>>;
 
   beforeEach(async () => {
+    qb = mockQueryBuilder<OrderEntity>();
+
     const module = await Test.createTestingModule({
       providers: [...usersModuleProviders, OrdersService],
     }).compile();
     service = module.get(OrdersService);
     repository = module.get(OrdersRepository);
+
+    jest.spyOn(repository, 'createQueryBuilder').mockReturnValue(qb);
   });
 
   afterEach(() => {
@@ -49,24 +55,131 @@ describe('OrderService', () => {
     });
   });
   describe('findAll', () => {
+    // it('should return paginated orders', async () => {
+    //   mockOrderRepository.findAndCount.mockResolvedValue([
+    //     mockOrderEntities,
+    //     mockOrderEntities.length,
+    //   ]);
+    //
+    //   const result = await service.findAll(1, 10);
+    //
+    //   expect(repository.findAndCount).toHaveBeenCalledWith({
+    //     skip: 0,
+    //     take: 10,
+    //   });
+    //   expect(result).toEqual({
+    //     data: mockOrderEntities,
+    //     total: mockOrderEntities.length,
+    //     page: 1,
+    //     limit: 10,
+    //   });
+    // });
+
     it('should return paginated orders', async () => {
-      mockOrderRepository.findAndCount.mockResolvedValue([
-        mockOrderEntities,
-        mockOrderEntities.length,
-      ]);
+      const orders = mockOrderEntities;
+      const skipSpy = jest.spyOn(qb, 'skip');
+      const takeSpy = jest.spyOn(qb, 'take');
+      qb.getManyAndCount.mockResolvedValue([orders, 1]);
 
-      const result = await service.findAll(1, 10);
+      const query: OrdersQueryDto = {
+        name: 'John',
+        surname: 'Smith',
+        email: 'test@mail.com',
+        phone: '1234567890',
+        startDate: '2026-01-01',
+        endDate: '2026-01-31',
+        course: 'TS',
+        course_format: 'online',
+        course_type: 'fulltime',
+        status: 'new',
+        group: 'group1',
+      };
 
-      expect(repository.findAndCount).toHaveBeenCalledWith({
-        skip: 0,
-        take: 10,
-      });
+      const result = await service.findAll(query, 1);
+
+      expect(repository.createQueryBuilder).toHaveBeenCalledWith('order');
+      expect(skipSpy).toHaveBeenCalledWith(0);
+      expect(takeSpy).toHaveBeenCalledWith(25);
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.name LIKE :name',
+        {
+          name: `%John%`,
+        },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.surname LIKE :surname',
+        {
+          surname: `%Smith%`,
+        },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.email LIKE :email',
+        {
+          email: `%test@mail.com%`,
+        },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.phone LIKE :phone',
+        {
+          phone: `%1234567890%`,
+        },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.created_at >= :startDate',
+        { startDate: `%2026-01-01%` },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.created_at <= :endDate',
+        {
+          endDate: `%2026-01-31%`,
+        },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.course = :course',
+        {
+          course: 'TS',
+        },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.course_format = :course_format',
+        { course_format: 'online' },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.course_type = :course_type',
+        { course_type: 'fulltime' },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.status = :status',
+        { status: 'new' },
+      );
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.group = :group',
+        { group: 'group1' },
+      );
+
       expect(result).toEqual({
-        data: mockOrderEntities,
-        total: mockOrderEntities.length,
+        data: orders,
+        total: 1,
         page: 1,
-        limit: 10,
+        limit: 25,
       });
+    });
+
+    it('should filter only mine orders', async () => {
+      qb.getManyAndCount.mockResolvedValue([[], 0]);
+
+      const query: OrdersQueryDto = {
+        onlyMine: 'true',
+      };
+
+      await service.findAll(query, 5);
+
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.managerId = :userId',
+        {
+          userId: 5,
+        },
+      );
     });
   });
 
@@ -224,7 +337,7 @@ describe('OrderService', () => {
       );
       expect(jest.spyOn(orderQB, 'groupBy')).toHaveBeenCalledWith('o.status');
       expect(jest.spyOn(orderQB, 'orderBy')).toHaveBeenCalledWith(
-        'count',
+        'COUNT(o.id)',
         'DESC',
       );
     });

@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { IOrder } from "../../models/IOrders/IOrder";
+import type { IOrder } from "../../models/interfaces/IOrders/IOrder.ts";
 
 type OrderRowProps = {
     order: IOrder;

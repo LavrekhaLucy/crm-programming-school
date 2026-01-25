@@ -1,9 +1,10 @@
-import type {CoursesEnum} from "../../enums/courses.enum.ts";
-import type {FormatsEnum} from "../../enums/formats.enum.ts";
-import type {TypesEnum} from "../../enums/types.enum.ts";
-import type {StatusesEnum} from "../../enums/statuses.enum.ts";
+
 import type {IUser} from "../IUser/IUser.ts";
 import type {IGroup} from "../IGroup/IGroup.ts";
+import type {CoursesEnum} from "../../../enums/courses.enum.ts";
+import type {FormatsEnum} from "../../../enums/formats.enum.ts";
+import type {TypesEnum} from "../../../enums/types.enum.ts";
+import type {StatusesEnum} from "../../../enums/statuses.enum.ts";
 
 
 export interface IOrder {

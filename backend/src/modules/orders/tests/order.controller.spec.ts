@@ -5,12 +5,10 @@ import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 import { UserRequest } from '../../auth/interfaces/user-request.interface';
 import { mockCreateOrderDto } from '../__mocks__/create-order-dto.mock';
-import {
-  mockResponseOrderDto,
-  mockResponseOrders,
-} from '../__mocks__/res-order-dto.mock';
+import { mockResponseOrderDto } from '../__mocks__/res-order-dto.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockOrdersService } from '../__mocks__/orders-service.mock';
+import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
 
 describe(OrdersController.name, () => {
   let ordersController: OrdersController;
@@ -44,34 +42,25 @@ describe(OrdersController.name, () => {
     });
   });
   describe('findAll', () => {
-    // it('should return all orders', async () => {
-    //   mockOrdersService.findAll.mockResolvedValue([mockResponseOrderDto]);
-    //
-    //   const result = await ordersController.findAll();
-    //
-    //   expect(mockOrdersService.findAll).toHaveBeenCalledTimes(1);
-    //   expect(result).toEqual([mockResponseOrderDto]);
-    // });
+    it('should return all orders', async () => {
+      const query: OrdersQueryDto = { page: '1', limit: '25' };
+      const userId = 3;
 
-    it('should return paginated orders', async () => {
-      // arrange
       mockOrdersService.findAll.mockResolvedValue({
-        data: mockResponseOrders,
-        total: mockResponseOrders.length,
+        data: [],
+        total: 0,
         page: 1,
-        limit: 10,
+        limit: 25,
       });
 
-      // act
-      const result = await ordersController.findAll(1, 10);
+      const result = await ordersController.findAll(query, userId);
 
-      // assert
-      expect(mockOrdersService.findAll).toHaveBeenCalledWith(1, 10);
+      expect(mockOrdersService.findAll).toHaveBeenCalledWith(query, userId);
       expect(result).toEqual({
-        data: mockResponseOrders,
-        total: mockResponseOrders.length,
+        data: [],
+        total: 0,
         page: 1,
-        limit: 10,
+        limit: 25,
       });
     });
   });

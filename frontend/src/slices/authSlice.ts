@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { loginRequest } from "../services/api.service.tsx";
-import type { ILoginData } from "../models/ILogin/ILoginData";
-import {AxiosError} from "axios";
+import type {ILoginData} from "../models/interfaces/ILogin/ILoginData.ts";
 
 type AuthState = {
     token: string | null;
@@ -17,33 +16,24 @@ const initialState: AuthState = {
 };
 
 
-export const login = createAsyncThunk<string, ILoginData, { rejectValue: string }>(
-    "auth/login",
-    async (data: ILoginData, thunkAPI) => {
+export const login = createAsyncThunk<
+    string,
+    ILoginData,
+    { rejectValue: string }
+>(
+    'auth/login',
+    async (data:ILoginData, { rejectWithValue }) => {
         try {
             const response = await loginRequest(data);
-            console.log("Login response:", response); // важливо побачити структуру
 
-            const token = response.accessToken;
-            console.log("Token saved to localStorage:", localStorage.getItem("token"));
+            if (!response.accessToken) {
+                return rejectWithValue('No token returned from server');
+            }
 
-            if (!token) return thunkAPI.rejectWithValue("No token returned from server");
-            localStorage.setItem("token", response.accessToken);
-            console.log("Token saved to localStorage:", localStorage.getItem("token"));
-
+            localStorage.setItem('token', response.accessToken);
             return response.accessToken;
-        } catch (e: unknown) {
-            if (e instanceof AxiosError) {
-                if (e.response?.status === 401) {
-                    return thunkAPI.rejectWithValue("Invalid email or password");
-                }
-                const serverMessage = e.response?.data?.message;
-                return thunkAPI.rejectWithValue(serverMessage || "Authorization failed");
-            }
-            if (e instanceof Error) {
-                return thunkAPI.rejectWithValue(e.message);
-            }
-            return thunkAPI.rejectWithValue("An unknown error occurred");
+        } catch (error) {
+          return rejectWithValue(error as string);
         }
     }
 );

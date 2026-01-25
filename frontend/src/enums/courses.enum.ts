@@ -7,3 +7,6 @@ export const CoursesEnum = {
   PCX : 'pcx',
 } as const;
 export type CoursesEnum = typeof CoursesEnum[keyof typeof CoursesEnum];
+
+
+

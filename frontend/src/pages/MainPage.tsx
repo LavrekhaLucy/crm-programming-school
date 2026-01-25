@@ -1,5 +1,5 @@
 import {Outlet} from "react-router-dom";
-import OrdersTable from "../components/ordersTable/ordersTable.tsx";
+import OrdersPage from "./OrdersPage.tsx";
 
 export const MainPage = () => {
 
@@ -9,7 +9,7 @@ export const MainPage = () => {
             <h1 className="text-3xl font-semibold text-center mb-6 text-gray-800">
                 Заявки
             </h1>
-            <OrdersTable/>
+            <OrdersPage />
             <Outlet/>
         </main>
     );

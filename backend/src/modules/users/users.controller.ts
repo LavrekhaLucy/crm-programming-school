@@ -13,11 +13,12 @@ import {
 import { UserService } from './services/user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
+
 import { UserRoleEnum } from '../../database/entities/enums/user-role.enum';
 import { UserRequest } from '../auth/interfaces/user-request.interface';
 import { BaseUserReqDto } from './models/dto/req/user-base.req.dto';
 import { UserEntity } from '../../database/entities/user.entity';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)

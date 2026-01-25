@@ -1,29 +1,18 @@
-import { useAppDispatch, useAppSelector } from "../store/store.ts";
-import { useSearchParams } from "react-router-dom";
-import { useEffect } from "react";
-import { ordersActions } from "../../slices/ordersSlice.ts";
-import { ORDERS_PER_PAGE } from "../res_constants/info.ts";
-
-import {ORDER_TABLE_HEADERS} from "../res_constants/tableHeaders.ts";
-import type {IOrder} from "../../models/IOrders/IOrder.ts";
+import type {OrderSortField} from "../../models/types/OrderSortField.ts";
+import {useAppSelector} from "../store/store.ts";
 import {OrderRow} from "../orderRow/orderRow.tsx";
+import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
+import React from "react";
 
-const OrdersTable = () => {
-    const dispatch = useAppDispatch();
-    const pageData = useAppSelector((state) => state.orderStoreSlice.pageData);
-    const loading = useAppSelector((state) => state.orderStoreSlice.loading);
+type OrdersTableProps = {
+    onSort: (field: OrderSortField ) => void;
+}
 
 
-    const [searchParams] = useSearchParams({ page: '1' });
-    const page = Number(searchParams.get('page') ?? 1);
-    const limit = ORDERS_PER_PAGE;
-
-    useEffect(() => {
-        dispatch(ordersActions.loadOrders({ page, limit }));
-    }, [dispatch, page, limit]);
-
-    console.log("pageData:", pageData);
-    console.log("orders:", pageData?.data);
+const OrdersTable: React.FC<OrdersTableProps> = ({ onSort }) => {
+    const { pageData, loading } = useAppSelector(
+        (state) => state.orderStoreSlice
+    );
 
     if (loading && !pageData) {
         return <div>Loading orders...</div>;
@@ -31,16 +20,28 @@ const OrdersTable = () => {
 
     const orders: IOrder[] = pageData?.data ?? [];
 
+
+
     return (
         <div className="overflow-x-auto">
-            <table className="min-w-full text-sm border border-gray-200">
-                <thead className="bg-green-600 text-white">
+            <table className="min-w-full text-black border-gray-300 ">
+                <thead>
                 <tr>
-                    {ORDER_TABLE_HEADERS.map((h) => (
-                        <th key={h} className="px-3 py-2 text-left border-b border-gray-300">
-                            {h}
-                        </th>
-                    ))}
+                    <th onClick={() => onSort("id")}>id</th>
+                    <th onClick={() => onSort("name")}>name</th>
+                    <th onClick={() => onSort("surname")}>surname</th>
+                    <th onClick={() => onSort("email")}>email</th>
+                    <th onClick={() => onSort("phone")}>phone</th>
+                    <th onClick={() => onSort("age")}>age</th>
+                    <th onClick={() => onSort("course")}>course</th>
+                    <th onClick={() => onSort("course_format")}>course_format</th>
+                    <th onClick={() => onSort("course_type")}>course_type</th>
+                    <th onClick={() => onSort("status")}>status</th>
+                    <th onClick={() => onSort("sum")}>sum</th>
+                    <th onClick={() => onSort("alreadyPaid")}>alreadyPaid</th>
+                    <th onClick={() => onSort("group")}>group</th>
+                    <th onClick={() => onSort("created_at")}>created_at</th>
+                    <th onClick={() => onSort("manager")}>Manager</th>
                 </tr>
                 </thead>
 
@@ -53,5 +54,4 @@ const OrdersTable = () => {
         </div>
     );
 };
-
 export default OrdersTable;

@@ -1,4 +1,4 @@
-import type {UserRoleEnum} from "../../enums/user-role.enum.ts";
+import type {UserRoleEnum} from "../../../enums/user-role.enum.ts";
 
 
 export interface IUser {
