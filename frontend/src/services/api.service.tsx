@@ -12,10 +12,10 @@ export const loginRequest = async (data: ILoginData): Promise<ILoginResponse> =>
 };
 
 export const getOrders = async (
-    filters: IOrderFilters
+    filters: IOrderFilters,
 ): Promise<IOrdersResponseModel> => {
     const { data } = await axiosInstance.get<IOrdersResponseModel>('/orders', {
-        params: filters, 
+        params: filters,
     });
     return data;
 };

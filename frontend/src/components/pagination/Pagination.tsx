@@ -18,12 +18,15 @@ export const Pagination: React.FC<PaginationProps> = ({
                                                           totalPages,
                                                           siblings = 2,
                                                       }) => {
+
+
     const [searchParams, setSearchParams] = useSearchParams();
 
     const currentPage = Math.min(
         Math.max(Number(searchParams.get("page")) || 1, 1),
         totalPages
     );
+
 
     const paginationRange = usePagination({
         currentPage,
@@ -39,6 +42,8 @@ export const Pagination: React.FC<PaginationProps> = ({
     };
 
     if (paginationRange.length === 0) return null;
+
+
 
     return (
         <nav aria-label="Pagination" className="flex justify-center mt-6">

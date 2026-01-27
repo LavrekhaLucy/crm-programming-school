@@ -47,7 +47,7 @@ const ordersSlice = createSlice({
             .addCase(loadOrders.fulfilled, (state, action) => {
                 state.loading = false;
                 state.pageData = action.payload;
-            })
+                           })
             .addCase(loadOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload ?? "Failed to load orders";

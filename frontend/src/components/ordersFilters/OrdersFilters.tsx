@@ -39,20 +39,17 @@ const OrdersFilters = () => {
 
 
     useEffect(() => {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(searchParams);
 
         Object.entries(debouncedFilters).forEach(([key, value]) => {
             if (value) params.set(key, value);
+            else params.delete(key);
         });
-
-        params.set("page", "1");
-        params.set("limit", "25");
 
         setSearchParams(params);
 
 
-    }, [debouncedFilters, setSearchParams]);
-
+    }, [debouncedFilters, searchParams, setSearchParams]);
 
 
 
