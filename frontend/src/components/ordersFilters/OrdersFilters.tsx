@@ -1,82 +1,160 @@
-import {useAppDispatch, useAppSelector} from "../store/store";
-import {loadOrders, resetFilters, setFilters} from "../../slices/ordersSlice.ts";
-import type {StatusesEnum} from "../../enums/statuses.enum.ts";
-import {useEffect, useState} from "react";
+import {useSearchParams} from "react-router-dom";
 import {useDebounce} from "../hooks/useDebounce.ts";
+import {useEffect, useState} from "react";
 
+const initialFilters = {
+    name: "",
+    surname: "",
+    email: "",
+    phone: "",
+    status: "",
+    onlyMine: "",
+};
 
 
 const OrdersFilters = () => {
-     const dispatch = useAppDispatch();
-    const filters = useAppSelector((state) => state.orderStoreSlice.filters);
-    const [name, setName] = useState(filters.name ?? "");
-    const [email, setEmail] = useState(filters.email ?? "");
+    const [searchParams, setSearchParams] = useSearchParams();
 
-    const debouncedName = useDebounce(name, 400);
-    const debouncedEmail = useDebounce(email, 400);
+    const [localFilters, setLocalFilters] = useState({
+        name: searchParams.get("name") ?? "",
+        surname: searchParams.get("surname") ?? "",
+        email: searchParams.get("email") ?? "",
+        phone: searchParams.get("phone") ?? "",
+        status: searchParams.get("status") ?? "",
+        onlyMine: searchParams.get("onlyMine") === "true" ? "true" : "",
+    });
+
+    const debouncedFilters = useDebounce(localFilters, 600);
+
+
+    const handleReset = () => {
+        setLocalFilters(initialFilters);
+
+        setSearchParams({
+            page: "1",
+            limit: "25",
+        });
+
+    };
+
 
     useEffect(() => {
-        dispatch(setFilters({ name: debouncedName || undefined }));
-        dispatch(loadOrders());
-    }, [debouncedName, dispatch]);
+        const params = new URLSearchParams();
 
-    useEffect(() => {
-        dispatch(setFilters({ email: debouncedEmail || undefined }));
-        dispatch(loadOrders());
-    }, [debouncedEmail, dispatch]);
+        Object.entries(debouncedFilters).forEach(([key, value]) => {
+            if (value) params.set(key, value);
+        });
+
+        params.set("page", "1");
+        params.set("limit", "25");
+
+        setSearchParams(params);
+
+
+    }, [debouncedFilters, setSearchParams]);
+
+
+
+
 
     return (
         <div>
             <div className="flex gap-2 mb-4">
-                <input
-                    placeholder="Name"
-                    value={filters.name ?? ""}
-                    onChange={(e) => setName(e.target.value)}
-                  />
+                <input className="w-full pl-10 pr-3 py-2
+                 bg-gray-100
+                  border border-gray-300
+                   rounded-lg
+                   text-sm
+                   focus:ring-2 focus:ring-blue-200
+                  focus:border-blue-500
+                   outline-none"
+                       placeholder="Name"
+                       value={localFilters.name}
+                       onChange={(e) =>
+                           setLocalFilters(prev => ({ ...prev, name: e.target.value }))
+                       }
+                />
+             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
-                <input
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+
+
+                <input className="w-full pl-10 pr-3 py-2
+                 bg-gray-100
+                  border border-gray-300
+                   rounded-lg
+                   text-sm
+                   focus:ring-2 focus:ring-blue-200
+                  focus:border-blue-500
+                   outline-none"
+                       placeholder="Surname"
+                       value={localFilters.surname}
+                       onChange={(e) =>
+                           setLocalFilters(prev => ({ ...prev, surname: e.target.value }))
+                       }
                 />
 
+             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
+                <input className="w-full pl-10 pr-3 py-2
+                 bg-gray-100
+                  border border-gray-300
+                   rounded-lg
+                   text-sm
+                   focus:ring-2 focus:ring-blue-200
+                  focus:border-blue-500
+                   outline-none"
+                       placeholder="Email"
+                       value={localFilters.email}
+                       onChange={(e) =>
+                           setLocalFilters(prev => ({ ...prev, email: e.target.value }))
+                       }
+                />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
+                <input className="w-full pl-10 pr-3 py-2
+                 bg-gray-100
+                  border border-gray-300
+                   rounded-lg
+                   text-sm
+                   focus:ring-2 focus:ring-blue-200
+                  focus:border-blue-500
+                   outline-none"
+                       placeholder="Phone"
+                       value={localFilters.phone}
+                       onChange={(e) =>
+                           setLocalFilters(prev => ({ ...prev, phone: e.target.value }))
+                       }
+                />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
+
                 <select
-                    value={filters.status ?? ""}
-                    onChange={(e) => {
-                        dispatch(
-                            setFilters({
-                                status: e.target.value
-                                    ? (e.target.value as StatusesEnum)
-                                    : undefined,
-                            })
-                        );
-                        dispatch(loadOrders());
-                    }}
+                    value={localFilters.status}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({ ...prev, status: e.target.value }))
+                    }
                 >
-                    <option value="">All</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
+                    <option value="">all statuses</option>
+                    <option value="in_work">In work</option>
+                    <option value="new">New</option>
+                    <option value="agree">Agree</option>
+                    <option value="disagree">Disagree</option>
+                    <option value="dubbing">Dubbing</option>
+
                 </select>
 
                 <input
                     type="checkbox"
-                    checked={filters.onlyMine === "true"}
-                    onChange={(e) => {
-                        dispatch(
-                            setFilters({
-                                onlyMine: e.target.checked ? "true" : undefined,
-                            })
-                        );
-                        dispatch(loadOrders());
-                    }}
+                    checked={localFilters.onlyMine === "true"}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({
+                            ...prev,
+                            onlyMine: e.target.checked ? "true" : "",
+                        }))
+                    }
                 />
 
-                <button
-                    onClick={() => {
-                        dispatch(resetFilters());
-                        dispatch(loadOrders());
-                    }}
-                >
+                <button type="button" onClick={handleReset}>
                     Reset
                 </button>
             </div>

@@ -57,8 +57,7 @@ describe('OrderService', () => {
   describe('findAll', () => {
     it('should return paginated orders', async () => {
       const orders = mockOrderEntities;
-      // const skipSpy = jest.spyOn(qb, 'skip');
-      // const takeSpy = jest.spyOn(qb, 'take');
+
       qb.getManyAndCount.mockResolvedValue([orders, 1]);
 
       const query: OrdersQueryDto = {
@@ -81,25 +80,25 @@ describe('OrderService', () => {
       expect(jest.spyOn(qb, 'skip')).toHaveBeenCalledWith(0);
       expect(jest.spyOn(qb, 'take')).toHaveBeenCalledWith(25);
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
-        'order.name LIKE :name',
+        'LOWER(order.name) LIKE:name',
         {
           name: `%john%`,
         },
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
-        'order.surname LIKE :surname',
+        'LOWER(order.surname) LIKE :surname',
         {
           surname: `%smith%`,
         },
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
-        'order.email LIKE :email',
+        'LOWER(order.email) LIKE :email',
         {
           email: `%test@mail.com%`,
         },
       );
       expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
-        'order.phone LIKE :phone',
+        'LOWER(order.phone) LIKE :phone',
         {
           phone: `%1234567890%`,
         },

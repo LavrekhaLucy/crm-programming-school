@@ -3,12 +3,14 @@ import {Pagination} from "../components/pagination/Pagination.tsx";
 
 
 
+
 export const PaginationPage = () => {
-    return (
+       return (
         <div>
 
             <Outlet/>
             <Pagination totalPages={20} />
+
 
 
 

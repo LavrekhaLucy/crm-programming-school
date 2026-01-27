@@ -7,8 +7,8 @@ import ordersSlice from "../../slices/ordersSlice.ts";
 
 export const store = configureStore({
     reducer: {
-        authStoreSlice: authSlice,
-        orderStoreSlice:ordersSlice,
+        authStoreSlice: authSlice.reducer,
+        orderStoreSlice:ordersSlice.reducer,
 
     }
 });

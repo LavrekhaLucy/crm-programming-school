@@ -35,6 +35,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         const params = new URLSearchParams(searchParams);
         params.set("page", page.toString());
         setSearchParams(params);
+
     };
 
     if (paginationRange.length === 0) return null;

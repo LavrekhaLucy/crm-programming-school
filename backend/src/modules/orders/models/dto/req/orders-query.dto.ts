@@ -1,12 +1,9 @@
 import {
-  IsOptional,
-  IsEnum,
-  IsString,
-  IsNumberString,
   IsBooleanString,
+  IsNumberString,
+  IsOptional,
+  IsString,
 } from 'class-validator';
-import { OrderSortField } from '../../../../../database/entities/enums/order-sort-field.enum';
-import { SortOrder } from '../../../../../database/entities/enums/sort-order.enum';
 
 export class OrdersQueryDto {
   // pagination
@@ -19,13 +16,15 @@ export class OrdersQueryDto {
   limit?: string;
 
   // sorting
+  // @IsOptional()
+  // @IsEnum(OrderSortField)
+  // sortBy?: OrderSortField;
+  //
+  // @IsOptional()
+  // @IsEnum(SortOrder)
+  // sortOrder?: SortOrder;
   @IsOptional()
-  @IsEnum(OrderSortField)
-  sortBy?: OrderSortField;
-
-  @IsOptional()
-  @IsEnum(SortOrder)
-  sortOrder?: SortOrder;
+  order?: string;
 
   // text filters
   @IsOptional()

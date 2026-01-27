@@ -15,8 +15,7 @@ import { UserEntity } from '../../../database/entities/user.entity';
 import { OrdersRepository } from '../../repository/services/orders.repository';
 import { PaginatedResponse } from '../../../common/types/pagination.type';
 import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
-import { OrderSortField } from '../../../database/entities/enums/order-sort-field.enum';
-import { SortOrder } from '../../../database/entities/enums/sort-order.enum';
+import { parseOrder } from '../utils/order-query.util';
 
 @Injectable()
 export class OrdersService {
@@ -38,9 +37,7 @@ export class OrdersService {
     const {
       page = '1',
       limit = '25',
-      sortBy = OrderSortField.CREATED_AT,
-      sortOrder = SortOrder.DESC,
-
+      order,
       name,
       surname,
       email,
@@ -58,23 +55,26 @@ export class OrdersService {
     } = query;
 
     const qb = this.orderRepository.createQueryBuilder('order');
+    const { sortBy, sortOrder } = parseOrder(order);
 
     // TEXT FILTERS (LIKE)
     if (name)
-      qb.andWhere('order.name LIKE :name', { name: `%${name.toLowerCase()}%` });
+      qb.andWhere('LOWER(order.name) LIKE:name', {
+        name: `%${name.toLowerCase()}%`,
+      });
 
     if (surname)
-      qb.andWhere('order.surname LIKE :surname', {
+      qb.andWhere('LOWER(order.surname) LIKE :surname', {
         surname: `%${surname.toLowerCase()}%`,
       });
 
     if (email)
-      qb.andWhere('order.email LIKE :email', {
+      qb.andWhere('LOWER(order.email) LIKE :email', {
         email: `%${email.toLowerCase()}%`,
       });
 
     if (phone)
-      qb.andWhere('order.phone LIKE :phone', {
+      qb.andWhere('LOWER(order.phone) LIKE :phone', {
         phone: `%${phone.toLowerCase()}%`,
       });
 
