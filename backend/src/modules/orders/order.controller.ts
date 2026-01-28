@@ -23,6 +23,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { OrdersQueryDto } from './models/dto/req/orders-query.dto';
 import { CurrentUser } from '../../common/decorators/user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('OrdersList')
@@ -33,7 +34,10 @@ export class OrdersController {
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Post()
   create(@Body() dto: CreateOrderDto): Promise<ResponseOrderDto> {
-    return this.ordersService.create(dto);
+    return this.ordersService.create({
+      ...dto,
+      status: StatusesEnum.NEW,
+    });
   }
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)

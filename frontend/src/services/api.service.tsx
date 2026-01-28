@@ -17,5 +17,6 @@ export const getOrders = async (
     const { data } = await axiosInstance.get<IOrdersResponseModel>('/orders', {
         params: filters,
     });
+    console.log('orders from API:', data);
     return data;
 };

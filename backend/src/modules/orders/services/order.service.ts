@@ -26,7 +26,10 @@ export class OrdersService {
   ) {}
 
   async create(dto: CreateOrderDto): Promise<ResponseOrderDto> {
-    const newOrder = this.orderRepository.create(dto);
+    const newOrder = this.orderRepository.create({
+      ...dto,
+      status: StatusesEnum.NEW,
+    });
     return this.orderRepository.save(newOrder);
   }
 
@@ -115,6 +118,7 @@ export class OrdersService {
 
     const [data, total] = await qb.getManyAndCount();
 
+    console.log(data[0]);
     return {
       data,
       total,
