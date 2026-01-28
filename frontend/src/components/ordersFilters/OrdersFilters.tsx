@@ -171,11 +171,11 @@ const OrdersFilters = () => {
                     }
                 >
                     <option value="">all statuses</option>
-                    <option value="in_work">In work</option>
-                    <option value="new">New</option>
-                    <option value="agree">Agree</option>
-                    <option value="disagree">Disagree</option>
-                    <option value="dubbing">Dubbing</option>
+                    <option value="in_work">in_work</option>
+                    <option value="new">new</option>
+                    <option value="agree">agree</option>
+                    <option value="disagree">disagree</option>
+                    <option value="dubbing">dubbing</option>
                 </Select>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
@@ -191,6 +191,7 @@ const OrdersFilters = () => {
 
 
                 <Input
+                    type="date"
                     placeholder="Start date"
                     value={localFilters.startDate}
                     onChange={(e) =>
@@ -200,6 +201,7 @@ const OrdersFilters = () => {
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
                 <Input
+                    type="date"
                     placeholder="End date"
                     value={localFilters.endDate}
                     onChange={(e) =>
