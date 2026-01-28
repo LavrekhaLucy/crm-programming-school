@@ -65,74 +65,84 @@ describe('OrderService', () => {
         surname: 'smith',
         email: 'test@mail.com',
         phone: '1234567890',
+        age: '30',
         startDate: '2026-01-01',
         endDate: '2026-01-31',
         course: 'TS',
         course_format: 'online',
-        course_type: 'fulltime',
+        course_type: 'minimal',
         status: 'new',
         group: 'group1',
       };
 
       const result = await service.findAll(query, 1);
+      const andWhereSpy = jest.spyOn(qb, 'andWhere');
+
+      await service.findAll(query, 1);
 
       expect(repository.createQueryBuilder).toHaveBeenCalledWith('order');
       expect(jest.spyOn(qb, 'skip')).toHaveBeenCalledWith(0);
       expect(jest.spyOn(qb, 'take')).toHaveBeenCalledWith(25);
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
-        'LOWER(order.name) LIKE:name',
-        {
-          name: `%john%`,
-        },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
+        'LOWER(order.name) LIKE :name',
+        { name: '%john%' },
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'LOWER(order.surname) LIKE :surname',
-        {
-          surname: `%smith%`,
-        },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        { surname: '%smith%' },
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'LOWER(order.email) LIKE :email',
-        {
-          email: `%test@mail.com%`,
-        },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        { email: '%test@mail.com%' },
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'LOWER(order.phone) LIKE :phone',
-        {
-          phone: `%1234567890%`,
-        },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        { phone: '%1234567890%' },
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
+        'order.age = :age',
+        { age: 30 },
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.created_at >= :startDate',
         { startDate: '2026-01-01' },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.created_at <= :endDate',
         { endDate: '2026-01-31' },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.course = :course',
-        {
-          course: 'TS',
-        },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        { course: 'TS' },
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.course_format = :course_format',
         { course_format: 'online' },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.course_type = :course_type',
-        { course_type: 'fulltime' },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        { course_type: 'minimal' },
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.status = :status',
         { status: 'new' },
-      );
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+      ]);
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.group = :group',
         { group: 'group1' },
-      );
+      ]);
 
       expect(result).toEqual({
         data: orders,
@@ -149,14 +159,14 @@ describe('OrderService', () => {
         onlyMine: 'true',
       };
 
-      await service.findAll(query, 5);
+      const andWhereSpy = jest.spyOn(qb, 'andWhere');
 
-      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+      await service.findAll(query, 5); // передаємо реальні дані та userId
+
+      expect(andWhereSpy.mock.calls).toContainEqual([
         'order.managerId = :userId',
-        {
-          userId: 5,
-        },
-      );
+        { userId: 5 },
+      ]);
     });
   });
 

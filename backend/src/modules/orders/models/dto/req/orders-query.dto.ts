@@ -16,13 +16,6 @@ export class OrdersQueryDto {
   limit?: string;
 
   // sorting
-  // @IsOptional()
-  // @IsEnum(OrderSortField)
-  // sortBy?: OrderSortField;
-  //
-  // @IsOptional()
-  // @IsEnum(SortOrder)
-  // sortOrder?: SortOrder;
   @IsOptional()
   order?: string;
 
@@ -42,6 +35,10 @@ export class OrdersQueryDto {
   @IsOptional()
   @IsString()
   phone?: string;
+
+  @IsOptional()
+  @IsString()
+  age?: string;
 
   @IsOptional()
   @IsString()

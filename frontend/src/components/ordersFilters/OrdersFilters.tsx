@@ -1,6 +1,10 @@
 import {useSearchParams} from "react-router-dom";
 import {useDebounce} from "../hooks/useDebounce.ts";
 import {useEffect, useState} from "react";
+import Input from "../ui/input.tsx";
+import Select from "../ui/select.tsx";
+import Button from "../ui/button.tsx";
+
 
 const initialFilters = {
     name: "",
@@ -9,15 +13,14 @@ const initialFilters = {
     phone: "",
     age: "",
     course: "",
-    format: "",
-    type: "",
+    course_format: "",
+    course_type: "",
     status: "",
     group: "",
     startDate: "",
     endDate: "",
     onlyMine: "",
 };
-
 
 const OrdersFilters = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -29,8 +32,8 @@ const OrdersFilters = () => {
         phone: searchParams.get("phone") ?? "",
         age: searchParams.get("age") ?? "",
         course: searchParams.get("course") ?? "",
-        format: searchParams.get("format") ?? "",
-        type: searchParams.get("type") ?? "",
+        course_format: searchParams.get("format") ?? "",
+        course_type: searchParams.get("type") ?? "",
         status: searchParams.get("status") ?? "",
         group: searchParams.get("group") ?? "",
         startDate: searchParams.get("startDate") ?? "",
@@ -54,117 +57,74 @@ const OrdersFilters = () => {
 
 
     useEffect(() => {
-        const params = new URLSearchParams(searchParams);
+        setSearchParams(prev => {
+            const params = new URLSearchParams(prev);
 
-        Object.entries(debouncedFilters).forEach(([key, value]) => {
-            if (value) params.set(key, value);
-            else params.delete(key);
+            for (const key in debouncedFilters) {
+                const value = debouncedFilters[key as keyof typeof debouncedFilters];
+
+                if (value) params.set(key, value);
+                else params.delete(key);
+            }
+            return params;
         });
-
-        setSearchParams(params);
-
-
-    }, [debouncedFilters, searchParams, setSearchParams]);
+    }, [debouncedFilters, setSearchParams]);
 
 
     return (
         <div>
             <div className="flex gap-2 mb-4">
-                <input className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                       placeholder="Name"
-                       value={localFilters.name}
-                       onChange={(e) =>
-                           setLocalFilters(prev => ({...prev, name: e.target.value}))
-                       }
+                <Input
+                    placeholder="Name"
+                    value={localFilters.name}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, name: e.target.value}))
+                    }
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
+                <Input
+                    placeholder="Surname"
+                    value={localFilters.surname}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, surname: e.target.value}))
+                    }
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
+                <Input
+                    placeholder="Email"
+                    value={localFilters.email}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, email: e.target.value}))
+                    }
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
+                <Input
+                    placeholder="Phone"
+                    value={localFilters.phone}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, phone: e.target.value}))
+                    }
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
+                <Input
+                    placeholder="Age"
+                    value={localFilters.age}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, age: e.target.value}))
+                    }
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
 
-                <input className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                       placeholder="Surname"
-                       value={localFilters.surname}
-                       onChange={(e) =>
-                           setLocalFilters(prev => ({...prev, surname: e.target.value}))
-                       }
-                />
-
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
-
-                <input className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                       placeholder="Email"
-                       value={localFilters.email}
-                       onChange={(e) =>
-                           setLocalFilters(prev => ({...prev, email: e.target.value}))
-                       }
-                />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
-
-                <input className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                       placeholder="Phone"
-                       value={localFilters.phone}
-                       onChange={(e) =>
-                           setLocalFilters(prev => ({...prev, phone: e.target.value}))
-                       }
-                />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
-
-                <input className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                       placeholder="Age"
-                       value={localFilters.age}
-                       onChange={(e) =>
-                           setLocalFilters(prev => ({...prev, age: e.target.value}))
-                       }
-                />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
-
-
-                <select className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                        value={localFilters.course}
-                        onChange={(e) =>
-                            setLocalFilters(prev => ({...prev, course: e.target.value}))
-                        }
+                <Select
+                    value={localFilters.course}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, course: e.target.value}))
+                    }
                 >
                     <option value="">all courses</option>
                     <option value="fs">FS</option>
@@ -173,43 +133,26 @@ const OrdersFilters = () => {
                     <option value="jscx">JSCX</option>
                     <option value="fe">FE</option>
                     <option value="pcx">PCX</option>
-
-                </select>
+                </Select>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
-                <select className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                        value={localFilters.format}
-                        onChange={(e) =>
-                            setLocalFilters(prev => ({...prev, format: e.target.value}))
-                        }
+                <Select
+                    value={localFilters.course_format}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, course_format: e.target.value}))
+                    }
                 >
                     <option value="">all formats</option>
                     <option value="static">static</option>
                     <option value="online">online</option>
-
-
-                </select>
+                </Select>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
-                <select className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                        value={localFilters.type}
-                        onChange={(e) =>
-                            setLocalFilters(prev => ({...prev, type: e.target.value}))
-                        }
+                <Select
+                    value={localFilters.course_type}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, course_type: e.target.value}))
+                    }
                 >
                     <option value="">all types</option>
                     <option value="pro">pro</option>
@@ -217,23 +160,15 @@ const OrdersFilters = () => {
                     <option value="premium">premium</option>
                     <option value="incubator">incubator</option>
                     <option value="vip">vip</option>
-
-                </select>
+                </Select>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
 
-                <select className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                        value={localFilters.status}
-                        onChange={(e) =>
-                            setLocalFilters(prev => ({...prev, status: e.target.value}))
-                        }
+                <Select
+                    value={localFilters.status}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, status: e.target.value}))
+                    }
                 >
                     <option value="">all statuses</option>
                     <option value="in_work">In work</option>
@@ -241,59 +176,35 @@ const OrdersFilters = () => {
                     <option value="agree">Agree</option>
                     <option value="disagree">Disagree</option>
                     <option value="dubbing">Dubbing</option>
-
-                </select>
+                </Select>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
-                <select className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                        value={localFilters.group}
-                        onChange={(e) =>
-                            setLocalFilters(prev => ({...prev, group: e.target.value}))
-                        }
+                <Select
+                    value={localFilters.group}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, group: e.target.value}))
+                    }
                 >
                     <option value="">all group</option>
-
-
-                </select>
+                </Select>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
 
-                <input className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                       placeholder="Start date"
-                       value={localFilters.startDate}
-                       onChange={(e) =>
-                           setLocalFilters(prev => ({...prev, startDate: e.target.value}))
-                       }
+                <Input
+                    placeholder="Start date"
+                    value={localFilters.startDate}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, startDate: e.target.value}))
+                    }
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
-                <input className="w-full pl-10 pr-3 py-2
-                 bg-gray-100
-                  border border-gray-300
-                   rounded-lg
-                   text-sm
-                   focus:ring-2 focus:ring-blue-200
-                  focus:border-blue-500
-                   outline-none"
-                       placeholder="End date"
-                       value={localFilters.endDate}
-                       onChange={(e) =>
-                           setLocalFilters(prev => ({...prev, endDate: e.target.value}))
-                       }
+                <Input
+                    placeholder="End date"
+                    value={localFilters.endDate}
+                    onChange={(e) =>
+                        setLocalFilters(prev => ({...prev, endDate: e.target.value}))
+                    }
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
@@ -309,9 +220,9 @@ const OrdersFilters = () => {
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
-                <button type="button" onClick={handleReset}>
+                <Button type="button" onClick={handleReset}>
                     Reset
-                </button>
+                </Button>
             </div>
         </div>
     );

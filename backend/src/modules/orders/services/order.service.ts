@@ -42,6 +42,7 @@ export class OrdersService {
       surname,
       email,
       phone,
+      age,
       startDate,
       endDate,
 
@@ -57,9 +58,8 @@ export class OrdersService {
     const qb = this.orderRepository.createQueryBuilder('order');
     const { sortBy, sortOrder } = parseOrder(order);
 
-    // TEXT FILTERS (LIKE)
     if (name)
-      qb.andWhere('LOWER(order.name) LIKE:name', {
+      qb.andWhere('LOWER(order.name) LIKE :name', {
         name: `%${name.toLowerCase()}%`,
       });
 
@@ -78,6 +78,12 @@ export class OrdersService {
         phone: `%${phone.toLowerCase()}%`,
       });
 
+    if (age) {
+      qb.andWhere('order.age = :age', {
+        age: Number(query.age),
+      });
+    }
+
     if (startDate) {
       qb.andWhere('order.created_at >= :startDate', { startDate });
     }
@@ -86,7 +92,6 @@ export class OrdersService {
       qb.andWhere('order.created_at <= :endDate', { endDate });
     }
 
-    // SELECT FILTERS
     if (course) qb.andWhere('order.course = :course', { course });
 
     if (course_format)
@@ -99,15 +104,12 @@ export class OrdersService {
 
     if (group) qb.andWhere('order.group = :group', { group });
 
-    // CHECKBOX
     if (onlyMine === 'true') {
       qb.andWhere('order.managerId = :userId', { userId });
     }
 
-    // SORTING (SAFE)
     qb.orderBy(`order.${sortBy}`, sortOrder);
 
-    // PAGINATION
     qb.skip((+page - 1) * +limit);
     qb.take(+limit);
 
