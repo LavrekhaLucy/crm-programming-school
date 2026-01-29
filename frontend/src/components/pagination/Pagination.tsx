@@ -22,11 +22,11 @@ export const Pagination: React.FC<PaginationProps> = ({
 
     const [searchParams, setSearchParams] = useSearchParams();
 
+    const pageParam = searchParams.get("page");
     const currentPage = Math.min(
-        Math.max(Number(searchParams.get("page")) || 1, 1),
+        Math.max(Number(pageParam ?? 1), 1),
         totalPages
     );
-
 
     const paginationRange = usePagination({
         currentPage,
@@ -34,12 +34,15 @@ export const Pagination: React.FC<PaginationProps> = ({
         siblings,
     });
 
-    const setPage = (page: number) => {
-        const params = new URLSearchParams(searchParams);
-        params.set("page", page.toString());
-        setSearchParams(params);
 
+    const setPage = (page: number) => {
+        const safePage = Math.min(Math.max(page, 1), totalPages);
+
+        const params = new URLSearchParams(searchParams);
+        params.set("page", safePage.toString());
+        setSearchParams(params);
     };
+
 
     if (paginationRange.length === 0) return null;
 

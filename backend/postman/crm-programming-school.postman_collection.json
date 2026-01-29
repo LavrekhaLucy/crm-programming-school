@@ -1,0 +1,564 @@
+{
+  "info": {
+    "_postman_id": "a7ee276b-b62e-4e93-bb49-f0acd7696ac4",
+    "name": "crm-programming-school",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44420116"
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "users/:id/enable",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJjcm9rdngwM2ZjayIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQzNjQyNywiZXhwIjoxNzY2NDQwMDI3fQ.Z6voo8gjjTm93VMTYesPOBYOcVnguxvlVF3tSAa7u1s",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"disable\":false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/admin/users/7/enable",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "7",
+                "enable"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "orders/stats",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJxbTJjZGNsZnByYSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQyMjc2MywiZXhwIjoxNzY2NDI2MzYzfQ.GaYmsgZO3cppgfSqmYUfpuAXF2oIIbbmEnLAA89unLM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/admin/orders/stats",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "admin",
+                "orders",
+                "stats"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJjcm9rdngwM2ZjayIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQzNjQyNywiZXhwIjoxNzY2NDQwMDI3fQ.Z6voo8gjjTm93VMTYesPOBYOcVnguxvlVF3tSAa7u1s",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/admin/users",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "managers",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJxbTJjZGNsZnByYSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQyMjc2MywiZXhwIjoxNzY2NDI2MzYzfQ.GaYmsgZO3cppgfSqmYUfpuAXF2oIIbbmEnLAA89unLM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"username\":\"lbus\",\r\n    \"password\":\"Snoop_d@@g1\",\r\n    \"email\":\"Snoop@gmail.com\",\r\n    \"name\":\"Ihor\",\r\n    \"surname\":\"Orest\" \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/admin/managers",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "admin",
+                "managers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users/:id/disable",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJxbTJjZGNsZnByYSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQyMjc2MywiZXhwIjoxNzY2NDI2MzYzfQ.GaYmsgZO3cppgfSqmYUfpuAXF2oIIbbmEnLAA89unLM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"disable\":false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/admin/users/7/disable",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "7",
+                "disable"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "7",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "register",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"Artem8\",\r\n    \"password\":\"p@ssword8\",\r\n    \"email\":\"Artem8@gmail.com\",\r\n    \"name\":\"Artem\",\r\n    \"surname\":\"Pivovarov\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/register",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n     \"login\":\"admin@gmail.com\",\r\n    \"password\":\"admin\"\r\n         \r\n    //  \"login\":\"Artem8@gmail.com\",\r\n    // \"password\":\"p@ssword8\"\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/login",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "refresh",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInVzZXJuYW1lIjoiQXJ0ZW04IiwianRpIjoiaHByZXBkbDd1cCIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzY2NjgxNDAxLCJleHAiOjE3Njc0ODE0MDF9.jqJ-VayT2dRWtrGCXKTrnfH3F7yXbZ-WEydKhgNNhbs\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/refresh",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "GET",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInVzZXJuYW1lIjoiQXJ0ZW04IiwianRpIjoiZ2tuMmVjdHpveSIsImlhdCI6MTc2NjY4MTQ3NSwiZXhwIjoxNzY2Njg1MDc1fQ.I8PKqXLlWv_Y2HwUVnLOsoAcSiuZ7_1PJzBbKOFrRzo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET/:id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInVzZXJuYW1lIjoiQXJ0ZW04IiwianRpIjoiZ2tuMmVjdHpveSIsImlhdCI6MTc2NjY4MTQ3NSwiZXhwIjoxNzY2Njg1MDc1fQ.I8PKqXLlWv_Y2HwUVnLOsoAcSiuZ7_1PJzBbKOFrRzo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/502",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                "502"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n        \"name\":\"Name1\",\r\n        \"surname\":\"Surname1\",\r\n        \"email\":\"onjg47@gmail.com\",\r\n        \"phone\":\"80931234567\",\r\n        \"age\":40,\r\n        \"course\":\"JSCX\",        \r\n        \"course_format\":\"online\",     \r\n        \"course_type\":\"incubator\",       \r\n        \"sum\":1000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n         \"name\":\"Name1\",\r\n        \"surname\":\"Surname1\",\r\n        \"email\":\"onjg47@gmail.com\",\r\n        \"phone\":\"80931234567\",\r\n        \"age\":40,\r\n        \"course\":\"JSCX\",        \r\n        \"course_format\":\"online\",     \r\n        \"course_type\":\"PREMIUM\",       \r\n        \"sum\":1000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/502",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                "502"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n     \r\n         \"name\":\"Name1\",\r\n        \"surname\":\"Surname1\",\r\n        \"email\":\"onjg47@gmail.com\",\r\n        \"phone\":\"80931234567\",\r\n        \"age\":40,\r\n        \"course\":\"JSCX\",        \r\n        \"course_format\":\"online\",     \r\n        \"course_type\":\"PREMIUM\",       \r\n        \"sum\":1000\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/502",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                "502"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": ":id/take",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJ6enFla2d4aTVlIiwicm9sZSI6Im1hbmFnZXIiLCJpYXQiOjE3NjY2ODQwNDUsImV4cCI6MTc2NjY4NzY0NX0.AGsNpJHXgiZ185Q9zpn_6JAAMncRDAAjoJZBG0MBWXc",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/501/take",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                "501",
+                "take"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": ":id/take Copy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJ6enFla2d4aTVlIiwicm9sZSI6Im1hbmFnZXIiLCJpYXQiOjE3NjY2ODQwNDUsImV4cCI6MTc2NjY4NzY0NX0.AGsNpJHXgiZ185Q9zpn_6JAAMncRDAAjoJZBG0MBWXc",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/501/take",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                "501",
+                "take"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "profile",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInVzZXJuYW1lIjoiQXJ0ZW04IiwianRpIjoiZ2tuMmVjdHpveSIsImlhdCI6MTc2NjY4MTQ3NSwiZXhwIjoxNzY2Njg1MDc1fQ.I8PKqXLlWv_Y2HwUVnLOsoAcSiuZ7_1PJzBbKOFrRzo",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n     \"login\":\"Artem8@gmail.com\",\r\n    \"password\":\"p@ssword8\"\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/users/profile",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "users",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
