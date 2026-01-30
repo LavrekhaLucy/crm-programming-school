@@ -1,21 +1,34 @@
-import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateCommentDto } from './models/create-comment.dto';
 import { UserEntity } from '../../database/entities/user.entity';
 import { CurrentUser } from '../../common/decorators/user.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { CommentsService } from './comments.service';
+import { CommentsService } from './services/comments.service';
 
 @Controller('orders')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard('jwt'))
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Post(':orderId/comments')
-  addComment(
-    @Param('orderId') orderId: string,
+  addCommentToOrder(
+    @Param('orderId', ParseIntPipe) orderId: string,
     @CurrentUser() user: UserEntity,
     @Body() dto: CreateCommentDto,
   ) {
     return this.commentsService.addCommentToOrder(orderId, user, dto);
+  }
+
+  @Get(':orderId/comments')
+  getCommentsByOrder(@Param('orderId', ParseIntPipe) orderId: string) {
+    return this.commentsService.getCommentsByOrder(orderId);
   }
 }

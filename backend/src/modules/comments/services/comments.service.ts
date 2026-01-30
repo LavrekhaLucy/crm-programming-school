@@ -5,11 +5,12 @@ import {
 } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
-import { UserEntity } from '../../database/entities/user.entity';
-import { CreateCommentDto } from './models/create-comment.dto';
-import { CommentEntity } from '../../database/entities/comment.entity';
-import { OrderEntity } from '../../database/entities/order.entity';
-import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
+import { UserEntity } from '../../../database/entities/user.entity';
+import { CreateCommentDto } from '../models/create-comment.dto';
+import { CommentEntity } from '../../../database/entities/comment.entity';
+import { OrderEntity } from '../../../database/entities/order.entity';
+import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 
 @Injectable()
 export class CommentsService {
@@ -35,7 +36,11 @@ export class CommentsService {
       if (!order) {
         throw new NotFoundException('Order not found');
       }
-      if (order.manager && order.manager.id !== user.id) {
+      if (
+        order.manager &&
+        order.manager.id !== user.id &&
+        user.role !== UserRoleEnum.ADMIN
+      ) {
         throw new ForbiddenException('You cannot comment on this order');
       }
       if (!order.status || order.status === StatusesEnum.NEW) {
