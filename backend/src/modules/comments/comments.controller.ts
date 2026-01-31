@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CreateCommentDto } from './models/create-comment.dto';
 import { UserEntity } from '../../database/entities/user.entity';
 import { CurrentUser } from '../../common/decorators/user.decorator';
@@ -20,7 +12,7 @@ export class CommentsController {
 
   @Post(':orderId/comments')
   addCommentToOrder(
-    @Param('orderId', ParseIntPipe) orderId: string,
+    @Param() orderId: string,
     @CurrentUser() user: UserEntity,
     @Body() dto: CreateCommentDto,
   ) {
@@ -28,7 +20,7 @@ export class CommentsController {
   }
 
   @Get(':orderId/comments')
-  getCommentsByOrder(@Param('orderId', ParseIntPipe) orderId: string) {
+  getCommentsByOrder(@Param() orderId: string) {
     return this.commentsService.getCommentsByOrder(orderId);
   }
 }

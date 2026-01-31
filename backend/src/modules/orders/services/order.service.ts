@@ -118,7 +118,6 @@ export class OrdersService {
 
     const [data, total] = await qb.getManyAndCount();
 
-    console.log(data[0]);
     return {
       data,
       total,
