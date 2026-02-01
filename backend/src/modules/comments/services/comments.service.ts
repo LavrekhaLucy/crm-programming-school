@@ -60,7 +60,7 @@ export class CommentsService {
   async getCommentsByOrder(orderId: string): Promise<CommentEntity[]> {
     return this.entityManager.getRepository(CommentEntity).find({
       where: { order: { id: orderId } },
-      relations: ['user'],
+      relations: ['manager'],
       order: { created_at: 'ASC' },
     });
   }

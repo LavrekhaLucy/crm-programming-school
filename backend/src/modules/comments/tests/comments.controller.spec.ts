@@ -3,9 +3,7 @@ import { Test } from '@nestjs/testing';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { mockCommentsService } from '../__mocks__/comments-service.mock';
-import { CommentEntity } from '../../../database/entities/comment.entity';
-import { mockOrderEntity } from '../../orders/__mocks__/mockOrderEntity';
-import { mockUser } from '../../auth/__mocks__/user.mock';
+import { mockComment, mockComments } from '../__mocks__/comment.mock';
 
 describe('Comments Controller', () => {
   let commentsController: CommentsController;
@@ -33,13 +31,6 @@ describe('Comments Controller', () => {
     it('should call service method with correct parameters', async () => {
       const orderId = '1';
 
-      const mockComment = {
-        id: 1,
-        text: 'hello',
-        user: mockUser,
-        order: mockOrderEntity,
-      } as CommentEntity;
-
       mockCommentsService.addCommentToOrder.mockResolvedValue(mockComment);
 
       const result = await commentsController.addCommentToOrder(
@@ -59,6 +50,17 @@ describe('Comments Controller', () => {
   });
 
   describe('getCommentsByOrder', () => {
-    it('should call service method with correct orderId', async () => {});
+    it('should call service method with correct orderId', async () => {
+      const orderId = '1';
+
+      mockCommentsService.getCommentsByOrder.mockResolvedValue(mockComments);
+
+      const result = await commentsController.getCommentsByOrder(orderId);
+
+      expect(mockCommentsService.getCommentsByOrder).toHaveBeenCalledWith(
+        orderId,
+      );
+      expect(result).toEqual(mockComments);
+    });
   });
 });
