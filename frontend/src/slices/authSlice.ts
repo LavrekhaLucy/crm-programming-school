@@ -9,7 +9,7 @@ type AuthState = {
     error: string | null;
 };
 
-const initialState: AuthState = {
+const initialAuthState: AuthState = {
     token: null,
     loading: false,
     error: null,
@@ -40,7 +40,7 @@ export const login = createAsyncThunk<
 
 const authSlice = createSlice({
     name: "auth",
-    initialState,
+    initialState:initialAuthState,
     reducers: {
         logout(state) {
             state.token = null;

@@ -26,7 +26,7 @@ export const loadOrders = createAsyncThunk<
     "orders/loadOrders",
     async (filters, { rejectWithValue }) => {
         try {
-            return await getOrders(filters); // всі параметри йдуть прямо в API
+            return await getOrders(filters);
         } catch (error) {
             return rejectWithValue(error as string);
         }
