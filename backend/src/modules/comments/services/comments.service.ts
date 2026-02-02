@@ -10,7 +10,6 @@ import { CreateCommentDto } from '../models/create-comment.dto';
 import { CommentEntity } from '../../../database/entities/comment.entity';
 import { OrderEntity } from '../../../database/entities/order.entity';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 
 @Injectable()
 export class CommentsService {
@@ -36,23 +35,21 @@ export class CommentsService {
       if (!order) {
         throw new NotFoundException('Order not found');
       }
-      if (
-        order.manager &&
-        order.manager.id !== user.id &&
-        user.role !== UserRoleEnum.ADMIN
-      ) {
+      if (order.manager && order.manager.id !== user.id) {
         throw new ForbiddenException('You cannot comment on this order');
+      }
+      if (!order.manager) {
+        order.manager = user;
       }
       if (!order.status || order.status === StatusesEnum.NEW) {
         order.status = StatusesEnum.INWORK;
-        await orderRepository.save(order);
       }
       const comment = commentRepository.create({
         text: dto.text,
         order,
         user,
       });
-
+      await orderRepository.save(order);
       return await commentRepository.save(comment);
     });
   }
@@ -60,7 +57,7 @@ export class CommentsService {
   async getCommentsByOrder(orderId: string): Promise<CommentEntity[]> {
     return this.entityManager.getRepository(CommentEntity).find({
       where: { order: { id: orderId } },
-      relations: ['manager'],
+      relations: ['user'],
       order: { created_at: 'ASC' },
     });
   }

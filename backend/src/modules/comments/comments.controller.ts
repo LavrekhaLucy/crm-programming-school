@@ -12,7 +12,7 @@ export class CommentsController {
 
   @Post(':orderId/comments')
   addCommentToOrder(
-    @Param() orderId: string,
+    @Param('orderId') orderId: string,
     @CurrentUser() user: UserEntity,
     @Body() dto: CreateCommentDto,
   ) {
@@ -20,7 +20,7 @@ export class CommentsController {
   }
 
   @Get(':orderId/comments')
-  getCommentsByOrder(@Param() orderId: string) {
+  getCommentsByOrder(@Param('orderId') orderId: string) {
     return this.commentsService.getCommentsByOrder(orderId);
   }
 }

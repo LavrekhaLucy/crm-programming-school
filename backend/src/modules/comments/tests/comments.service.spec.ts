@@ -65,12 +65,8 @@ describe('CommentsService', () => {
           mockComment,
         );
 
-        expect(mockCommentsRepository.create).toHaveBeenCalledWith({
-          text: mockComment.text,
-          order,
-          user: mockUserEntity,
-        });
-
+        expect(order.manager).toBe(mockUserEntity);
+        expect(order.status).toBe(StatusesEnum.INWORK);
         expect(mockCommentsRepository.save).toHaveBeenCalledWith(mockComment);
         expect(result).toEqual(mockComment);
       });
@@ -86,7 +82,7 @@ describe('CommentsService', () => {
 
         expect(mockCommentsRepository.find).toHaveBeenCalledWith({
           where: { order: { id: 'order-1' } },
-          relations: ['manager'],
+          relations: ['user'],
           order: { created_at: 'ASC' },
         });
 
