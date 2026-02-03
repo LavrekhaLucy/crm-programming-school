@@ -3,12 +3,15 @@ import type { IOrder } from "../../models/interfaces/IOrders/IOrder.ts";
 
 type OrderRowProps = {
     order: IOrder;
+    isExpanded?: boolean;
+    onToggle?: () => void;
+    onEdit?: () => void;
 };
 
-export const OrderRow: FC<OrderRowProps> = ({ order }) => {
+export const OrderRow: FC<OrderRowProps> = ({ order, onToggle}) => {
     return (
 
-        <tr className="hover:bg-green-600 hover:text-white even:bg-gray-200 ">
+        <tr onClick={onToggle} className="cursor-pointer  hover:bg-green-600 hover:text-white even:bg-gray-200 ">
             <td className="px-3 py-2">{order.id}</td>
             <td className="px-3 py-2 font-medium">{order.name ?? "null"}</td>
             <td className="px-3 py-2">{order.surname ?? "null"}</td>

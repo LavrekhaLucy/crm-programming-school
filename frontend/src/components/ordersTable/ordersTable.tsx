@@ -2,14 +2,21 @@ import type {OrderSortField} from "../../models/types/OrderSortField.ts";
 import {useAppSelector} from "../store/store.ts";
 import {OrderRow} from "../orderRow/orderRow.tsx";
 import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
-import React from "react";
+import React, {Fragment, useState} from "react";
+import {ExpandedOrderPanel} from "../orderRow/expandedRowPanel.tsx";
+import {EditOrderModal} from "./EditOrderModal.tsx";
 
 type OrdersTableProps = {
     onSort: (field: OrderSortField ) => void;
+
 }
 
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ onSort }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
+    const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+    const [editOrder, setEditOrder] = useState<IOrder | null>(null);
+
+
     const { pageData, loading } = useAppSelector(
         (state) => state.orderStoreSlice
     );
@@ -17,8 +24,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort }) => {
     if (loading && !pageData) {
         return <div>Loading orders...</div>;
     }
+    const handleAddComment = (orderId: string, text: string) => {
+        console.log('add comment', orderId, text);
+    };
 
-    const orders: IOrder[] = pageData?.data ?? [];
+     const orders: IOrder[] = pageData?.data ?? [];
 
 
 
@@ -46,9 +56,45 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort }) => {
                 </thead>
 
                 <tbody>
-                {orders.map((order) => (
-                    <OrderRow key={order.id} order={order} />
+
+                {orders.map(order => (
+                    <Fragment key={order.id}>
+                        <OrderRow
+                            order={order}
+                            isExpanded={expandedOrderId === order.id}
+                            onToggle={() =>
+                                setExpandedOrderId(
+                                    expandedOrderId === order.id ? null : order.id
+                                )
+                            }
+                            onEdit={() => setEditOrder(order)}
+                        />
+
+                        {expandedOrderId === order.id && (
+                            <ExpandedOrderPanel
+                                order={order}
+                                onEdit={() => setEditOrder(order)}
+                                onAddComment={handleAddComment}
+                            />
+                        )}
+                        {editOrder && (
+                            <EditOrderModal
+                                order={editOrder}
+                                onClose={() => setEditOrder(null)}
+                                onSubmit={(updatedOrder) => {
+                                    console.log("Updated order:", updatedOrder);
+                                    setEditOrder(null);
+                                }}
+                            />
+                        )}
+
+                    </Fragment>
                 ))}
+
+
+
+
+
                 </tbody>
             </table>
         </div>
