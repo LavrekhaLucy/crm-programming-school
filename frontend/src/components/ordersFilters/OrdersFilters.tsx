@@ -4,49 +4,21 @@ import {useEffect, useState} from "react";
 import Input from "../ui/input.tsx";
 import Select from "../ui/select.tsx";
 import Button from "../ui/button.tsx";
+import {getOrderFiltersFromSearchParams} from "../../common/helper/getOrderFiltersFromSearchParams.ts";
+import {initialOrderFilters} from "../res_constants/orderFilters.ts";
 
-
-const initialFilters = {
-    name: "",
-    surname: "",
-    email: "",
-    phone: "",
-    age: "",
-    course: "",
-    course_format: "",
-    course_type: "",
-    status: "",
-    group: "",
-    startDate: "",
-    endDate: "",
-    onlyMine: "",
-};
 
 const OrdersFilters = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-
-    const [localFilters, setLocalFilters] = useState({
-        name: searchParams.get("name") ?? "",
-        surname: searchParams.get("surname") ?? "",
-        email: searchParams.get("email") ?? "",
-        phone: searchParams.get("phone") ?? "",
-        age: searchParams.get("age") ?? "",
-        course: searchParams.get("course") ?? "",
-        course_format: searchParams.get("format") ?? "",
-        course_type: searchParams.get("type") ?? "",
-        status: searchParams.get("status") ?? "",
-        group: searchParams.get("group") ?? "",
-        startDate: searchParams.get("startDate") ?? "",
-        endDate: searchParams.get("endDate") ?? "",
-
-        onlyMine: searchParams.get("onlyMine") === "true" ? "true" : "",
-    });
+    const [localFilters, setLocalFilters] = useState(() =>
+        getOrderFiltersFromSearchParams(searchParams)
+    );
 
     const debouncedFilters = useDebounce(localFilters, 600);
 
 
     const handleReset = () => {
-        setLocalFilters(initialFilters);
+        setLocalFilters(initialOrderFilters);
 
         setSearchParams({
             page: "1",
@@ -230,3 +202,6 @@ const OrdersFilters = () => {
     );
 };
 export default OrdersFilters;
+
+
+

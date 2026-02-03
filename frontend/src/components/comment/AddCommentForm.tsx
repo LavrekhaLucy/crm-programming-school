@@ -1,4 +1,5 @@
 import {type FC, useState} from 'react';
+import Button from "../ui/button.tsx";
 
 interface AddCommentFormProps {
     orderId: string;
@@ -22,7 +23,9 @@ export const AddCommentForm: FC<AddCommentFormProps> = ({ onSubmit, orderId }) =
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Write a comment..."
             />
-            <button type="submit">Add</button>
+            <Button
+                 type="button">Submit
+            </Button>
         </form>
     );
 };
