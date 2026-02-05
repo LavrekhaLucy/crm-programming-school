@@ -26,7 +26,7 @@ export class EnvService {
     this.mysqlPort = this.configService.get<number>('MYSQL_PORT', 3306);
     this.mysqlDatabase = this.configService.get<string>(
       'MYSQL_DATABASE',
-      'crm-programming-school',
+      'defaultdb',
     );
     this.mysqlUser = this.configService.get<string>('MYSQL_USER') || '';
     this.mysqlPassword = this.configService.get<string>('MYSQL_PASSWORD') || '';

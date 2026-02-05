@@ -195,6 +195,24 @@
       "item": [
         {
           "name": "register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();\r",
+                  "const role = body.user.role;\r",
+                  "\r",
+                  "pm.environment.set(`${role}AccessToken`, body.tokens.accessToken);\r",
+                  "pm.environment.set(`${role}RefreshToken`, body.tokens.refreshToken);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "noauth"
@@ -225,6 +243,24 @@
         },
         {
           "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();\r",
+                  "const role = body.user.role;\r",
+                  "\r",
+                  "pm.environment.set(`${role}AccessToken`, body.tokens.accessToken);\r",
+                  "pm.environment.set(`${role}RefreshToken`, body.tokens.refreshToken);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "noauth"
@@ -233,7 +269,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n     \"login\":\"admin@gmail.com\",\r\n    \"password\":\"admin\"\r\n         \r\n    //  \"login\":\"Artem8@gmail.com\",\r\n    // \"password\":\"p@ssword8\"\r\n    \r\n}",
+              "raw": "{\r\n    //  \"login\":\"admin@gmail.com\",\r\n    // \"password\":\"admin\"\r\n         \r\n     \"login\":\"Artem8@gmail.com\",\r\n    \"password\":\"p@ssword8\"\r\n    \r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -255,6 +291,24 @@
         },
         {
           "name": "refresh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();\r",
+                  "const role = body.user.role;\r",
+                  "\r",
+                  "pm.environment.set(`${role}AccessToken`, body.tokens.accessToken);\r",
+                  "pm.environment.set(`${role}RefreshToken`, body.tokens.refreshToken);\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "noauth"
@@ -299,7 +353,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInVzZXJuYW1lIjoiQXJ0ZW04IiwianRpIjoiZ2tuMmVjdHpveSIsImlhdCI6MTc2NjY4MTQ3NSwiZXhwIjoxNzY2Njg1MDc1fQ.I8PKqXLlWv_Y2HwUVnLOsoAcSiuZ7_1PJzBbKOFrRzo",
+                  "value": "{{managerAccessToken}}",
                   "type": "string"
                 }
               ]

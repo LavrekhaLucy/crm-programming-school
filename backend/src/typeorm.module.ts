@@ -16,6 +16,9 @@ import { EnvService } from './shared/env.service';
         database: envService.mysqlDatabase,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false,
+        ssl: {
+          rejectUnauthorized: false,
+        },
         migrations: [__dirname + '/src/database/migrations/*{.ts,.js}'],
       }),
       inject: [EnvService],

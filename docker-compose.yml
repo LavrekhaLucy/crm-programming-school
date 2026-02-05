@@ -3,10 +3,10 @@ services:
     build:
       context: .
     env_file:
-      - .env
+      - ./backend/.env
     volumes:
       - ./backend:/app
-#      - /app/node_modules
+      - /app/node_modules
     ports:
       - "3000:3000"
     depends_on:
@@ -14,13 +14,14 @@ services:
         condition: service_healthy
     command: sh -c "npm run migration:run && npm run seed && npm run start:dev"
 
+
   db:
     image: mysql:8
 #  volumes:
 #    - ./mysql_db:/var/lib/mysql
 #
     environment:
-      - MYSQL_DATABASE=crm-programming-school
+      - MYSQL_DATABASE=defaultdb
       - MYSQL_ROOT_PASSWORD=rootroot
     ports:
       - '3307:3306'

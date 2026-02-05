@@ -17,10 +17,10 @@ import { AdminService } from './services/admin.service';
 import { OrdersStatsDto } from '../orders/models/dto/req/order-stats.dto';
 import { UserResDto } from '../users/models/dto/res/user.res.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateManagerResDto } from './models/dto/res/create-manager.res.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { UserBaseResDto } from '../users/models/dto/res/user-base.res.dto';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { CreateManagerReqDto } from './models/dto/req/create-manager.req.dto';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -39,9 +39,9 @@ export class AdminController {
 
   @Post('managers')
   createManager(
-    @Body() createManagerResDto: CreateManagerResDto,
+    @Body() createManagerReqDto: CreateManagerReqDto,
   ): Promise<UserBaseResDto> {
-    return this.adminService.createManager(createManagerResDto);
+    return this.adminService.createManager(createManagerReqDto);
   }
 
   @Get('users')

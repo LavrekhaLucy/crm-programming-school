@@ -12,7 +12,6 @@ export class AdminService {
     private readonly ordersService: OrdersService,
   ) {}
 
-  // користувачі
   createManager(
     createManagerReqDto: CreateManagerReqDto,
   ): Promise<UserBaseResDto> {
@@ -28,19 +27,6 @@ export class AdminService {
   enableUser(userId: number): Promise<UserBaseResDto> {
     return this.usersService.enable(userId);
   }
-
-  // заявки (orders)
-  // getAllOrders(): Promise<ResponseOrderDto[]> {
-  //   return this.ordersService.findAll();
-  // }
-  // async findAll(): Promise<PaginatedResponse<ResponseOrderDto>> {
-  //   const result = await this.ordersService.findAll();
-  //
-  //   return {
-  //     ...result,
-  //     data: this.orderMapper.toResponseMany(result.data),
-  //   };
-  // }
 
   getOrdersStats(): Promise<OrdersStatsDto[]> {
     return this.ordersService.getStatsByStatus();

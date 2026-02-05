@@ -5,6 +5,7 @@ import { mockAdminService } from '../__mocks__/admin-service.mock';
 import { mockCreateManagerResDto } from '../__mocks__/create-manager-res.dto.mock';
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
+import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
 
 describe(AdminController.name, () => {
   let adminController: AdminController;
@@ -31,15 +32,16 @@ describe(AdminController.name, () => {
         .mockResolvedValue(mockCreateManagerResDto);
 
       const result = await adminController.createManager(
-        mockCreateManagerResDto,
+        mockCreateManagerReqDto,
       );
 
       expect(mockAdminService.createManager).toHaveBeenCalledWith(
-        mockCreateManagerResDto,
+        mockCreateManagerReqDto,
       );
       expect(result).toEqual(mockCreateManagerResDto);
     });
   });
+
   describe('getAllUsers', () => {
     it('should return all users', async () => {
       jest

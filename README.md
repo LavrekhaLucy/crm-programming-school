@@ -121,7 +121,7 @@ http://localhost:3000
 Swagger API documentation:
 
 ```
-http://localhost:3000/api
+http://localhost:3000/docs
 ```
 
 ### Run with Docker
