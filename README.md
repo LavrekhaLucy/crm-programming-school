@@ -31,40 +31,24 @@ cd crm-programming-school
 
 ### Backend
 
-- NestJS 11
-
 - TypeScript
-
 - TypeORM
-
 - MySQL (Aiven Cloud)
-
 - JWT Authentication
-
 - Passport (local, jwt)
-
 - Swagger
-
 - Jest (unit tests)
-
 - Docker Compose
 
 ### Frontend
 
 - React 19
-
 - TypeScript
-
 - Vite
-
 - Redux Toolkit
-
 - React Router
-
 - React Hook Form
-
 - Axios
-
 - Tailwind CSS
 
 ---
@@ -79,7 +63,7 @@ crm-programming-school/
 └── README.md
 ```
 
-### Notes
+### Frontend / Production Notes
 
 Frontend development happens in the frontend/ folder
 
@@ -89,91 +73,77 @@ Backend serves static files from client/ in production
 
 ## Environment Variables
 
-- Copy example environment files:
+Copy example environment files:
 
 ### Backend
+```bash
 cp backend/.env.example backend/.env
+```
 
 ### Frontend
+```bash
 cp frontend/.env.example frontend/.env
-
+```
 
 ### Fill in required values:
 
 - database credentials
-
 - JWT secrets
-
 - API URLs
+- Initial admin credentials (used by the seed script for the first login)
 
 ---
 
 ## Run with Docker (Recommended)
 
-### Start the entire system:
+### Start the full system:
 
 ```bash
 docker compose up --build
 ```
 
-Backend will run on:
-
-http://localhost:3000
+- Backend will run on: http://localhost:3000
 
 
-Frontend will run on:
+- Frontend will be served by backend at: http://localhost
 
-http://localhost
+#### Note:
+To log in for the first time, use the credentials you defined in your .env file (these are processed by the seed script).
+#### Note:
+Frontend is already built into the client/ folder. No separate frontend server is needed.
 
-### Backend Setup (without Docker)
+
+## Manual Setup (Without Docker)
+
+If you prefer not to use Docker, follow these steps to build and run the integrated system:
+
+1. Prepare the Frontend
+
 ```bash
-cd backend
+cd frontend
+npm install
+npm run build
+```
+
+This command builds the UI into the client/ folder, where the backend will serve it from.
+
+2. Setup the Backend
+
+```bash
+cd ../backend
 npm install
 npm run migration:run
 npm run seed
 npm run start:dev
 ```
 
-Backend will run on:
+3. Access the Application
 
-http://localhost:3000
+Main App & API: http://localhost:3000
 
+Swagger Docs: http://localhost:3000/docs
 
-Swagger docs:
-
-http://localhost:3000/docs
-
-
-
-### Frontend Setup (without Docker)
-
-Install dependencies:
-```bash
-cd frontend
-npm install
-```
-
-Run development server:
-```bash
-npm run dev
-```
-
-Frontend will be available at:
-
-http://localhost:5173
-
-Production build:
-```bash
-npm run build
- ```
-
-This builds frontend into the client/ folder.
-
-In production, frontend is served by backend at:
-
-http://localhost:3000
-
----
+Note: To log in for the first time, use the administrative credentials defined in your .env file (applied during the npm run seed process).
 
 ## Features
 
@@ -214,12 +184,10 @@ backend/postman/CRM_Programming_School.postman_collection.json
 
 - Select collection JSON file
 
-Configure variables if needed:
+- Set variables if needed:
+  - BASE_URL=http://localhost:3000
+  - ACCESS_TOKEN=your_jwt_token
 
-```bash
-BASE_URL=http://localhost:3000
-ACCESS_TOKEN=your_jwt_token
-```
 
 ### Notes
 
