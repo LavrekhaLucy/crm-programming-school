@@ -102,48 +102,22 @@ cp frontend/.env.example frontend/.env
 docker compose up --build
 ```
 
-- Backend will run on: http://localhost:3000
+#### Access the application:
 
+Frontend: http://localhost
 
-- Frontend will be served by backend at: http://localhost
-
-#### Note:
-To log in for the first time, use the credentials you defined in your .env file (these are processed by the seed script).
-#### Note:
-Frontend is already built into the client/ folder. No separate frontend server is needed.
-
-
-## Manual Setup (Without Docker)
-
-If you prefer not to use Docker, follow these steps to build and run the integrated system:
-
-1. Prepare the Frontend
-
-```bash
-cd frontend
-npm install
-npm run build
-```
-
-This command builds the UI into the client/ folder, where the backend will serve it from.
-
-2. Setup the Backend
-
-```bash
-cd ../backend
-npm install
-npm run migration:run
-npm run seed
-npm run start:dev
-```
-
-3. Access the Application
-
-Main App & API: http://localhost:3000
+API: http://localhost:3000
 
 Swagger Docs: http://localhost:3000/docs
 
-Note: To log in for the first time, use the administrative credentials defined in your .env file (applied during the npm run seed process).
+#### Notes:
+
+Frontend is served by nginx inside Docker.
+
+No separate frontend server is needed.
+
+Use the credentials defined in your .env file for first login (applied by the seed script).
+
 
 ## Features
 
