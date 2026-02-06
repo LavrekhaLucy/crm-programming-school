@@ -17,7 +17,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJjcm9rdngwM2ZjayIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQzNjQyNywiZXhwIjoxNzY2NDQwMDI3fQ.Z6voo8gjjTm93VMTYesPOBYOcVnguxvlVF3tSAa7u1s",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -34,14 +34,14 @@
               }
             },
             "url": {
-              "raw": "{{baseURL}}/admin/users/7/enable",
+              "raw": "{{baseURL}}/admin/users/3/enable",
               "host": [
                 "{{baseURL}}"
               ],
               "path": [
                 "admin",
                 "users",
-                "7",
+                "3",
                 "enable"
               ]
             }
@@ -56,7 +56,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJxbTJjZGNsZnByYSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQyMjc2MywiZXhwIjoxNzY2NDI2MzYzfQ.GaYmsgZO3cppgfSqmYUfpuAXF2oIIbbmEnLAA89unLM",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -85,7 +85,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJjcm9rdngwM2ZjayIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQzNjQyNywiZXhwIjoxNzY2NDQwMDI3fQ.Z6voo8gjjTm93VMTYesPOBYOcVnguxvlVF3tSAa7u1s",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -113,7 +113,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJxbTJjZGNsZnByYSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQyMjc2MywiZXhwIjoxNzY2NDI2MzYzfQ.GaYmsgZO3cppgfSqmYUfpuAXF2oIIbbmEnLAA89unLM",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -150,7 +150,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJxbTJjZGNsZnByYSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NjQyMjc2MywiZXhwIjoxNzY2NDI2MzYzfQ.GaYmsgZO3cppgfSqmYUfpuAXF2oIIbbmEnLAA89unLM",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -167,14 +167,14 @@
               }
             },
             "url": {
-              "raw": "{{baseURL}}/admin/users/7/disable",
+              "raw": "{{baseURL}}/admin/users/3/disable",
               "host": [
                 "{{baseURL}}"
               ],
               "path": [
                 "admin",
                 "users",
-                "7",
+                "3",
                 "disable"
               ],
               "query": [
@@ -269,7 +269,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    //  \"login\":\"admin@gmail.com\",\r\n    // \"password\":\"admin\"\r\n         \r\n     \"login\":\"Artem8@gmail.com\",\r\n    \"password\":\"p@ssword8\"\r\n    \r\n}",
+              "raw": "{\r\n     \"login\":\"admin@gmail.com\",\r\n    \"password\":\"admin\"\r\n         \r\n    //  \"login\":\"Artem8@gmail.com\",\r\n    // \"password\":\"p@ssword8\"\r\n    \r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -343,7 +343,7 @@
       "name": "Orders",
       "item": [
         {
-          "name": "GET",
+          "name": "orders",
           "protocolProfileBehavior": {
             "disableBodyPruning": true
           },
@@ -353,7 +353,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{managerAccessToken}}",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -382,7 +382,7 @@
           "response": []
         },
         {
-          "name": "GET/:id",
+          "name": "orders/:id",
           "protocolProfileBehavior": {
             "disableBodyPruning": true
           },
@@ -392,7 +392,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInVzZXJuYW1lIjoiQXJ0ZW04IiwianRpIjoiZ2tuMmVjdHpveSIsImlhdCI6MTc2NjY4MTQ3NSwiZXhwIjoxNzY2Njg1MDc1fQ.I8PKqXLlWv_Y2HwUVnLOsoAcSiuZ7_1PJzBbKOFrRzo",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -409,20 +409,20 @@
               }
             },
             "url": {
-              "raw": "{{baseURL}}/orders/502",
+              "raw": "{{baseURL}}/orders/500",
               "host": [
                 "{{baseURL}}"
               ],
               "path": [
                 "orders",
-                "502"
+                "500"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "POST",
+          "name": "orders",
           "request": {
             "method": "POST",
             "header": [],
@@ -448,7 +448,7 @@
           "response": []
         },
         {
-          "name": "PATCH",
+          "name": "orders/:id",
           "request": {
             "method": "PATCH",
             "header": [],
@@ -509,40 +509,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJ6enFla2d4aTVlIiwicm9sZSI6Im1hbmFnZXIiLCJpYXQiOjE3NjY2ODQwNDUsImV4cCI6MTc2NjY4NzY0NX0.AGsNpJHXgiZ185Q9zpn_6JAAMncRDAAjoJZBG0MBWXc",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{baseURL}}/orders/501/take",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "orders",
-                "501",
-                "take"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": ":id/take Copy",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiYWRtaW4iLCJqdGkiOiJ6enFla2d4aTVlIiwicm9sZSI6Im1hbmFnZXIiLCJpYXQiOjE3NjY2ODQwNDUsImV4cCI6MTc2NjY4NzY0NX0.AGsNpJHXgiZ185Q9zpn_6JAAMncRDAAjoJZBG0MBWXc",
+                  "value": "{{managerAccessToken}}",
                   "type": "string"
                 }
               ]
@@ -583,7 +550,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsInVzZXJuYW1lIjoiQXJ0ZW04IiwianRpIjoiZ2tuMmVjdHpveSIsImlhdCI6MTc2NjY4MTQ3NSwiZXhwIjoxNzY2Njg1MDc1fQ.I8PKqXLlWv_Y2HwUVnLOsoAcSiuZ7_1PJzBbKOFrRzo",
+                  "value": "{{adminAccessToken}}",
                   "type": "string"
                 }
               ]

@@ -1,18 +1,25 @@
 # CRM Programming School
 
-Full‑stack CRM system for managing students and orders in a programming school.
+Full-stack CRM system for managing students and orders in a programming school.
 
-The project consists of a **NestJS backend** and a **React + Vite frontend**. It supports authentication, role‑based access, filtering, sorting, pagination, and order management.
+The project consists of a **NestJS backend** and a **React + Vite frontend**.  
+It supports authentication, role-based access, filtering, sorting, pagination, and order management.
 
 ---
+
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js LTS (v22)  
+- Node.js LTS (v22 or later)  
   Download from the official website: https://nodejs.org/en
 
-### Clone the repository
+- Docker Desktop (recommended)  
+  Download: https://www.docker.com/products/docker-desktop/
+
+---
+
+## Clone the repository
 
 ```bash
 git clone https://github.com/LavrekhaLucy/crm-programming-school
@@ -24,210 +31,220 @@ cd crm-programming-school
 
 ### Backend
 
-* NestJS 11
-* TypeScript
-* TypeORM
-* MySQL
-* JWT Authentication
-* Passport (local, jwt)
-* Swagger
-* Jest (unit tests)
-* Docker Compose
+- NestJS 11
+
+- TypeScript
+
+- TypeORM
+
+- MySQL (Aiven Cloud)
+
+- JWT Authentication
+
+- Passport (local, jwt)
+
+- Swagger
+
+- Jest (unit tests)
+
+- Docker Compose
 
 ### Frontend
 
-* React 19
-* TypeScript
-* Vite
-* Redux Toolkit
-* React Router
-* React Hook Form
-* Axios
-* Tailwind CSS
+- React 19
+
+- TypeScript
+
+- Vite
+
+- Redux Toolkit
+
+- React Router
+
+- React Hook Form
+
+- Axios
+
+- Tailwind CSS
 
 ---
 
 ## Project Structure
-
-```
+```bash
 crm-programming-school/
-├── backend/ # Server-side (API, database, business logic)
-├── frontend/ # Frontend (React) — development happens here
-├── client/ # Built frontend for production
-└── README.md # Project documentation
+├── backend/      # NestJS backend (API, database, business logic)
+├── frontend/     # Frontend source code (React + Vite)
+├── client/       # Production build of frontend
+├── docker-compose.yml
+└── README.md
 ```
+
 ### Notes
 
-- **Frontend** is developed in the `frontend/` folder and built into the `client/` folder using Vite.
-- **Backend** serves static files from `client/` for the production version of the frontend.
-- **Client** contains production-ready HTML, CSS, and JS files.
+Frontend development happens in the frontend/ folder
+
+Production frontend is built into the client/ folder
+
+Backend serves static files from client/ in production
+
+## Environment Variables
+
+- Copy example environment files:
+
+### Backend
+cp backend/.env.example backend/.env
+
+### Frontend
+cp frontend/.env.example frontend/.env
+
+
+### Fill in required values:
+
+- database credentials
+
+- JWT secrets
+
+- API URLs
 
 ---
 
-## Backend Setup
+## Run with Docker (Recommended)
 
-### Installation
+### Start the entire system:
 
+```bash
+docker compose up --build
+```
+
+Backend will run on:
+
+http://localhost:3000
+
+
+Frontend will run on:
+
+http://localhost
+
+### Backend Setup (without Docker)
 ```bash
 cd backend
 npm install
-```
----
-## Environment Variables
-
-Copy the example .env file from the project root to create your environment file:
-
-```bash
-cp .env.example .env
-```
-
-Copy the example .env inside the frontend folder to create your frontend environment file:
-  ```bash
-cp frontend/.env.example frontend/.env
-  ```
-
-Open the newly created .env files and fill in your actual values (e.g., database credentials, JWT secrets, API URLs).
-
----
-
-### Database
-
-Run migrations:
-
-```bash
 npm run migration:run
-```
-
-(Optional) Seed database (creates initial admin user):
-
-```bash
 npm run seed
-```
-
-### Run backend
-
-Development mode:
-
-```bash
 npm run start:dev
 ```
 
-Backend will be available at:
+Backend will run on:
 
-```
 http://localhost:3000
-```
 
-Swagger API documentation:
 
-```
+Swagger docs:
+
 http://localhost:3000/docs
-```
 
-### Run with Docker
 
-```bash
-npm run start:docker-compose
-```
 
----
+### Frontend Setup (without Docker)
 
-## Frontend Setup
-
-### Installation
-
+Install dependencies:
 ```bash
 cd frontend
 npm install
 ```
 
-### Run frontend
-
+Run development server:
 ```bash
 npm run dev
 ```
 
 Frontend will be available at:
-```
-http://localhost:5173
-```
 
-### Build Frontend (Production)
+http://localhost:5173
+
+Production build:
 ```bash
 npm run build
-```
-This command builds the frontend into the client/ folder.
+ ```
 
-In production, the frontend is served by the backend and is available at the backend URL (e.g. http://localhost:3000).
+This builds frontend into the client/ folder.
 
+In production, frontend is served by backend at:
+
+http://localhost:3000
 
 ---
-
 
 ## Features
 
-* Authentication (JWT)
-* Role‑based access
-* Orders management
-* Filtering and sorting
-* Pagination with URL query params
-* "Only my orders" filter
-* Date range filtering
-* Responsive UI
+- JWT Authentication
+
+- Role-based access control
+
+- Orders management
+
+- Comments system
+
+- Filtering and sorting
+
+- Pagination with URL query params
+
+- "Only my orders" filter
+
+- Date range filtering
+
+- Responsive UI
 
 ---
 
-## Scripts
+## API Testing (Postman Collection)
 
-### Backend
-
-* `npm run start:dev` — development mode
-* `npm run migration:run` — run database migrations
-* `npm run seed` — seed database
-* `npm run test:unit` — unit tests
-
-### Frontend
-
-* `npm run dev` — development mode
-* `npm run build` — production build
-
----
-## Postman Collection
-
-This project includes a Postman collection containing all available API endpoints.
-
-### Location:
+## Location:
+```bash
 
 backend/postman/CRM_Programming_School.postman_collection.json
+```
 
 
-### How to use:
+### How to use
 
-Open Postman
+- Open Postman
 
-Click Import
+- Click Import
 
-Select the collection JSON file
+- Select collection JSON file
 
-(Optional) Configure environment variables (e.g. BASE_URL, ACCESS_TOKEN)
+Configure variables if needed:
+
+```bash
+BASE_URL=http://localhost:3000
+ACCESS_TOKEN=your_jwt_token
+```
 
 ### Notes
 
-The collection is intended for API testing and demonstration
+Some endpoints require authentication
 
-Authentication-protected endpoints require a valid JWT token
+Use JWT access token
 
-No sensitive data is included in the collection
-
----
-## Author
-
-CRM Programming School — educational full‑stack project
-
-Developed by Lavrekha Liudmila
-
+Collection contains no sensitive data
 ---
 
-## Notes
+### Author
 
-This project is intended for learning and portfolio demonstration.
+Lavrekha Liudmila
+Full-stack CRM Programming School project
+
+### Purpose
+
+This project was created to:
+
+- practice full-stack development
+
+- learn NestJS architecture
+
+- build a modern React application
+
+- work with MySQL (Aiven Cloud)
+
+- demonstrate real-world CRM functionality
