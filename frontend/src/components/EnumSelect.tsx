@@ -30,7 +30,7 @@ export const EnumSelect = <T extends string>({ className = "",
             <option value="">{placeholder}</option>
             {options.map(option => (
                 <option key={option} value={option}>
-                    {option.toUpperCase()}
+                    {option}
                 </option>
             ))}
         </select>

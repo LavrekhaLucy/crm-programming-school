@@ -1,5 +1,5 @@
 import {type FC, useState} from "react";
-import type { IOrder } from "../../models/interfaces/IOrders/IOrder";
+import type { IOrder} from "../../models/interfaces/IOrders/IOrder";
 import {EnumSelect} from "../EnumSelect.tsx";
 import {CoursesEnum} from "../../enums/courses.enum.ts";
 import {FormatsEnum} from "../../enums/formats.enum.ts";
@@ -7,6 +7,8 @@ import {TypesEnum} from "../../enums/types.enum.ts";
 import {StatusesEnum} from "../../enums/statuses.enum.ts";
 import Input from "../ui/input.tsx";
 import Button from "../ui/button.tsx";
+import {baseFieldClass} from "../ui/styles.ts";
+
 
 type EditOrderModalProps = {
     order: IOrder;
@@ -20,6 +22,21 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                                                             onSubmit,
                                                         }) => {
     const [editedOrder, setEditedOrder] = useState<IOrder>(order);
+
+    const [groupMode, setGroupMode] = useState<"add" | "select">("add");
+    const [value, setValue] = useState("");
+    const [options, setOptions] = useState(["Option 1", "Option 2"]);
+
+
+    const handleAdd = () => {
+        if (!value.trim()) return;
+        setOptions(prev => [...prev, value]);
+        setValue("");
+        setGroupMode("add")
+    };
+    const handleSelect = () => {
+        setGroupMode("select");
+    }
 
     const toNumberOrUndefined = (value: string) =>
         value === "" ? undefined : Number(value);
@@ -43,6 +60,41 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                     }}
                     className="grid grid-cols-2 gap-4"
                 >
+                    <div>
+                        <label htmlFor="group">Group</label>
+                        {groupMode === "add" ? (
+                            <Input
+                                id="group"
+                                defaultValue={order.group?.name}
+                                className="w-full border px-3 py-2"
+                                placeholder="All group"
+                            />
+                        ):(
+                            <select
+                                value={value}
+                                onChange={(e) => setValue(e.target.value)}
+                                className={baseFieldClass}
+                            >
+                                <option value="">Select group</option>
+                                {options.map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
+                        <div className="flex justify-center gap-2 mt-2">
+                            <Button type="button" onClick={handleAdd} className="px-20 py-0.5 border">
+                                Add
+                            </Button>
+                            <Button type="button" onClick={handleSelect} className="px-20 py-0.5 border">
+                                Select
+                            </Button>
+
+
+                        </div>
+                    </div>
+
                     <div><label htmlFor="name">Name</label>
                         <Input
                             id="name"
@@ -113,39 +165,6 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             placeholder="Age"
                         /></div>
 
-                    <div><label htmlFor="course">Course</label>
-                        <EnumSelect
-                            id="course"
-                            value={editedOrder.course}
-                            options={Object.values(CoursesEnum)}
-                            placeholder="Select course"
-                            onChange={(course) =>
-                                setEditedOrder(prev => ({...prev, course}))
-                            }
-                        /></div>
-
-                    <div><label htmlFor="course">Course format</label>
-                        <EnumSelect
-                            id="course_format"
-                            value={editedOrder.course_format}
-                            options={Object.values(FormatsEnum)}
-                            placeholder="Select format"
-                            onChange={(course_format) =>
-                                setEditedOrder(prev => ({...prev, course_format}))
-                            }
-                        /></div>
-
-                    <div><label htmlFor="course_type">Course type</label>
-                        <EnumSelect
-                            id="course_type"
-                            value={editedOrder.course_type}
-                            options={Object.values(TypesEnum)}
-                            placeholder="Select type"
-                            onChange={(course_type) =>
-                                setEditedOrder(prev => ({...prev, course_type}))
-                            }
-                        /></div>
-
                     <div><label htmlFor="status">Status</label>
                         <EnumSelect
                             id="status"
@@ -185,13 +204,44 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             placeholder="Already Paid"
                         /></div>
 
-                    <div><label htmlFor="group">Group</label>
-                        <input
-                            id="group"
-                            defaultValue={order.group?.name}
-                            className="w-full border px-3 py-2"
-                            placeholder="All group"
+
+                    <div><label htmlFor="course">Course</label>
+                        <EnumSelect
+                            id="course"
+                            value={editedOrder.course}
+                            options={Object.values(CoursesEnum)}
+                            placeholder="Select course"
+                            onChange={(course) =>
+                                setEditedOrder(prev => ({...prev, course}))
+                            }
                         /></div>
+
+                    <div><label htmlFor="course">Course format</label>
+                        <EnumSelect
+                            id="course_format"
+                            value={editedOrder.course_format}
+                            options={Object.values(FormatsEnum)}
+                            placeholder="Select format"
+                            onChange={(course_format) =>
+                                setEditedOrder(prev => ({...prev, course_format}))
+                            }
+                        /></div>
+
+                    <div><label htmlFor="course_type">Course type</label>
+                        <EnumSelect
+                            id="course_type"
+                            value={editedOrder.course_type}
+                            options={Object.values(TypesEnum)}
+                            placeholder="Select type"
+                            onChange={(course_type) =>
+                                setEditedOrder(prev => ({...prev, course_type}))
+                            }
+                        /></div>
+
+
+
+
+
 
 
                     <div className="flex justify-end gap-2 pt-4">
@@ -205,7 +255,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
 
                         <Button
                             type="submit"
-                            className="px-4 py-2 bg-emerald-600 text-white"
+                            className="px-4 py-2 border"
                         >
                             Submit
                         </Button>
