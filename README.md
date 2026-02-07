@@ -94,7 +94,7 @@ cp frontend/.env.example frontend/.env
 
 ---
 
-## Run with Docker (Recommended)
+## Run with Docker 
 
 ### Start the full system:
 
@@ -170,11 +170,13 @@ Some endpoints require authentication
 Use JWT access token
 
 Collection contains no sensitive data
+
 ---
 
 ### Author
 
 Lavrekha Liudmila
+
 Full-stack CRM Programming School project
 
 ### Purpose
@@ -189,4 +191,3 @@ This project was created to:
 
 - work with MySQL (Aiven Cloud)
 
-- demonstrate real-world CRM functionality

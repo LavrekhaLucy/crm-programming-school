@@ -1,18 +1,4 @@
-#services:
-#  app:
-#    build:
-#      context: .
-#    env_file:
-#      - ./backend/.env
-#    volumes:
-#      - ./backend:/app
-#      - /app/node_modules
-#    ports:
-#      - "3000:3000"
-##    depends_on:
-##      db:
-##        condition: service_healthy
-#    command: sh -c "npm run migration:run && npm run seed && npm run start:dev"
+
 services:
   app:
     build:

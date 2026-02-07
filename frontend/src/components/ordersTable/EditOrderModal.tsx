@@ -6,6 +6,7 @@ import {FormatsEnum} from "../../enums/formats.enum.ts";
 import {TypesEnum} from "../../enums/types.enum.ts";
 import {StatusesEnum} from "../../enums/statuses.enum.ts";
 import Input from "../ui/input.tsx";
+import Button from "../ui/button.tsx";
 
 type EditOrderModalProps = {
     order: IOrder;
@@ -40,153 +41,174 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                         e.preventDefault();
                         onSubmit(order);
                     }}
-                    className="space-y-3"
+                    className="grid grid-cols-2 gap-4"
                 >
+                    <div><label htmlFor="name">Name</label>
+                        <Input
+                            id="name"
+                            value={editedOrder.name ?? ""}
+                            onChange={(e) =>
+                                setEditedOrder(prev => ({
+                                    ...prev,
+                                    name: e.target.value,
+                                }))
+                            }
+                            className="w-full border px-3 py-2"
+                            placeholder="Name"
+                        /></div>
 
-                    <Input
-                        value={editedOrder.name ?? ""}
-                        onChange={(e) =>
-                            setEditedOrder(prev => ({
-                                ...prev,
-                                name: e.target.value,
-                            }))
-                        }
-                        className="w-full border px-3 py-2"
-                        placeholder="Name"
-                    />
+                    <div><label htmlFor="surname">Surname</label>
+                        <Input
+                            id="surname"
+                            value={editedOrder.surname ?? ""}
+                            onChange={(e) =>
+                                setEditedOrder(prev => ({
+                                    ...prev,
+                                    surname: e.target.value,
+                                }))
+                            }
+                            className="w-full border px-3 py-2"
+                            placeholder="Surname"
+                        /></div>
 
+                    <div><label htmlFor="email">Email</label>
+                        <Input
+                            id="email"
+                            value={editedOrder.email ?? ""}
+                            onChange={(e) =>
+                                setEditedOrder(prev => ({
+                                    ...prev,
+                                    email: e.target.value,
+                                }))
+                            }
+                            className="w-full border px-3 py-2"
+                            placeholder="Email"
+                        /></div>
 
-                    <Input
-                        value={editedOrder.surname ?? ""}
-                        onChange={(e) =>
-                            setEditedOrder(prev => ({
-                                ...prev,
-                                surname: e.target.value,
-                            }))
-                        }
-                        className="w-full border px-3 py-2"
-                        placeholder="Surname"
-                    />
+                    <div><label htmlFor="phone">Phone</label>
+                        <Input
+                            id="phone"
+                            value={editedOrder.phone ?? ""}
+                            onChange={(e) =>
+                                setEditedOrder(prev => ({
+                                    ...prev,
+                                    phone: e.target.value,
+                                }))
+                            }
+                            className="w-full border px-3 py-2"
+                            placeholder="Phone"
+                        /></div>
 
-                    <Input
-                        value={editedOrder.email?? ""}
-                        onChange={(e) =>
-                            setEditedOrder(prev => ({
-                                ...prev,
-                                email: e.target.value,
-                            }))
-                        }
-                        className="w-full border px-3 py-2"
-                        placeholder="Email"
-                    />
+                    <div><label htmlFor="age">Age</label>
+                        <Input
+                            id="age"
+                            value={editedOrder.age ?? ""}
+                            onChange={(e) =>
+                                setEditedOrder(prev => ({
+                                    ...prev,
+                                    age: toNumberOrUndefined(e.target.value),
+                                }))
+                            }
+                            className="w-full border px-3 py-2"
+                            placeholder="Age"
+                        /></div>
 
-                    <Input
-                        value={editedOrder.phone?? ""}
-                        onChange={(e) =>
-                            setEditedOrder(prev => ({
-                                ...prev,
-                                phone: e.target.value,
-                            }))
-                        }
-                        className="w-full border px-3 py-2"
-                        placeholder="Phone"
-                    />
+                    <div><label htmlFor="course">Course</label>
+                        <EnumSelect
+                            id="course"
+                            value={editedOrder.course}
+                            options={Object.values(CoursesEnum)}
+                            placeholder="Select course"
+                            onChange={(course) =>
+                                setEditedOrder(prev => ({...prev, course}))
+                            }
+                        /></div>
 
-                    <Input
-                        value={editedOrder.age?? ""}
-                        onChange={(e) =>
-                            setEditedOrder(prev => ({
-                                ...prev,
-                                age:toNumberOrUndefined (e.target.value),
-                            }))
-                        }
-                        className="w-full border px-3 py-2"
-                        placeholder="Age"
-                    />
+                    <div><label htmlFor="course">Course format</label>
+                        <EnumSelect
+                            id="course_format"
+                            value={editedOrder.course_format}
+                            options={Object.values(FormatsEnum)}
+                            placeholder="Select format"
+                            onChange={(course_format) =>
+                                setEditedOrder(prev => ({...prev, course_format}))
+                            }
+                        /></div>
 
-                    <EnumSelect
-                        value={editedOrder.course}
-                        options={Object.values(CoursesEnum)}
-                        placeholder="Select course"
-                        onChange={(course) =>
-                            setEditedOrder(prev => ({ ...prev, course }))
-                        }
-                    />
+                    <div><label htmlFor="course_type">Course type</label>
+                        <EnumSelect
+                            id="course_type"
+                            value={editedOrder.course_type}
+                            options={Object.values(TypesEnum)}
+                            placeholder="Select type"
+                            onChange={(course_type) =>
+                                setEditedOrder(prev => ({...prev, course_type}))
+                            }
+                        /></div>
 
+                    <div><label htmlFor="status">Status</label>
+                        <EnumSelect
+                            id="status"
+                            value={editedOrder.status}
+                            options={Object.values(StatusesEnum)}
+                            placeholder="Select type"
+                            onChange={(status) =>
+                                setEditedOrder(prev => ({...prev, status}))
+                            }
+                        /></div>
 
-                    <EnumSelect
-                        value={editedOrder.course_format}
-                        options={Object.values(FormatsEnum)}
-                        placeholder="Select format"
-                        onChange={(course_format) =>
-                            setEditedOrder(prev => ({ ...prev, course_format }))
-                        }
-                    />
+                    <div><label htmlFor="sum">Sum</label>
+                        <Input
+                            id="sum"
+                            value={editedOrder.sum ?? ""}
+                            onChange={(e) =>
+                                setEditedOrder(prev => ({
+                                    ...prev,
+                                    sum: toNumberOrUndefined(e.target.value),
+                                }))
+                            }
+                            className="w-full border px-3 py-2"
+                            placeholder="Sum"
+                        /></div>
 
-                    <EnumSelect
-                        value={editedOrder.course_type}
-                        options={Object.values(TypesEnum)}
-                        placeholder="Select type"
-                        onChange={(course_type) =>
-                            setEditedOrder(prev => ({ ...prev, course_type }))
-                        }
-                    />
+                    <div><label htmlFor="alreadyPaid">Already paid</label>
+                        <Input
+                            id="alreadyPaid"
+                            value={editedOrder.alreadyPaid ?? ""}
+                            onChange={(e) =>
+                                setEditedOrder(prev => ({
+                                    ...prev,
+                                    alreadyPaid: Number(e.target.value) || 0,
+                                }))
+                            }
+                            className="w-full border px-3 py-2"
+                            placeholder="Already Paid"
+                        /></div>
 
-                    <EnumSelect
-                        value={editedOrder.status}
-                        options={Object.values(StatusesEnum)}
-                        placeholder="Select type"
-                        onChange={(status) =>
-                            setEditedOrder(prev => ({ ...prev, status }))
-                        }
-                    />
-
-                    <Input
-                        value={editedOrder.sum?? ""}
-                        onChange={(e) =>
-                            setEditedOrder(prev => ({
-                                ...prev,
-                                sum:toNumberOrUndefined (e.target.value),
-                            }))
-                        }
-                        className="w-full border px-3 py-2"
-                        placeholder="Sum"
-                    />
-
-                    <Input
-                        value={editedOrder.alreadyPaid?? ""}
-                        onChange={(e) =>
-                            setEditedOrder(prev => ({
-                                ...prev,
-                                alreadyPaid:Number (e.target.value) || 0,
-                            }))
-                        }
-                        className="w-full border px-3 py-2"
-                        placeholder="Already Paid"
-                    />
-
-                    <input
-                        defaultValue={order.group?.name}
-                        className="w-full border px-3 py-2"
-                        placeholder="All group"
-                    />
+                    <div><label htmlFor="group">Group</label>
+                        <input
+                            id="group"
+                            defaultValue={order.group?.name}
+                            className="w-full border px-3 py-2"
+                            placeholder="All group"
+                        /></div>
 
 
                     <div className="flex justify-end gap-2 pt-4">
-                        <button
+                        <Button
                             type="button"
                             onClick={onClose}
                             className="px-4 py-2 border"
                         >
                             Close
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
                             type="submit"
                             className="px-4 py-2 bg-emerald-600 text-white"
                         >
                             Submit
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

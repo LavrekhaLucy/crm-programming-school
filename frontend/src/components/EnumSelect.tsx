@@ -1,6 +1,7 @@
 import {baseFieldClass} from "./ui/styles.ts";
 
 type EnumSelectProps<T extends string> = {
+    id?: string;
     value?: T;
     onChange: (value: T | undefined) => void;
     options: readonly T[];
