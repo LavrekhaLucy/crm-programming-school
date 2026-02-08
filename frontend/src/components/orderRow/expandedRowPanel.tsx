@@ -2,6 +2,7 @@ import {AddCommentForm} from "../comment/AddCommentForm.tsx";
 import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
 import type {FC} from "react";
 import {Comment} from "../comment/Comment.tsx";
+import Button from "../ui/button.tsx";
 
 type ExpandedOrderPanelProps = {
     order: IOrder;
@@ -17,14 +18,14 @@ export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit, 
 
                 <AddCommentForm orderId={order.id}  onSubmit={onAddComment} />
 
-                <button
+                <Button
                     onClick={e => {
                         e.stopPropagation();
                         onEdit();
                     }}
                 >
                     EDIT
-                </button>
+                </Button>
             </td>
         </tr>
     );

@@ -3,7 +3,6 @@ import {useDebounce} from "../hooks/useDebounce.ts";
 import {useEffect, useState} from "react";
 import Input from "../ui/input.tsx";
 import Select from "../ui/select.tsx";
-import Button from "../ui/button.tsx";
 import {getOrderFiltersFromSearchParams} from "../../common/helper/getOrderFiltersFromSearchParams.ts";
 import {initialOrderFilters} from "../res_constants/orderFilters.ts";
 
@@ -44,8 +43,8 @@ const OrdersFilters = () => {
 
 
     return (
-        <div>
-            <div className="flex gap-2 mb-4">
+        <form className="flex flex-2 gap-4 m-4">
+            <div className="grid grid-cols-6 gap-2">
                 <Input
                     placeholder="Name"
                     value={localFilters.name}
@@ -182,7 +181,12 @@ const OrdersFilters = () => {
                 />
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
 
-                <input
+
+            </div>
+
+            <div className ="flex justify-center align-middle px-3 py-3 gap-2 m-4" >
+                <label>
+                    <input
                     type="checkbox"
                     checked={localFilters.onlyMine === "true"}
                     onChange={(e) =>
@@ -192,13 +196,19 @@ const OrdersFilters = () => {
                         }))
                     }
                 />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+                    My
 
-                <Button type="button" onClick={handleReset}>
+                </label>
+
+                <button
+                    type="button"
+                    onClick={handleReset}
+                    className="bg-[#43a047] text-white rounded-[5px]">
                     Reset
-                </Button>
+                </button>
             </div>
-        </div>
+
+        </form>
     );
 };
 export default OrdersFilters;
