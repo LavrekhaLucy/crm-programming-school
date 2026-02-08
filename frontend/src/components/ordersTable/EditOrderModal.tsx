@@ -65,7 +65,8 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                         {groupMode === "add" ? (
                             <Input
                                 id="group"
-                                defaultValue={order.group?.name}
+                                value={value}
+                                onChange={(e) => setValue(e.target.value)}
                                 className="w-full border px-3 py-2"
                                 placeholder="All group"
                             />
@@ -84,12 +85,12 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             </select>
                         )}
                         <div className="flex justify-center gap-2 mt-2">
-                            <Button type="button" onClick={handleAdd} className="px-20 py-0.5 border">
+                            <button type="button" onClick={handleAdd} className="px-21 py-0.5 text-sm bg-[#43a047] text-white rounded-[5px]">
                                 Add
-                            </Button>
-                            <Button type="button" onClick={handleSelect} className="px-20 py-0.5 border">
+                            </button>
+                            <button type="button" onClick={handleSelect} className="px-21 py-0.5 text-sm bg-[#43a047] text-white rounded-[5px]">
                                 Select
-                            </Button>
+                            </button>
 
 
                         </div>
@@ -170,7 +171,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             id="status"
                             value={editedOrder.status}
                             options={Object.values(StatusesEnum)}
-                            placeholder="Select type"
+                            placeholder="All statuses"
                             onChange={(status) =>
                                 setEditedOrder(prev => ({...prev, status}))
                             }
@@ -210,7 +211,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             id="course"
                             value={editedOrder.course}
                             options={Object.values(CoursesEnum)}
-                            placeholder="Select course"
+                            placeholder="All course"
                             onChange={(course) =>
                                 setEditedOrder(prev => ({...prev, course}))
                             }
@@ -221,7 +222,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             id="course_format"
                             value={editedOrder.course_format}
                             options={Object.values(FormatsEnum)}
-                            placeholder="Select format"
+                            placeholder="All format"
                             onChange={(course_format) =>
                                 setEditedOrder(prev => ({...prev, course_format}))
                             }
@@ -232,15 +233,11 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             id="course_type"
                             value={editedOrder.course_type}
                             options={Object.values(TypesEnum)}
-                            placeholder="Select type"
+                            placeholder="All type"
                             onChange={(course_type) =>
                                 setEditedOrder(prev => ({...prev, course_type}))
                             }
                         /></div>
-
-
-
-
 
 
 

@@ -1,6 +1,6 @@
 import type {FC, ButtonHTMLAttributes} from "react";
 
-const buttonClass = `
+export const buttonClass = `
 px-4 py-2
 text-sm
 rounded-lg
