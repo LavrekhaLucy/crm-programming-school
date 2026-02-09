@@ -1,5 +1,6 @@
 import {type FC, useState} from 'react';
 import Button from "../ui/button.tsx";
+import Input from "../ui/input.tsx";
 
 interface AddCommentFormProps {
     orderId: string;
@@ -18,14 +19,15 @@ export const AddCommentForm: FC<AddCommentFormProps> = ({ onSubmit, orderId }) =
                 setText('');
             }}
         >
-            <input
+            <div className="flex  gap-5" ><Input
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Write a comment..."
+
             />
-            <Button
-                 type="button">Submit
-            </Button>
+                <Button
+                    type="submit">Submit
+                </Button></div>
+
         </form>
     );
 };

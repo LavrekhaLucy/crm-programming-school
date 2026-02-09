@@ -51,7 +51,7 @@ const Login = () => {
   }, [token, navigate]);
 
   return (
-      <div className="min-h-screen flex items-center justify-center bg-green-400">
+      <div className="min-h-screen flex items-center justify-center bg-[#43a047]">
         <div className="bg-white p-8 rounded-lg shadow-lg w-80">
           <h2 className="text-center text-xl font-semibold mb-6">Login</h2>
 
