@@ -24,9 +24,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
     if (loading && !pageData) {
         return <div>Loading orders...</div>;
     }
-    const handleAddComment = (orderId: string, text: string) => {
-        console.log('add comment', orderId, text);
-    };
 
      const orders: IOrder[] = pageData?.data ?? [];
 
@@ -74,7 +71,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
                             <ExpandedOrderPanel
                                 order={order}
                                 onEdit={() => setEditOrder(order)}
-                                onAddComment={handleAddComment}
+                                // onAddComment={handleAddComment}
                             />
                         )}
                         {editOrder && (

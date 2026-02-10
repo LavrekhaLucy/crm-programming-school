@@ -6,4 +6,5 @@ export interface ICommentResponse {
     text: string,
     user: IUser,
     order: IOrder,
+    created_at:string
 }

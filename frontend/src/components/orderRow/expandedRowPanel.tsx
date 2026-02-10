@@ -1,14 +1,12 @@
-import {AddCommentForm} from "../comment/AddCommentForm.tsx";
 import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
 import type {FC} from "react";
 import {Comment} from "../comment/Comment.tsx";
 type ExpandedOrderPanelProps = {
     order: IOrder;
     onEdit: () => void;
-    onAddComment: (orderId: string, text: string) => void;
 };
 
-export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit, onAddComment }) => {
+export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit }) => {
     return (
         <tr>
             <td colSpan={12}>
@@ -32,7 +30,8 @@ export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit, 
 
                         <Comment orderId={order.id}/>
 
-                        <AddCommentForm orderId={order.id} onSubmit={onAddComment}/></div>
+
+                     </div>
 
 
                 </div>

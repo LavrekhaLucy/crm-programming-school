@@ -10,7 +10,7 @@ type AuthState = {
 };
 
 const initialAuthState: AuthState = {
-    token: null,
+    token: localStorage.getItem("token"),
     loading: false,
     error: null,
 };
@@ -66,7 +66,7 @@ const authSlice = createSlice({
 });
 
 export const { logout } = authSlice.actions;
-export const authActions = {...authSlice.actions, login, logout};
+export const authActions = {...authSlice.actions, login};
 export default authSlice;
 
 

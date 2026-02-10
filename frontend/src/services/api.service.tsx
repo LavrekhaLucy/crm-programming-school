@@ -26,3 +26,8 @@ export const createComment = async (orderId: string, data: IComment,):Promise<IC
     const response = await axiosInstance.post<ICommentResponse>( `/orders/${orderId}/comment`, data);
     return response.data;
 };
+
+export const getCommentsByOrder = async (orderId: string): Promise<ICommentResponse[]> => {
+    const response = await axiosInstance.get<ICommentResponse[]>(`/orders/${orderId}/comment`);
+    return response.data;
+};
