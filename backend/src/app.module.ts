@@ -12,6 +12,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './common/filters/global-filter';
 import { CommentsModule } from './modules/comments/comments.module';
+import { GroupModule } from './modules/groups/group.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CommentsModule } from './modules/comments/comments.module';
     UsersModule,
     AdminModule,
     CommentsModule,
+    GroupModule,
   ],
   controllers: [UsersController],
   providers: [
