@@ -6,13 +6,34 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s",
-    "!**/index.ts",
+  "collectCoverageFrom": [
+    "**/*.ts",
+
+    "!main.ts",
+    "!seed.ts",
+    "!app.module.ts",
+    "!typeorm.module.ts",
+
     "!**/*.module.ts",
     "!**/*.repository.ts",
-    "!**/database/**/*"
-    ],
+    "!**/*.entity.ts",
+
+    "!**/database/**",
+    "!**/migrations/**",
+
+    "!**/dto/**",
+    "!**/models/**",
+
+    "!**/configs/**",
+    "!**/helpers/**",
+    "!**/filters/**",
+
+    "!**/decorators/**",
+
+    "!**/env.service.ts"
+  ],
+
+
   "coverageThreshold": {
     "global": {
       "branches": 30,
@@ -25,14 +46,7 @@
   "collectCoverage": true,
   "coverageDirectory": "../coverage",
   "coveragePathIgnorePatterns": [
-    "/node_modules/",
-    "main.ts",
-    "seed.ts",
-    "/dto/",
-    "/models/",
-    "/configs/",
-    "/helpers/",
-    "/filters/",
-    "env.service.ts"
+    "/node_modules/"
   ]
+
 }
