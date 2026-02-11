@@ -18,7 +18,7 @@ export class GroupService {
     });
   }
 
-  async findById(id: number): Promise<ResponseGroupDto | null> {
+  async findOne(id: number): Promise<ResponseGroupDto | null> {
     return this.groupRepository.findOne({
       where: { id },
     });

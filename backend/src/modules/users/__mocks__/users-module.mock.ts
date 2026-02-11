@@ -36,6 +36,7 @@ export const usersModuleProviders: Provider[] = [
     provide: OrdersRepository,
     useValue: mockOrderRepository,
   },
+
   {
     provide: UserService,
     useValue: mockUserService,

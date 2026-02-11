@@ -206,7 +206,10 @@ describe('OrderService', () => {
       });
 
       const result = await service.assignManager('order1', 42);
-      expect(mockEntityManager.transaction).toHaveBeenCalled();
+
+      const transactionSpy = jest.spyOn(mockEntityManager, 'transaction');
+
+      expect(transactionSpy).toHaveBeenCalledTimes(1);
 
       expect(mockOrderRepository.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -252,7 +255,10 @@ describe('OrderService', () => {
 
       await service.takeOrder('order2', 43);
 
-      expect(mockEntityManager.transaction).toHaveBeenCalled();
+      const transactionSpy = jest.spyOn(mockEntityManager, 'transaction');
+
+      expect(transactionSpy).toHaveBeenCalledTimes(1);
+
       expect(mockOrderRepository.update).toHaveBeenCalledWith('order2', {
         manager: { id: 43 },
         status: StatusesEnum.INWORK,
