@@ -3,6 +3,7 @@ import {type TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import authSlice from "../../slices/authSlice.ts";
 import ordersSlice from "../../slices/ordersSlice.ts";
 import commentSlice from "../../slices/commentSlice.ts";
+import groupSlice from "../../slices/groupSlice.ts";
 
 
 
@@ -11,6 +12,7 @@ export const store = configureStore({
         authStoreSlice: authSlice.reducer,
         orderStoreSlice:ordersSlice.reducer,
         commentStoreSlice:commentSlice.reducer,
+        groupStoreSlice: groupSlice.reducer,
 
     }
 });

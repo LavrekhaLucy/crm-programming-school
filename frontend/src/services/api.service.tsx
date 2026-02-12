@@ -5,14 +5,16 @@ import type {IOrderFilters} from "../models/interfaces/IOrders/IOrderFilters.ts"
 import {axiosInstance} from "./http/axios.ts";
 import type {IComment} from "../models/interfaces/IComments/IComment.ts";
 import type {ICommentResponse} from "../models/interfaces/IComments/ICommentResponse.ts";
+import type {IGroup} from "../models/interfaces/IGroup/IGroup.ts";
 
 
-
+//Login
 export const loginRequest = async (data: ILoginData): Promise<ILoginResponse> => {
     const response = await axiosInstance.post<ILoginResponse>("/auth/login", data);
     return response.data;
 };
 
+// Orders
 export const getOrders = async (
     filters: IOrderFilters,
 ): Promise<IOrdersResponseModel> => {
@@ -22,6 +24,8 @@ export const getOrders = async (
     console.log('orders from API:', data);
     return data;
 };
+
+// Comments
 export const createComment = async (orderId: string, data: IComment,):Promise<ICommentResponse> => {
     const response = await axiosInstance.post<ICommentResponse>( `/orders/${orderId}/comment`, data);
     return response.data;
@@ -29,5 +33,16 @@ export const createComment = async (orderId: string, data: IComment,):Promise<IC
 
 export const getCommentsByOrder = async (orderId: string): Promise<ICommentResponse[]> => {
     const response = await axiosInstance.get<ICommentResponse[]>(`/orders/${orderId}/comment`);
+    return response.data;
+};
+
+//Groups
+export const createGroup = async (data: { name: string }) => {
+    const response = await axiosInstance.post<IGroup>(`/groups`, data);
+    return response.data;
+};
+
+ export const  getGroups = async () => {
+    const response = await axiosInstance.get<IGroup[]>(`/groups/`);
     return response.data;
 };

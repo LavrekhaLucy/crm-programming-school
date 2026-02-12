@@ -1,4 +1,4 @@
-import {type FC, useState} from "react";
+import {type FC, useEffect, useState} from "react";
 import type { IOrder} from "../../models/interfaces/IOrders/IOrder";
 import {EnumSelect} from "../EnumSelect.tsx";
 import {CoursesEnum} from "../../enums/courses.enum.ts";
@@ -8,6 +8,10 @@ import {StatusesEnum} from "../../enums/statuses.enum.ts";
 import Input from "../ui/input.tsx";
 import Button from "../ui/button.tsx";
 import {baseFieldClass} from "../ui/styles.ts";
+import type {AppDispatch, RootState} from "../store/store.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {AddCreateGroup, fetchGroups} from "../../slices/groupSlice.ts";
+
 
 
 type EditOrderModalProps = {
@@ -21,19 +25,33 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                                                             onClose,
                                                             onSubmit,
                                                         }) => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const { groups} = useSelector(
+        (state: RootState) => state.groupStoreSlice
+    );
+
+
     const [editedOrder, setEditedOrder] = useState<IOrder>(order);
 
     const [groupMode, setGroupMode] = useState<"add" | "select">("add");
     const [value, setValue] = useState("");
-    const [options, setOptions] = useState(["Option 1", "Option 2"]);
+
+    useEffect(() => {
+        dispatch(fetchGroups());
+    }, [dispatch]);
+
 
 
     const handleAdd = () => {
         if (!value.trim()) return;
-        setOptions(prev => [...prev, value]);
+
+        dispatch(AddCreateGroup(value));
+
         setValue("");
-        setGroupMode("add")
+        setGroupMode("select");
     };
+
     const handleSelect = () => {
         setGroupMode("select");
     }
@@ -77,9 +95,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                                 className={baseFieldClass}
                             >
                                 <option value="">Select group</option>
-                                {options.map((option, index) => (
-                                    <option key={index} value={option}>
-                                        {option}
+                                {groups.map((group) => (
+                                    <option key={group.id} value={group.name}>
+                                        {group.name}
                                     </option>
                                 ))}
                             </select>
