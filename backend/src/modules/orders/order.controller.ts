@@ -26,7 +26,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('OrdersList')
+@ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}

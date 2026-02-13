@@ -1,6 +1,6 @@
 import {createSlice, createAsyncThunk, type PayloadAction} from '@reduxjs/toolkit';
 import type {IGroup} from "../models/interfaces/IGroup/IGroup.ts";
-import {createGroup, getGroups} from "../services/api.service.tsx";
+import {createGroup, getGroupById, getGroups} from "../services/api.service.tsx";
 import type {IGroupResponse} from "../models/interfaces/IGroup/IGroupResponse.ts";
 
 
@@ -38,6 +38,17 @@ export const fetchGroups = createAsyncThunk(
     }
 );
 
+export const fetchGroupById = createAsyncThunk(
+    "groups/fetchById",
+    async (id: number, { rejectWithValue }) => {
+        try {
+            return await getGroupById(id);
+        } catch (error) {
+            return rejectWithValue(error as string);
+        }
+    }
+);
+
 const groupSlice = createSlice({
     name: 'groups',
     initialState: initialGroupState,
@@ -58,6 +69,7 @@ const groupSlice = createSlice({
                 state.error = action.payload as string;
             })
 
+
             .addCase(fetchGroups.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -69,9 +81,22 @@ const groupSlice = createSlice({
             .addCase(fetchGroups.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
-            });
+            })
+
+            .addCase(fetchGroupById.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            })
+            .addCase(fetchGroupById.fulfilled, (state, action: PayloadAction<IGroup>) => {
+                state.loading = false;
+                state.groups.push(action.payload);
+            })
+            .addCase(fetchGroupById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
     },
 });
-export const groupActions = {...groupSlice.actions, AddCreateGroup, fetchGroups}
+export const groupActions = {...groupSlice.actions, AddCreateGroup, fetchGroups, fetchGroupById}
 
 export default groupSlice;
