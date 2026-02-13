@@ -10,7 +10,7 @@ import Button from "../ui/button.tsx";
 import {baseFieldClass} from "../ui/styles.ts";
 import type {AppDispatch, RootState} from "../store/store.ts";
 import {useDispatch, useSelector} from "react-redux";
-import {AddCreateGroup, fetchGroups} from "../../slices/groupSlice.ts";
+import {groupActions} from "../../slices/groupSlice.ts";
 
 
 
@@ -38,7 +38,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
     const [value, setValue] = useState("");
 
     useEffect(() => {
-        dispatch(fetchGroups());
+        dispatch(groupActions.fetchGroups());
     }, [dispatch]);
 
 
@@ -46,7 +46,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
     const handleAdd = () => {
         if (!value.trim()) return;
 
-        dispatch(AddCreateGroup(value));
+        dispatch(groupActions.AddCreateGroup(value));
 
         setValue("");
         setGroupMode("select");
