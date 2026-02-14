@@ -1,10 +1,14 @@
 import type {OrderSortField} from "../../models/types/OrderSortField.ts";
-import {useAppSelector} from "../store/store.ts";
+import {type AppDispatch, useAppSelector} from "../store/store.ts";
 import {OrderRow} from "../orderRow/orderRow.tsx";
 import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
-import React, {Fragment, useState} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import {ExpandedOrderPanel} from "../orderRow/expandedRowPanel.tsx";
 import {EditOrderModal} from "./EditOrderModal.tsx";
+import {groupActions} from "../../slices/groupSlice.ts";
+import {useDispatch} from "react-redux";
+import {ordersActions} from "../../slices/ordersSlice.ts";
+import type {IUpdateOrder} from "../../models/interfaces/IOrders/IUpdateOrder.ts";
 
 type OrdersTableProps = {
     onSort: (field: OrderSortField ) => void;
@@ -13,9 +17,15 @@ type OrdersTableProps = {
 
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
+
+    const dispatch = useDispatch<AppDispatch>();
+
     const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
     const [editOrder, setEditOrder] = useState<IOrder | null>(null);
 
+    useEffect(() => {
+        dispatch(groupActions.fetchGroups());
+    }, [dispatch]);
 
     const { pageData, loading } = useAppSelector(
         (state) => state.orderStoreSlice
@@ -26,6 +36,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
     }
 
      const orders: IOrder[] = pageData?.data ?? [];
+
 
 
 
@@ -71,29 +82,32 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
                             <ExpandedOrderPanel
                                 order={order}
                                 onEdit={() => setEditOrder(order)}
-                                // onAddComment={handleAddComment}
-                            />
+                              />
                         )}
-                        {editOrder && (
-                            <EditOrderModal
-                                order={editOrder}
-                                onClose={() => setEditOrder(null)}
-                                onSubmit={(updatedOrder) => {
-                                    console.log("Updated order:", updatedOrder);
-                                    setEditOrder(null);
-                                }}
-                            />
-                        )}
+
 
                     </Fragment>
                 ))}
 
-
-
-
-
                 </tbody>
             </table>
+
+            {editOrder && (
+                <EditOrderModal
+                    order={editOrder}
+                    onClose={() => setEditOrder(null)}
+                    onSubmit={(updateData: IUpdateOrder) => {
+                        dispatch(
+                            ordersActions.loadUpdateOrder({
+                                id: editOrder.id,
+                                payload: updateData,
+                            })
+                        );
+                        setEditOrder(null);
+                    }}
+                />
+    )}
+
         </div>
     );
 };

@@ -1,7 +1,9 @@
 import {createAsyncThunk, createSlice,} from "@reduxjs/toolkit";
-import {getOrders} from "../services/api.service.tsx";
+import {getOrders, updateOrders} from "../services/api.service.tsx";
 import type {IOrdersResponseModel} from "../models/interfaces/IOrders/IOrdersResponseModel.ts";
 import type {IOrderFilters} from "../models/interfaces/IOrders/IOrderFilters.ts";
+import type {IOrder} from "../models/interfaces/IOrders/IOrder.ts";
+import type {IUpdateOrder} from "../models/interfaces/IOrders/IUpdateOrder.ts";
 
 
 type OrderSliceType = {
@@ -33,6 +35,19 @@ export const loadOrders = createAsyncThunk<
     }
 );
 
+export const loadUpdateOrder = createAsyncThunk<
+    IOrder,
+    { id: string; payload: IUpdateOrder },
+    { rejectValue: string }>(
+      "orders/update",
+    async ({id, payload}, {rejectWithValue}) => {
+        try {
+            return await updateOrders(id, payload);
+        } catch (error) {
+            return rejectWithValue(error as string);
+        }
+    })
+
 
 const ordersSlice = createSlice({
     name: 'orders',
@@ -51,10 +66,27 @@ const ordersSlice = createSlice({
             .addCase(loadOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload ?? "Failed to load orders";
+            })
+
+            .addCase(loadUpdateOrder.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(loadUpdateOrder.fulfilled, (state, action) => {
+                state.loading = false;
+                if (!state.pageData || !state.pageData.data) return;
+
+                state.pageData.data = state.pageData.data.map(o =>
+                    o.id === action.payload.id ? action.payload : o
+                );
+            })
+            .addCase(loadUpdateOrder.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload ?? "Failed to load orders";
             });
     },
 });
 
-export const ordersActions = {...ordersSlice.actions, loadOrders};
+export const ordersActions = {...ordersSlice.actions, loadOrders, loadUpdateOrder};
 export default ordersSlice;
 

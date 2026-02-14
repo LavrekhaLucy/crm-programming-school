@@ -60,6 +60,7 @@ export class OrdersController {
   ): Promise<ResponseOrderDto> {
     return this.ordersService.update(id, dto);
   }
+
   @Roles(UserRoleEnum.ADMIN)
   @Patch(':id/assign/:managerId')
   async assignManager(

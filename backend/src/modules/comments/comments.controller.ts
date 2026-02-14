@@ -10,7 +10,7 @@ import { CommentsService } from './services/comments.service';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
-  @Post(':orderId/comment')
+  @Post(':orderId/comments')
   addCommentToOrder(
     @Param('orderId') orderId: string,
     @CurrentUser() user: UserEntity,
@@ -19,7 +19,7 @@ export class CommentsController {
     return this.commentsService.addCommentToOrder(orderId, user, dto);
   }
 
-  @Get(':orderId/comment')
+  @Get(':orderId/comments')
   getCommentsByOrder(@Param('orderId') orderId: string) {
     return this.commentsService.getCommentsByOrder(orderId);
   }

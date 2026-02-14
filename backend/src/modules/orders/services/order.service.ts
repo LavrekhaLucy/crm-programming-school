@@ -16,6 +16,8 @@ import { OrdersRepository } from '../../repository/services/orders.repository';
 import { PaginatedResponse } from '../../../common/types/pagination.type';
 import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
 import { parseOrder } from '../utils/order-query.util';
+import { OrdersMapper } from '../orders.mapper';
+import { GroupEntity } from '../../../database/entities/group.entity';
 
 @Injectable()
 export class OrdersService {
@@ -208,11 +210,24 @@ export class OrdersService {
   }
 
   async update(id: string, dto: UpdateOrderDto): Promise<ResponseOrderDto> {
-    const result = await this.orderRepository.update({ id }, dto);
-    if (!result.affected) {
-      throw new NotFoundException(`Order #${id} not found`);
-    }
-    return this.orderRepository.findOneBy({ id });
+    const order = await this.orderRepository.findOne({ where: { id } });
+
+    if (!order) throw new NotFoundException(`Order #${id} not found`);
+
+    if (dto.group) order.group = { id: dto.group } as GroupEntity;
+    if (dto.manager) order.manager = { id: dto.manager } as UserEntity;
+
+    const { group: _group, manager: _manager, ...rest } = dto;
+    Object.assign(order, rest);
+
+    await this.orderRepository.save(order);
+
+    const updatedOrder = await this.orderRepository.findOne({
+      where: { id },
+      relations: ['group', 'manager'], // Це додасть name групи та менеджера у відповідь
+    });
+
+    return OrdersMapper.toResDto(updatedOrder);
   }
 
   async delete(id: string): Promise<void> {

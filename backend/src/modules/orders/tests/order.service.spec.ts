@@ -17,9 +17,15 @@ import { mockEntityManager } from '../__mocks__/entity-manager.mock';
 import { mockUpdateResult } from '../__mocks__/update-result.mock';
 import { mockQueryBuilder } from '../__mocks__/query-builder.mock';
 import { SelectQueryBuilder } from 'typeorm';
-import { mockUpdateOrderDto } from '../__mocks__/update-order-dto.mock';
 import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
-import { mockOrderEntities } from '../__mocks__/mockOrderEntity';
+import {
+  mockOrderEntities,
+  mockOrderEntity,
+} from '../__mocks__/mockOrderEntity';
+import { OrdersMapper } from '../orders.mapper';
+import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
+import { mockGroup } from '../__mocks__/group.mock';
+import { mockManager } from '../__mocks__/manager.mock';
 
 describe('OrderService', () => {
   let service: OrdersService;
@@ -349,40 +355,73 @@ describe('OrderService', () => {
       expect(result).toHaveLength(0);
     });
   });
+
   describe('update', () => {
     it('should update order and return updated order', async () => {
       const orderId = 'orderId';
 
-      mockOrderRepository.update.mockResolvedValue(mockUpdateResult);
-      mockOrderRepository.findOneBy.mockResolvedValue(mockUpdateOrderDto);
+      const existingOrder = { ...mockOrderEntity, group: null, manager: null };
 
-      const result = await service.update(orderId, mockCreateOrderDto);
+      const updateDto: UpdateOrderDto = {
+        ...mockCreateOrderDto,
+        group: 3,
+        manager: 1,
+      };
 
-      expect(mockOrderRepository.update).toHaveBeenCalledWith(
-        { id: orderId },
-        mockCreateOrderDto,
-      );
-      expect(mockOrderRepository.findOneBy).toHaveBeenCalledWith({
-        id: orderId,
+      const expectedOrderToSave = {
+        ...existingOrder,
+        group: { id: 3 },
+        manager: { id: 1 },
+      };
+
+      const fullUpdatedOrder = {
+        ...existingOrder,
+        group: mockGroup,
+        manager: mockManager,
+      };
+
+      mockOrderRepository.findOne
+        .mockResolvedValueOnce(existingOrder)
+        .mockResolvedValueOnce(fullUpdatedOrder);
+
+      mockOrderRepository.save.mockResolvedValue(fullUpdatedOrder);
+
+      const result = await service.update(orderId, updateDto);
+
+      expect(mockOrderRepository.findOne).toHaveBeenNthCalledWith(1, {
+        where: { id: orderId },
       });
-      expect(result).toEqual(mockUpdateOrderDto);
+
+      expect(mockOrderRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining(expectedOrderToSave),
+      );
+
+      expect(mockOrderRepository.findOne).toHaveBeenNthCalledWith(2, {
+        where: { id: orderId },
+        relations: ['group', 'manager'],
+      });
+
+      expect(result).toEqual(OrdersMapper.toResDto(fullUpdatedOrder));
     });
 
     it('should throw NotFoundException if order not found', async () => {
       const orderId = 'missingOrder';
+      const updateDto: UpdateOrderDto = {
+        ...mockCreateOrderDto,
+        group: 3,
+        manager: 1,
+      };
+      mockOrderRepository.findOne.mockResolvedValue(null);
 
-      mockOrderRepository.update.mockResolvedValue({
-        ...mockUpdateResult,
-        affected: 0,
-      });
+      await expect(service.update(orderId, updateDto)).rejects.toThrow(
+        NotFoundException,
+      );
 
-      await expect(
-        service.update(orderId, { status: StatusesEnum.DISAGREE }),
-      ).rejects.toThrow(NotFoundException);
-
-      expect(mockOrderRepository.findOneBy).not.toHaveBeenCalled();
+      expect(mockOrderRepository.save).not.toHaveBeenCalled();
+      expect(mockOrderRepository.findOne).toHaveBeenCalledTimes(1);
     });
   });
+
   describe('delete', () => {
     it('should delete order successfully', async () => {
       const orderId = 'order1';

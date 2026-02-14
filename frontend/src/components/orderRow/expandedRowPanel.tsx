@@ -1,6 +1,6 @@
 import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
 import type {FC} from "react";
-import {Comment} from "../comment/Comment.tsx";
+import {Comments} from "../comment/Comments.tsx";
 type ExpandedOrderPanelProps = {
     order: IOrder;
     onEdit: () => void;
@@ -28,7 +28,7 @@ export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit }
 
                     <div className="flex flex-col gap-10">
 
-                        <Comment orderId={order.id}/>
+                        <Comments orderId={order.id}/>
 
 
                      </div>
@@ -42,7 +42,7 @@ export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit }
                             e.stopPropagation();
                             onEdit();
                         }}
-                        className="bg-[#43a047] text-white rounded-[5px] self-start"
+                        className="px-4 py-2 bg-[#43a047] text-white rounded-[5px] self-start"
                     >
                         EDIT
                     </button>

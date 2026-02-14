@@ -1,5 +1,5 @@
-import {type FC, useEffect, useState} from "react";
-import type { IOrder} from "../../models/interfaces/IOrders/IOrder";
+import {type FC, useState} from "react";
+import type {IOrder} from "../../models/interfaces/IOrders/IOrder";
 import {EnumSelect} from "../EnumSelect.tsx";
 import {CoursesEnum} from "../../enums/courses.enum.ts";
 import {FormatsEnum} from "../../enums/formats.enum.ts";
@@ -11,13 +11,14 @@ import {baseFieldClass} from "../ui/styles.ts";
 import type {AppDispatch, RootState} from "../store/store.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {groupActions} from "../../slices/groupSlice.ts";
-
+import type {IUpdateOrder} from "../../models/interfaces/IOrders/IUpdateOrder.ts";
+import {mapOrderToUpdate} from "../../utils/orderUtils.ts";
 
 
 type EditOrderModalProps = {
     order: IOrder;
     onClose: () => void;
-    onSubmit: (order: IOrder) => void;
+    onSubmit: (order: IUpdateOrder) => void;
 };
 
 export const EditOrderModal: FC<EditOrderModalProps> = ({
@@ -32,25 +33,30 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
     );
 
 
-    const [editedOrder, setEditedOrder] = useState<IOrder>(order);
+    const [editedOrder, setEditedOrder] = useState<IUpdateOrder>(
+        mapOrderToUpdate(order)
+    );
+
 
     const [groupMode, setGroupMode] = useState<"add" | "select">("add");
     const [value, setValue] = useState("");
 
-    useEffect(() => {
-        dispatch(groupActions.fetchGroups());
-    }, [dispatch]);
 
-
-
-    const handleAdd = () => {
+    const handleAdd = async () => {
         if (!value.trim()) return;
+        const newGroup = await dispatch(
+            groupActions.AddCreateGroup(value)
+        ).unwrap();
 
-        dispatch(groupActions.AddCreateGroup(value));
+        setEditedOrder(prev => ({
+            ...prev,
+            group: Number(newGroup.id)
+        }));
 
-        setValue("");
         setGroupMode("select");
+        setValue("");
     };
+
 
     const handleSelect = () => {
         setGroupMode("select");
@@ -59,7 +65,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
     const toNumberOrUndefined = (value: string) =>
         value === "" ? undefined : Number(value);
 
-    return (
+       return (
         <div
             className="fixed inset-0 flex items-center justify-center z-50"
             onClick={onClose}
@@ -72,10 +78,13 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
             >
 
                 <form
+
                     onSubmit={(e) => {
                         e.preventDefault();
-                        onSubmit(order);
+                        const payload: IUpdateOrder = { ...editedOrder };
+                        onSubmit(payload);
                     }}
+
                     className="grid grid-cols-2 gap-4"
                 >
                     <div>
@@ -90,17 +99,25 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             />
                         ):(
                             <select
-                                value={value}
-                                onChange={(e) => setValue(e.target.value)}
+                                value={editedOrder.group ?? ""}
+                                onChange={(e) => {
+                                    const group = Number(e.target.value) || undefined;
+                                    setEditedOrder(prev => ({
+                                        ...prev,
+                                        group
+                                    }));
+                                }}
                                 className={baseFieldClass}
                             >
                                 <option value="">Select group</option>
-                                {groups.map((group) => (
-                                    <option key={group.id} value={group.name}>
+                                {groups.map(group => (
+                                    <option key={group.id} value={group.id}>
                                         {group.name}
                                     </option>
                                 ))}
                             </select>
+
+
                         )}
                         <div className="flex justify-center gap-2 mt-2">
                             <button type="button" onClick={handleAdd} className="px-21 py-0.5 text-sm bg-[#43a047] text-white rounded-[5px]">

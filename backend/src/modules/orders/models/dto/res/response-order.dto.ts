@@ -46,4 +46,18 @@ export class ResponseOrderDto {
 
   @ApiProperty({ example: 'NEW', nullable: true })
   status?: StatusesEnum;
+
+  @ApiProperty({
+    type: () => Object,
+    example: { id: 1, name: 'march-2025' },
+    nullable: true,
+  })
+  group?: { id: number; name: string };
+
+  @ApiProperty({
+    type: () => Object,
+    example: { id: '123', name: 'John Doe' },
+    nullable: true,
+  })
+  manager?: { id: number; name: string };
 }

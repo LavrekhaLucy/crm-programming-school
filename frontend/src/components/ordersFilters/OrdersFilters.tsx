@@ -184,9 +184,10 @@ const OrdersFilters = () => {
 
             </div>
 
-            <div className ="flex justify-center align-middle px-3 py-3 gap-2 m-4" >
-                <label>
+            <div className ="flex justify-center align-middle px-2 py-2 gap-2 m-auto" >
+                <label htmlFor='checkbox'>
                     <input
+                     id='checkbox'
                     type="checkbox"
                     checked={localFilters.onlyMine === "true"}
                     onChange={(e) =>
@@ -196,14 +197,13 @@ const OrdersFilters = () => {
                         }))
                     }
                 />
-                    My
 
                 </label>
-
+                   My
                 <button
                     type="button"
                     onClick={handleReset}
-                    className="bg-[#43a047] text-white rounded-[5px]">
+                    className="px-0.5 py-0.5 bg-[#43a047] text-white rounded-[5px]">
                     Reset
                 </button>
             </div>

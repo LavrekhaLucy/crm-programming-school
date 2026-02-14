@@ -1,7 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import type {ICommentResponse} from "../models/interfaces/IComments/ICommentResponse.ts";
 import type {IComment} from "../models/interfaces/IComments/IComment.ts";
-import {createComment} from "../services/api.service.tsx";
+import {createComments} from "../services/api.service.tsx";
 
 
 interface CommentState {
@@ -23,7 +23,7 @@ export const addComment = createAsyncThunk<
     'comment/addComment',
     async ({ orderId, data }, { rejectWithValue }) => {
         try {
-            return await createComment(orderId, data);
+            return await createComments(orderId, data);
         } catch (error) {
             return rejectWithValue(error as string);
         }
@@ -31,7 +31,7 @@ export const addComment = createAsyncThunk<
 );
 
 const commentSlice = createSlice({
-    name: 'comment',
+    name: 'comments',
     initialState: initialCommentState,
     reducers: {
         clearComment(state) {

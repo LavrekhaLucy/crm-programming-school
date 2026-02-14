@@ -1,8 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { OrderEntity } from './order.entity';
-import { TableNameEnum } from './enums/table-name.enum';
 
-@Entity(TableNameEnum.GROUPS)
+@Entity('groups')
 export class GroupEntity {
   @PrimaryGeneratedColumn()
   id: number;

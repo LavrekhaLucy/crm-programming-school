@@ -6,6 +6,8 @@ import {axiosInstance} from "./http/axios.ts";
 import type {IComment} from "../models/interfaces/IComments/IComment.ts";
 import type {ICommentResponse} from "../models/interfaces/IComments/ICommentResponse.ts";
 import type {IGroup} from "../models/interfaces/IGroup/IGroup.ts";
+import type {IOrder} from "../models/interfaces/IOrders/IOrder.ts";
+import type {IUpdateOrder} from "../models/interfaces/IOrders/IUpdateOrder.ts";
 
 
 // Auth
@@ -22,15 +24,21 @@ export const getOrders = async (filters: IOrderFilters,): Promise<IOrdersRespons
       return data;
 };
 
+export const updateOrders = async (id: string, payload: IUpdateOrder): Promise<IOrder> => {
+    const { data } = await axiosInstance.patch(`/orders/${id}`, payload);
+    return data;
+};
+
+
 // Comments
-export const createComment = async (orderId: string, data: IComment,):Promise<ICommentResponse> => {
-    const response = await axiosInstance.post<ICommentResponse>( `/orders/${orderId}/comment`, data);
-    return response.data;
+export const createComments = async (orderId: string, data: IComment): Promise<ICommentResponse> => {
+    const { data: res } = await axiosInstance.post<ICommentResponse>(`/orders/${orderId}/comments`, data);
+    return res;
 };
 
 export const getCommentsByOrder = async (orderId: string): Promise<ICommentResponse[]> => {
-    const response = await axiosInstance.get<ICommentResponse[]>(`/orders/${orderId}/comment`);
-    return response.data;
+    const { data: res } = await axiosInstance.get<ICommentResponse[]>(`/orders/${orderId}/comments`);
+    return res;
 };
 
 // Groups

@@ -17,4 +17,5 @@ export const mockCreateOrderDto = {
   utm: 'utm',
   msg: 'msg',
   status: StatusesEnum.NEW,
+  group: 3,
 };

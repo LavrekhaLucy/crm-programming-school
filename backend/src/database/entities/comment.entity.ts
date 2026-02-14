@@ -6,11 +6,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CreateUpdateModel } from './models/create-update.model';
-import { TableNameEnum } from './enums/table-name.enum';
 import { OrderEntity } from './order.entity';
 import { UserEntity } from './user.entity';
 
-@Entity(TableNameEnum.COMMENT)
+@Entity('comments')
 export class CommentEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('increment')
   id: number;

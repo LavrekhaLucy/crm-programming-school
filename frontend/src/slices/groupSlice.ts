@@ -1,7 +1,6 @@
 import {createSlice, createAsyncThunk, type PayloadAction} from '@reduxjs/toolkit';
 import type {IGroup} from "../models/interfaces/IGroup/IGroup.ts";
 import {createGroup, getGroupById, getGroups} from "../services/api.service.tsx";
-import type {IGroupResponse} from "../models/interfaces/IGroup/IGroupResponse.ts";
 
 
 interface GroupState {
@@ -16,7 +15,7 @@ const initialGroupState: GroupState = {
     error: null,
 };
 
-export const AddCreateGroup = createAsyncThunk<IGroupResponse, string>(
+export const AddCreateGroup = createAsyncThunk<IGroup, string>(
     'groups/createGroup',
     async (name, { rejectWithValue }) => {
         try {

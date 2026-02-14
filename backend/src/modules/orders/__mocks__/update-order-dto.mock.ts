@@ -3,20 +3,28 @@ import { FormatsEnum } from '../../../database/entities/enums/formats.enum';
 import { TypesEnum } from '../../../database/entities/enums/types.enum';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { OrderEntity } from '../../../database/entities/order.entity';
+import { GroupEntity } from '../../../database/entities/group.entity';
+import { UserEntity } from '../../../database/entities/user.entity';
 
-export const mockUpdateOrderDto = {
-  id: 'orderId',
-  name: 'name',
-  surname: 'surname',
-  email: 'email',
-  phone: 'phone',
-  age: 30,
-  course: CoursesEnum.FS,
-  course_format: FormatsEnum.ONLINE,
-  course_type: TypesEnum.VIP,
-  sum: 1000,
-  alreadyPaid: 1000,
-  utm: 'utm',
-  msg: 'msg',
-  status: StatusesEnum.NEW,
-} as OrderEntity;
+export const mockUpdateOrderDto = new OrderEntity();
+mockUpdateOrderDto.id = 'orderId';
+mockUpdateOrderDto.name = 'name';
+mockUpdateOrderDto.surname = 'surname';
+mockUpdateOrderDto.email = 'email';
+mockUpdateOrderDto.phone = 'phone';
+mockUpdateOrderDto.age = 30;
+mockUpdateOrderDto.course = CoursesEnum.FS;
+mockUpdateOrderDto.course_format = FormatsEnum.ONLINE;
+mockUpdateOrderDto.course_type = TypesEnum.VIP;
+mockUpdateOrderDto.sum = 1000;
+mockUpdateOrderDto.alreadyPaid = 1000;
+mockUpdateOrderDto.utm = 'utm';
+mockUpdateOrderDto.msg = 'msg';
+mockUpdateOrderDto.status = StatusesEnum.NEW;
+mockUpdateOrderDto.group = new GroupEntity();
+mockUpdateOrderDto.group.id = 5;
+mockUpdateOrderDto.group.name = 'Group1';
+mockUpdateOrderDto.manager = new UserEntity();
+mockUpdateOrderDto.manager.id = 10;
+mockUpdateOrderDto.manager.name = 'Manager1';
+mockUpdateOrderDto.comments = [];
