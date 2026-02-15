@@ -224,7 +224,7 @@ export class OrdersService {
 
     const updatedOrder = await this.orderRepository.findOne({
       where: { id },
-      relations: ['group', 'manager'], // Це додасть name групи та менеджера у відповідь
+      relations: ['group', 'manager'],
     });
 
     return OrdersMapper.toResDto(updatedOrder);

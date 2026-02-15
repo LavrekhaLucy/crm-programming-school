@@ -8,8 +8,9 @@ import {
 import { CreateUpdateModel } from './models/create-update.model';
 import { OrderEntity } from './order.entity';
 import { UserEntity } from './user.entity';
+import { TableNameEnum } from './enums/table-name.enum';
 
-@Entity('comments')
+@Entity(TableNameEnum.COMMENTS)
 export class CommentEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('increment')
   id: number;
