@@ -5,9 +5,21 @@ import Input from "../ui/input.tsx";
 import Select from "../ui/select.tsx";
 import {getOrderFiltersFromSearchParams} from "../../common/helper/getOrderFiltersFromSearchParams.ts";
 import {initialOrderFilters} from "../res_constants/orderFilters.ts";
+import {groupActions} from "../../slices/groupSlice.ts";
+import { useAppDispatch, useAppSelector} from "../store/store.ts";
 
 
 const OrdersFilters = () => {
+    const dispatch = useAppDispatch();
+
+    const { groups } = useAppSelector((state) => state.groupStoreSlice);
+
+    useEffect(() => {
+        if (groups.length === 0) {
+            dispatch(groupActions.fetchGroups());
+        }
+    }, [dispatch, groups.length]);
+
     const [searchParams, setSearchParams] = useSearchParams();
     const [localFilters, setLocalFilters] = useState(() =>
         getOrderFiltersFromSearchParams(searchParams)
@@ -156,9 +168,17 @@ const OrdersFilters = () => {
                         setLocalFilters(prev => ({...prev, group: e.target.value}))
                     }
                 >
-                    <option value="">all group</option>
+                    <option value="">all groups</option>
+
+                    {groups?.map((group) => (
+                        <option key={group.id} value={group.id}>
+                            {group.name}
+                        </option>
+                    ))}
+
                 </Select>
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></span>
+
 
 
                 <Input

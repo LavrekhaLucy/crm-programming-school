@@ -2,6 +2,7 @@ import type {CoursesEnum} from "../../../enums/courses.enum.ts";
 import type {FormatsEnum} from "../../../enums/formats.enum.ts";
 import type {TypesEnum} from "../../../enums/types.enum.ts";
 import type {StatusesEnum} from "../../../enums/statuses.enum.ts";
+import type {IGroup} from "../IGroup/IGroup.ts";
 
 export interface IUpdateOrder {
     name?: string;
@@ -15,6 +16,6 @@ export interface IUpdateOrder {
     sum?: number;
     alreadyPaid?: number;
     age?: number;
-    group?: number;
+    group?: number | IGroup;
     manager?:number;
 }

@@ -87,6 +87,14 @@ describe('OrderService', () => {
       await service.findAll(query, 1);
 
       expect(repository.createQueryBuilder).toHaveBeenCalledWith('order');
+      expect(jest.spyOn(qb, 'leftJoinAndSelect')).toHaveBeenCalledWith(
+        'order.group',
+        'group',
+      );
+      expect(jest.spyOn(qb, 'leftJoinAndSelect')).toHaveBeenCalledWith(
+        'order.manager',
+        'manager',
+      );
       expect(jest.spyOn(qb, 'skip')).toHaveBeenCalledWith(0);
       expect(jest.spyOn(qb, 'take')).toHaveBeenCalledWith(25);
 
@@ -167,7 +175,7 @@ describe('OrderService', () => {
 
       const andWhereSpy = jest.spyOn(qb, 'andWhere');
 
-      await service.findAll(query, 5); // передаємо реальні дані та userId
+      await service.findAll(query, 5);
 
       expect(andWhereSpy.mock.calls).toContainEqual([
         'order.managerId = :userId',

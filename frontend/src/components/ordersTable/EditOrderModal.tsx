@@ -8,11 +8,11 @@ import {StatusesEnum} from "../../enums/statuses.enum.ts";
 import Input from "../ui/input.tsx";
 import Button from "../ui/button.tsx";
 import {baseFieldClass} from "../ui/styles.ts";
-import type {AppDispatch, RootState} from "../store/store.ts";
-import {useDispatch, useSelector} from "react-redux";
+import {useAppDispatch, useAppSelector} from "../store/store.ts";
 import {groupActions} from "../../slices/groupSlice.ts";
 import type {IUpdateOrder} from "../../models/interfaces/IOrders/IUpdateOrder.ts";
 import {mapOrderToUpdate} from "../../utils/orderUtils.ts";
+import type {IGroup} from "../../models/interfaces/IGroup/IGroup.ts";
 
 
 type EditOrderModalProps = {
@@ -26,11 +26,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                                                             onClose,
                                                             onSubmit,
                                                         }) => {
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useAppDispatch();
 
-    const { groups} = useSelector(
-        (state: RootState) => state.groupStoreSlice
-    );
+    const { groups} = useAppSelector((state) => state.groupStoreSlice);
 
 
     const [editedOrder, setEditedOrder] = useState<IUpdateOrder>(
@@ -40,7 +38,10 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
 
     const [groupMode, setGroupMode] = useState<"add" | "select">("add");
     const [value, setValue] = useState("");
-
+    const getGroupId = (group: number | IGroup | undefined): string | number => {
+        if (!group) return "";
+        return typeof group === 'object' ? group.id : group;
+    };
 
     const handleAdd = async () => {
         if (!value.trim()) return;
@@ -48,9 +49,11 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
             groupActions.AddCreateGroup(value)
         ).unwrap();
 
+        await dispatch(groupActions.fetchGroups());
+
         setEditedOrder(prev => ({
             ...prev,
-            group: Number(newGroup.id)
+            group: newGroup
         }));
 
         setGroupMode("select");
@@ -98,17 +101,17 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                                 placeholder="All group"
                             />
                         ):(
-                            <select
-                                value={editedOrder.group ?? ""}
-                                onChange={(e) => {
-                                    const group = Number(e.target.value) || undefined;
-                                    setEditedOrder(prev => ({
-                                        ...prev,
-                                        group
-                                    }));
-                                }}
-                                className={baseFieldClass}
-                            >
+                                 <select
+                                    value={getGroupId(editedOrder.group)}
+                                    onChange={(e) => {
+                                        const groupId = Number(e.target.value) || undefined;
+                                        setEditedOrder(prev => ({
+                                            ...prev,
+                                            group: groupId
+                                        }));
+                                    }}
+                                    className={baseFieldClass}
+                                >
                                 <option value="">Select group</option>
                                 {groups.map(group => (
                                     <option key={group.id} value={group.id}>

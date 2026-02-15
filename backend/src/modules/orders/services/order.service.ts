@@ -61,6 +61,10 @@ export class OrdersService {
     } = query;
 
     const qb = this.orderRepository.createQueryBuilder('order');
+
+    qb.leftJoinAndSelect('order.group', 'group');
+    qb.leftJoinAndSelect('order.manager', 'manager');
+
     const { sortBy, sortOrder } = parseOrder(order);
 
     if (name)

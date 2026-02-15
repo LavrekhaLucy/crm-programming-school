@@ -1,12 +1,11 @@
 import type {OrderSortField} from "../../models/types/OrderSortField.ts";
-import {type AppDispatch, useAppSelector} from "../store/store.ts";
+import {useAppDispatch, useAppSelector} from "../store/store.ts";
 import {OrderRow} from "../orderRow/orderRow.tsx";
 import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
 import React, {Fragment, useEffect, useState} from "react";
 import {ExpandedOrderPanel} from "../orderRow/expandedRowPanel.tsx";
 import {EditOrderModal} from "./EditOrderModal.tsx";
 import {groupActions} from "../../slices/groupSlice.ts";
-import {useDispatch} from "react-redux";
 import {ordersActions} from "../../slices/ordersSlice.ts";
 import type {IUpdateOrder} from "../../models/interfaces/IOrders/IUpdateOrder.ts";
 
@@ -18,7 +17,7 @@ type OrdersTableProps = {
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
 
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useAppDispatch();
 
     const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
     const [editOrder, setEditOrder] = useState<IOrder | null>(null);
@@ -27,9 +26,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
         dispatch(groupActions.fetchGroups());
     }, [dispatch]);
 
-    const { pageData, loading } = useAppSelector(
-        (state) => state.orderStoreSlice
-    );
+    const { pageData, loading } = useAppSelector((state) => state.orderStoreSlice);
 
     if (loading && !pageData) {
         return <div>Loading orders...</div>;
@@ -96,7 +93,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
                 <EditOrderModal
                     order={editOrder}
                     onClose={() => setEditOrder(null)}
-                    onSubmit={(updateData: IUpdateOrder) => {
+                    onSubmit={async (updateData: IUpdateOrder) => {
                         dispatch(
                             ordersActions.loadUpdateOrder({
                                 id: editOrder.id,
