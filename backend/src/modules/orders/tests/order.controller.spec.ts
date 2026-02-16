@@ -9,6 +9,7 @@ import { mockResponseOrderDto } from '../__mocks__/res-order-dto.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockOrdersService } from '../__mocks__/orders-service.mock';
 import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
+import { Response } from 'express';
 
 describe(OrdersController.name, () => {
   let ordersController: OrdersController;
@@ -64,7 +65,36 @@ describe(OrdersController.name, () => {
       });
     });
   });
+  describe('exportExcel', () => {
+    it('should set correct headers and return excel buffer', async () => {
+      const mockBuffer = Buffer.from('mock excel content');
+      const userId = 1;
+      const mockQuery: OrdersQueryDto = { name: 'John' };
 
+      mockOrdersService.exportToExcel.mockResolvedValue(mockBuffer);
+
+      const mockResponse = {
+        set: jest.fn().mockReturnThis(),
+        end: jest.fn(),
+      } as unknown as Response;
+
+      await ordersController.exportExcel(mockQuery, userId, mockResponse);
+
+      expect(mockOrdersService.exportToExcel).toHaveBeenCalledWith(
+        mockQuery,
+        userId,
+      );
+
+      expect(jest.spyOn(mockResponse, 'set')).toHaveBeenCalledWith({
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': 'attachment; filename="orders_report.xlsx"',
+        'Content-Length': mockBuffer.byteLength,
+      });
+
+      expect(jest.spyOn(mockResponse, 'end')).toHaveBeenCalledWith(mockBuffer);
+    });
+  });
   describe('findOne', () => {
     it('should return one order', async () => {
       const orderId = 'order-id';

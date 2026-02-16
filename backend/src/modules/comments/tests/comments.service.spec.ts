@@ -27,6 +27,69 @@ describe('CommentsService', () => {
   });
 
   describe('addCommentToOrder', () => {
+    describe('success', () => {
+      it('should assign manager, status and create comment', async () => {
+        const order = {
+          ...mockOrderEntity,
+          manager: null,
+          status: StatusesEnum.NEW,
+        } as OrderEntity;
+
+        mockOrderRepository.findOne.mockResolvedValue(order);
+        mockCommentsRepository.create.mockReturnValue(mockComment);
+        mockCommentsRepository.save.mockResolvedValue(mockComment);
+
+        mockOrderRepository.save.mockResolvedValue(order);
+
+        const result = await service.addCommentToOrder(
+          '1',
+          mockUserEntity,
+          mockComment,
+        );
+
+        expect(order.manager).toBe(mockUserEntity);
+        expect(order.status).toBe(StatusesEnum.INWORK);
+
+        expect(mockOrderRepository.save).toHaveBeenCalledWith(order);
+        expect(mockCommentsRepository.save).toHaveBeenCalledWith(mockComment);
+        expect(result).toEqual(mockComment);
+      });
+      it('should cover branch where manager and status already exist', async () => {
+        const order = {
+          ...mockOrderEntity,
+          manager: mockUserEntity,
+          status: StatusesEnum.INWORK,
+        } as OrderEntity;
+
+        mockOrderRepository.findOne.mockResolvedValue(order);
+        mockOrderRepository.save.mockResolvedValue(order);
+        mockCommentsRepository.create.mockReturnValue(mockComment);
+        mockCommentsRepository.save.mockResolvedValue(mockComment);
+
+        await service.addCommentToOrder('1', mockUserEntity, mockComment);
+
+        expect(order.manager.id).toBe(mockUserEntity.id);
+        expect(order.status).toBe(StatusesEnum.INWORK);
+      });
+
+      it('should cover branch where status is null', async () => {
+        const order = {
+          ...mockOrderEntity,
+          manager: mockUserEntity,
+          status: null,
+        } as OrderEntity;
+
+        mockOrderRepository.findOne.mockResolvedValue(order);
+        mockOrderRepository.save.mockResolvedValue(order);
+        mockCommentsRepository.create.mockReturnValue(mockComment);
+        mockCommentsRepository.save.mockResolvedValue(mockComment);
+
+        await service.addCommentToOrder('1', mockUserEntity, mockComment);
+
+        expect(order.status).toBe(StatusesEnum.INWORK);
+      });
+    });
+
     describe('errors', () => {
       it('throws NotFoundException when order not found', async () => {
         mockOrderRepository.findOne.mockResolvedValue(null);
@@ -48,27 +111,6 @@ describe('CommentsService', () => {
         await expect(
           service.addCommentToOrder('1', mockUserEntity, mockComment),
         ).rejects.toThrow(ForbiddenException);
-      });
-    });
-
-    describe('success', () => {
-      it('creates comment and returns it', async () => {
-        const order = mockOrderEntity;
-
-        mockOrderRepository.findOne.mockResolvedValue(order);
-        mockCommentsRepository.create.mockReturnValue(mockComment);
-        mockCommentsRepository.save.mockResolvedValue(mockComment);
-
-        const result = await service.addCommentToOrder(
-          '1',
-          mockUserEntity,
-          mockComment,
-        );
-
-        expect(order.manager).toBe(mockUserEntity);
-        expect(order.status).toBe(StatusesEnum.INWORK);
-        expect(mockCommentsRepository.save).toHaveBeenCalledWith(mockComment);
-        expect(result).toEqual(mockComment);
       });
     });
   });

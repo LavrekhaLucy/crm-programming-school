@@ -1,6 +1,7 @@
 export const mockOrdersService = {
   create: jest.fn(),
   findAll: jest.fn(),
+  exportToExcel: jest.fn(),
   findOne: jest.fn(),
   update: jest.fn(),
   assignManager: jest.fn(),

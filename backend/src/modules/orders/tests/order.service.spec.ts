@@ -61,7 +61,6 @@ describe('OrderService', () => {
       expect(result).toEqual(mockResponseOrderDto);
     });
   });
-
   describe('findAll', () => {
     it('should return paginated orders with all filters applied', async () => {
       const orders = mockOrderEntities;
@@ -127,24 +126,28 @@ describe('OrderService', () => {
       ]);
     });
   });
-
   describe('exportToExcel', () => {
     it('should generate an excel buffer', async () => {
       qb.getMany.mockResolvedValue(mockOrderEntities);
-      const result = await service.exportToExcel(mockOrdersQuery, 1);
+
+      let result = await service.exportToExcel(mockOrdersQuery, 1);
+      expect(result).toBeInstanceOf(Buffer);
+
+      const mockWithoutDate = [{ ...mockOrderEntity, created_at: null }];
+      qb.getMany.mockResolvedValue(mockWithoutDate as OrderEntity[]);
+
+      result = await service.exportToExcel(mockOrdersQuery, 1);
 
       expect(result).toBeInstanceOf(Buffer);
-      expect(jest.spyOn(qb, 'getMany')).toHaveBeenCalled();
-
       expect(jest.spyOn(qb, 'leftJoinAndSelect')).toHaveBeenCalledWith(
         'order.group',
         'group',
       );
+      expect(jest.spyOn(qb, 'getMany')).toHaveBeenCalledTimes(2);
       expect(jest.spyOn(qb, 'skip')).not.toHaveBeenCalled();
       expect(jest.spyOn(qb, 'take')).not.toHaveBeenCalled();
     });
   });
-
   describe('findOne', () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -324,7 +327,6 @@ describe('OrderService', () => {
       expect(result).toHaveLength(0);
     });
   });
-
   describe('update', () => {
     it('should update order and return updated order', async () => {
       const orderId = 'orderId';
@@ -348,7 +350,6 @@ describe('OrderService', () => {
         group: mockGroup,
         manager: mockManager,
       };
-
       mockOrderRepository.findOne
         .mockResolvedValueOnce(existingOrder)
         .mockResolvedValueOnce(fullUpdatedOrder);
@@ -372,7 +373,24 @@ describe('OrderService', () => {
 
       expect(result).toEqual(OrdersMapper.toResDto(fullUpdatedOrder));
     });
+    it('should update without group and manager (branch coverage)', async () => {
+      const orderId = 'id-1';
+      const existingOrder = { ...mockOrderEntity };
 
+      const updateDto: Partial<UpdateOrderDto> = {
+        name: 'Only Name',
+      };
+
+      mockOrderRepository.findOne
+        .mockResolvedValueOnce(existingOrder)
+        .mockResolvedValueOnce({ ...existingOrder, name: 'Only Name' });
+
+      await service.update(orderId, updateDto as UpdateOrderDto);
+
+      expect(mockOrderRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'Only Name' }),
+      );
+    });
     it('should throw NotFoundException if order not found', async () => {
       const orderId = 'missingOrder';
       const updateDto: UpdateOrderDto = {
@@ -390,7 +408,6 @@ describe('OrderService', () => {
       expect(mockOrderRepository.findOne).toHaveBeenCalledTimes(1);
     });
   });
-
   describe('delete', () => {
     it('should delete order successfully', async () => {
       const orderId = 'order1';
