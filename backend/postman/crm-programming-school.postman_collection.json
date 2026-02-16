@@ -382,6 +382,46 @@
           "response": []
         },
         {
+          "name": "orders/excel",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "text"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/orders/excel",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "orders",
+                "excel"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "orders/:id",
           "protocolProfileBehavior": {
             "disableBodyPruning": true
@@ -628,7 +668,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"name\":\"VIP\"\r\n}",
+              "raw": "{\r\n    \"name\":\"December-2025\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
