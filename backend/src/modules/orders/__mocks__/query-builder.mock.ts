@@ -21,8 +21,10 @@ export const mockQueryBuilder = <T>(): jest.Mocked<SelectQueryBuilder<T>> => {
 
     // execution
     getOne: jest.fn(),
-    getMany: jest.fn(),
+    // getMany: jest.fn(),
+    getMany: jest.fn().mockResolvedValue([]),
     getRawMany: jest.fn(),
-    getManyAndCount: jest.fn(),
+    // getManyAndCount: jest.fn(),
+    getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
   } as unknown as jest.Mocked<SelectQueryBuilder<T>>;
 };

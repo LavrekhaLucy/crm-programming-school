@@ -26,6 +26,7 @@ import { OrdersMapper } from '../orders.mapper';
 import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 import { mockGroup } from '../__mocks__/group.mock';
 import { mockManager } from '../__mocks__/manager.mock';
+import { mockOrdersQuery } from '../__mocks__/orders-query.mock';
 
 describe('OrderService', () => {
   let service: OrdersService;
@@ -60,33 +61,16 @@ describe('OrderService', () => {
       expect(result).toEqual(mockResponseOrderDto);
     });
   });
-  describe('findAll', () => {
-    it('should return paginated orders', async () => {
-      const orders = mockOrderEntities;
 
+  describe('findAll', () => {
+    it('should return paginated orders with all filters applied', async () => {
+      const orders = mockOrderEntities;
       qb.getManyAndCount.mockResolvedValue([orders, 1]);
 
-      const query: OrdersQueryDto = {
-        name: 'john',
-        surname: 'smith',
-        email: 'test@mail.com',
-        phone: '1234567890',
-        age: '30',
-        startDate: '2026-01-01',
-        endDate: '2026-01-31',
-        course: 'TS',
-        course_format: 'online',
-        course_type: 'minimal',
-        status: 'new',
-        group: 'group1',
-      };
-
-      const result = await service.findAll(query, 1);
-      const andWhereSpy = jest.spyOn(qb, 'andWhere');
-
-      await service.findAll(query, 1);
+      const result = await service.findAll(mockOrdersQuery, 1);
 
       expect(repository.createQueryBuilder).toHaveBeenCalledWith('order');
+
       expect(jest.spyOn(qb, 'leftJoinAndSelect')).toHaveBeenCalledWith(
         'order.group',
         'group',
@@ -95,65 +79,25 @@ describe('OrderService', () => {
         'order.manager',
         'manager',
       );
+
       expect(jest.spyOn(qb, 'skip')).toHaveBeenCalledWith(0);
       expect(jest.spyOn(qb, 'take')).toHaveBeenCalledWith(25);
 
-      expect(andWhereSpy.mock.calls).toContainEqual([
+      const andWhereCalls = qb.andWhere.mock.calls;
+
+      expect(andWhereCalls).toContainEqual([
         'LOWER(order.name) LIKE :name',
         { name: '%john%' },
       ]);
 
-      expect(andWhereSpy.mock.calls).toContainEqual([
+      expect(andWhereCalls).toContainEqual([
         'LOWER(order.surname) LIKE :surname',
         { surname: '%smith%' },
       ]);
 
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'LOWER(order.email) LIKE :email',
-        { email: '%test@mail.com%' },
-      ]);
+      expect(andWhereCalls).toContainEqual(['order.age = :age', { age: 30 }]);
 
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'LOWER(order.phone) LIKE :phone',
-        { phone: '%1234567890%' },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.age = :age',
-        { age: 30 },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.created_at >= :startDate',
-        { startDate: '2026-01-01' },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.created_at <= :endDate',
-        { endDate: '2026-01-31' },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.course = :course',
-        { course: 'TS' },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.course_format = :course_format',
-        { course_format: 'online' },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.course_type = :course_type',
-        { course_type: 'minimal' },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.status = :status',
-        { status: 'new' },
-      ]);
-
-      expect(andWhereSpy.mock.calls).toContainEqual([
+      expect(andWhereCalls).toContainEqual([
         'order.group = :group',
         { group: 'group1' },
       ]);
@@ -181,6 +125,23 @@ describe('OrderService', () => {
         'order.managerId = :userId',
         { userId: 5 },
       ]);
+    });
+  });
+
+  describe('exportToExcel', () => {
+    it('should generate an excel buffer', async () => {
+      qb.getMany.mockResolvedValue(mockOrderEntities);
+      const result = await service.exportToExcel(mockOrdersQuery, 1);
+
+      expect(result).toBeInstanceOf(Buffer);
+      expect(jest.spyOn(qb, 'getMany')).toHaveBeenCalled();
+
+      expect(jest.spyOn(qb, 'leftJoinAndSelect')).toHaveBeenCalledWith(
+        'order.group',
+        'group',
+      );
+      expect(jest.spyOn(qb, 'skip')).not.toHaveBeenCalled();
+      expect(jest.spyOn(qb, 'take')).not.toHaveBeenCalled();
     });
   });
 

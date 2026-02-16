@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from './services/order.service';
@@ -24,6 +25,7 @@ import { OrdersQueryDto } from './models/dto/req/orders-query.dto';
 import { CurrentUser } from '../../common/decorators/user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
+import { Response } from 'express';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Orders')
@@ -44,6 +46,24 @@ export class OrdersController {
   @Get()
   findAll(@Query() query: OrdersQueryDto, @CurrentUser('id') userId: number) {
     return this.ordersService.findAll(query, userId);
+  }
+
+  @Get('excel')
+  async exportExcel(
+    @Query() query: OrdersQueryDto,
+    @CurrentUser('id') userId: number,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.ordersService.exportToExcel(query, userId);
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="orders_report.xlsx"',
+      'Content-Length': buffer.byteLength,
+    });
+
+    res.end(buffer);
   }
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
