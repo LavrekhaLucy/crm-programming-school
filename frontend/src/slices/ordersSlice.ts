@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice,} from "@reduxjs/toolkit";
-import {getOrders, updateOrders} from "../services/api.service.tsx";
+import {exportOrdersToExcel, getOrders, updateOrders} from "../services/api.service.tsx";
 import type {IOrdersResponseModel} from "../models/interfaces/IOrders/IOrdersResponseModel.ts";
 import type {IOrderFilters} from "../models/interfaces/IOrders/IOrderFilters.ts";
 import type {IOrder} from "../models/interfaces/IOrders/IOrder.ts";
@@ -12,11 +12,12 @@ type OrderSliceType = {
     error: string | null;
     filters: IOrderFilters;
     order: string | null;
+    isExporting: boolean;
 
 }
 
 const initOrdersSliceState: OrderSliceType  = {
-    pageData:null, loading: false, error: null, filters: { page: "1", limit: "25" }, order: null,};
+    pageData:null, loading: false, error: null, filters: { page: "1", limit: "25" }, order: null, isExporting: false};
 
 
 
@@ -42,11 +43,28 @@ export const loadUpdateOrder = createAsyncThunk<
       "orders/update",
     async ({id, payload}, {rejectWithValue}) => {
         try {
+
             return await updateOrders(id, payload);
         } catch (error) {
             return rejectWithValue(error as string);
         }
     })
+
+
+export const exportOrders = createAsyncThunk<
+    Blob,
+    IOrderFilters,
+    { rejectValue: string }
+>(
+    'orders/exportExcel',
+    async (filters, { rejectWithValue }) => {
+        try {
+            return await exportOrdersToExcel(filters);
+        } catch (error) {
+            return rejectWithValue(error as string);
+        }
+    }
+);
 
 
 const ordersSlice = createSlice({
@@ -83,10 +101,20 @@ const ordersSlice = createSlice({
             .addCase(loadUpdateOrder.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload ?? "Failed to load orders";
-            });
+            })
+
+            .addCase(exportOrders.pending, (state) => {
+                state.isExporting = true;
+            })
+            .addCase(exportOrders.fulfilled, (state) => {
+                state.isExporting = false;
+            })
+            .addCase(exportOrders.rejected, (state) => {
+                state.isExporting = false;
+            })
     },
 });
 
-export const ordersActions = {...ordersSlice.actions, loadOrders, loadUpdateOrder};
+export const ordersActions = {...ordersSlice.actions, loadOrders, loadUpdateOrder, exportOrdersToExcel};
 export default ordersSlice;
 

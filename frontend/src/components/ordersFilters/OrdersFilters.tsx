@@ -7,13 +7,14 @@ import {getOrderFiltersFromSearchParams} from "../../common/helper/getOrderFilte
 import {initialOrderFilters} from "../res_constants/orderFilters.ts";
 import {groupActions} from "../../slices/groupSlice.ts";
 import { useAppDispatch, useAppSelector} from "../store/store.ts";
+import {ExportButton} from "./ExportButton.tsx";
 
 
 const OrdersFilters = () => {
     const dispatch = useAppDispatch();
 
     const { groups } = useAppSelector((state) => state.groupStoreSlice);
-
+    const currentFilters = useAppSelector((state) => state.orderStoreSlice.filters);
     useEffect(() => {
         if (groups.length === 0) {
             dispatch(groupActions.fetchGroups());
@@ -217,18 +218,22 @@ const OrdersFilters = () => {
                         }))
                     }
                 />
-
                 </label>
                    My
+
                 <button
                     type="button"
                     onClick={handleReset}
                     className="px-0.5 py-0.5 bg-[#43a047] text-white rounded-[5px]">
                     Reset
                 </button>
+
+                <ExportButton filters={currentFilters} />
             </div>
 
+
         </form>
+
     );
 };
 export default OrdersFilters;

@@ -29,6 +29,14 @@ export const updateOrders = async (id: string, payload: IUpdateOrder): Promise<I
     return data;
 };
 
+export const exportOrdersToExcel = async (filters: IOrderFilters): Promise<Blob> => {
+    const { data } = await axiosInstance.get('/orders/excel', {
+        params: filters,
+        responseType: 'blob',
+    });
+    return data;
+};
+
 
 // Comments
 export const createComments = async (orderId: string, data: IComment): Promise<ICommentResponse> => {

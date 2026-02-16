@@ -1,5 +1,5 @@
 export const baseFieldClass = `
-w-full pl-15 pr-4 py-3
+w-full pl-16 pr-4 py-3
 bg-gray-100
 border border-gray-300
 rounded-lg
