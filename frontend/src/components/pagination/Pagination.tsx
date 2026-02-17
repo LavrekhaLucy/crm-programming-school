@@ -4,7 +4,7 @@ import {usePagination} from "../hooks/usePagination.ts";
 
 const baseBtn =
     "w-9 h-9 rounded-full flex items-center justify-center " +
-    "bg-green-500 text-white font-medium " +
+    "bg-[#43a047] text-white font-medium " +
     "hover:bg-green-600 transition-colors " +
     "disabled:bg-green-200 disabled:cursor-not-allowed";
 
@@ -49,7 +49,7 @@ export const Pagination: React.FC<PaginationProps> = ({
 
 
     return (
-        <nav aria-label="Pagination" className="flex justify-center mt-6">
+        <nav aria-label="Pagination" className="flex justify-center m-4">
             <ul className="flex gap-2 list-none p-0">
                 {/* Prev */}
                 <li>

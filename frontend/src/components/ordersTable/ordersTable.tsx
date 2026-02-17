@@ -40,7 +40,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ onSort  }) => {
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full border-gray-300">
-                <thead className="bg-emerald-600 text-white">
+                <thead className="bg-[#43a047] text-white">
                 <tr>
                     <th onClick={() => onSort("id")}>id</th>
                     <th onClick={() => onSort("name")}>name</th>

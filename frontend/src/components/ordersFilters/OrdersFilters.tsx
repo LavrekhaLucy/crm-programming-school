@@ -56,7 +56,7 @@ const OrdersFilters = () => {
 
 
     return (
-        <form className="flex flex-2 gap-4 m-4">
+        <form className="flex flex-2 gap-4 m-2">
             <div className="grid grid-cols-6 gap-2">
                 <Input
                     placeholder="Name"
@@ -205,7 +205,7 @@ const OrdersFilters = () => {
 
             </div>
 
-            <div className ="flex justify-center align-middle px-2 py-2 gap-2 m-auto" >
+            <div className ="flex justify-center align-middle items-center px-2 py-2 gap-2 m-auto" >
                 <label htmlFor='checkbox'>
                     <input
                      id='checkbox'
@@ -224,8 +224,8 @@ const OrdersFilters = () => {
                 <button
                     type="button"
                     onClick={handleReset}
-                    className="px-0.5 py-0.5 bg-[#43a047] text-white rounded-[5px]">
-                    Reset
+                    style={{ backgroundImage: `url('http://bigbird.space:81/static/media/reset.51c9a5b2e5527c0bfbcaf74793deb908.svg')` }}
+                    className="bg-[#2e7d32] bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]">
                 </button>
 
                 <ExportButton filters={currentFilters} />

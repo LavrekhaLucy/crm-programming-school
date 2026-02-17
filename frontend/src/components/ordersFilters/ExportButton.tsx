@@ -43,9 +43,9 @@ export const ExportButton: FC<ExportButtonProps> = ({ filters }) => {
         <button
             onClick={handleDownload}
             disabled={isExporting}
-            className="px-0.5 py-0.5 bg-[#43a047] text-white rounded-[5px]"
+            style={{ backgroundImage: `url('http://bigbird.space:81/static/media/xls.476bc5b02e8b94a61782636d19526309.svg')` }}
+            className="bg-[#2e7d32] bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]"
         >
-           Excel
         </button>
     );
 };
