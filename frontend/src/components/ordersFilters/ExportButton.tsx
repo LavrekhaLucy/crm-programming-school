@@ -44,7 +44,7 @@ export const ExportButton: FC<ExportButtonProps> = ({ filters }) => {
             onClick={handleDownload}
             disabled={isExporting}
             style={{ backgroundImage: `url('http://bigbird.space:81/static/media/xls.476bc5b02e8b94a61782636d19526309.svg')` }}
-            className="bg-[#2e7d32] bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]"
+            className="bg-[#2e7d32] hover:bg-[#43a047] transition-colors bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]"
         >
         </button>
     );

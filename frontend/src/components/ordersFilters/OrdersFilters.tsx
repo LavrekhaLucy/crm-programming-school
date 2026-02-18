@@ -225,7 +225,7 @@ const OrdersFilters = () => {
                     type="button"
                     onClick={handleReset}
                     style={{ backgroundImage: `url('http://bigbird.space:81/static/media/reset.51c9a5b2e5527c0bfbcaf74793deb908.svg')` }}
-                    className="bg-[#2e7d32] bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]">
+                    className="bg-[#2e7d32] hover:bg-[#43a047] transition-colors bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]">
                 </button>
 
                 <ExportButton filters={currentFilters} />
