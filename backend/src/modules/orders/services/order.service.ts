@@ -20,6 +20,11 @@ import { OrdersMapper } from '../orders.mapper';
 import { GroupEntity } from '../../../database/entities/group.entity';
 import * as ExcelJS from 'exceljs';
 
+type OrderRawStats = {
+  status: string;
+  count: string;
+};
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -212,33 +217,32 @@ export class OrdersService {
     });
   }
 
-  async getStatsByStatus(): Promise<OrdersStatsDto[]> {
-    const qb = this.orderRepository
+  async getStatsByStatus(): Promise<OrdersStatsDto> {
+    const rows: OrderRawStats[] = await this.orderRepository
       .createQueryBuilder('o')
       .select('o.status', 'status')
       .addSelect('COUNT(o.id)', 'count')
       .groupBy('o.status')
-      .orderBy('COUNT(o.id)', 'DESC');
+      .getRawMany();
 
-    const rows: Array<{ status: string; count: string | number }> =
-      await qb.getRawMany();
+    const total = await this.orderRepository.count();
 
-    return rows
-      .map((r) => {
-        const rawCount = r.count;
-        let count: number;
-        if (typeof rawCount === 'string') {
-          count = Number(rawCount);
-        } else {
-          count = Number(rawCount ?? 0);
-        }
+    const statsResult: OrdersStatsDto = {
+      total,
+      agree: 0,
+      in_work: 0,
+      disagree: 0,
+      dubbing: 0,
+      new: 0,
+    };
 
-        return {
-          status: r.status as StatusesEnum,
-          count: Number.isNaN(count) ? 0 : count,
-        };
-      })
-      .filter((item) => item.count > 0);
+    for (const row of rows) {
+      const statusKey = row.status as keyof OrdersStatsDto;
+      if (statusKey in statsResult) {
+        statsResult[statusKey] = Number(row.count) || 0;
+      }
+    }
+    return statsResult;
   }
 
   async update(id: string, dto: UpdateOrderDto): Promise<ResponseOrderDto> {

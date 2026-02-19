@@ -28,7 +28,7 @@ export class AdminService {
     return this.usersService.enable(userId);
   }
 
-  getOrdersStats(): Promise<OrdersStatsDto[]> {
+  getOrdersStats(): Promise<OrdersStatsDto> {
     return this.ordersService.getStatsByStatus();
   }
 }

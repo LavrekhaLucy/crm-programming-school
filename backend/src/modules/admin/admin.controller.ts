@@ -60,7 +60,7 @@ export class AdminController {
   }
 
   @Get('orders/stats')
-  getOrdersStats(): Promise<OrdersStatsDto[]> {
+  getOrdersStats(): Promise<OrdersStatsDto> {
     return this.adminService.getOrdersStats();
   }
 }

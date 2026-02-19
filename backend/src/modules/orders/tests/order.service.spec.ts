@@ -266,56 +266,45 @@ describe('OrderService', () => {
       expect(mockOrderRepository.update).not.toHaveBeenCalled();
     });
   });
+
   describe('getStatsByStatus', () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
 
-    it('should return mapped and filtered statistics by status', async () => {
+    it('should return valid statistics', async () => {
       const customRows = [
         { status: StatusesEnum.NEW, count: '10' },
         { status: StatusesEnum.INWORK, count: 5 },
-        { status: StatusesEnum.AGREE, count: '0' },
-        { status: StatusesEnum.DISAGREE, count: null },
-        { status: StatusesEnum.NEW, count: undefined },
-        { status: StatusesEnum.INWORK, count: 'abc' },
       ];
 
       const orderQB = mockQueryBuilder<OrderEntity>();
-
       orderQB.getRawMany.mockResolvedValue(customRows);
-
       jest
         .spyOn(mockOrderRepository, 'createQueryBuilder')
         .mockReturnValue(orderQB as unknown as SelectQueryBuilder<OrderEntity>);
+
+      jest.spyOn(mockOrderRepository, 'count').mockResolvedValue(15);
 
       const result = await service.getStatsByStatus();
 
       expect(mockOrderRepository.createQueryBuilder).toHaveBeenCalledWith('o');
-      expect(result).toHaveLength(2);
-      expect(result).toEqual([
-        { status: StatusesEnum.NEW, count: 10 },
-        { status: StatusesEnum.INWORK, count: 5 },
-      ]);
+      expect(mockOrderRepository.count).toHaveBeenCalled();
 
-      expect(jest.spyOn(orderQB, 'select')).toHaveBeenCalledWith(
-        'o.status',
-        'status',
-      );
-      expect(jest.spyOn(orderQB, 'addSelect')).toHaveBeenCalledWith(
-        'COUNT(o.id)',
-        'count',
-      );
-      expect(jest.spyOn(orderQB, 'groupBy')).toHaveBeenCalledWith('o.status');
-      expect(jest.spyOn(orderQB, 'orderBy')).toHaveBeenCalledWith(
-        'COUNT(o.id)',
-        'DESC',
-      );
+      expect(result).toEqual({
+        total: 15,
+        new: 10,
+        in_work: 5,
+        agree: 0,
+        disagree: 0,
+        dubbing: 0,
+      });
     });
 
-    it('should return an empty array if database returns no rows', async () => {
+    it('should handle empty database', async () => {
       const orderQB = mockQueryBuilder<OrderEntity>();
       orderQB.getRawMany.mockResolvedValue([]);
+      jest.spyOn(mockOrderRepository, 'count').mockResolvedValue(0);
 
       jest
         .spyOn(mockOrderRepository, 'createQueryBuilder')
@@ -323,10 +312,41 @@ describe('OrderService', () => {
 
       const result = await service.getStatsByStatus();
 
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      expect(result).toEqual({
+        total: 0,
+        new: 0,
+        in_work: 0,
+        agree: 0,
+        disagree: 0,
+        dubbing: 0,
+      });
+    });
+
+    it('should handle invalid counts and unknown statuses', async () => {
+      const customRows = [
+        { status: StatusesEnum.NEW, count: '10' },
+        { status: StatusesEnum.INWORK, count: 'abc' },
+        { status: StatusesEnum.AGREE, count: null },
+        { status: 'unknown_status', count: '100' },
+      ];
+
+      const orderQB = mockQueryBuilder<OrderEntity>();
+      orderQB.getRawMany.mockResolvedValue(customRows);
+      jest.spyOn(mockOrderRepository, 'count').mockResolvedValue(10);
+
+      jest
+        .spyOn(mockOrderRepository, 'createQueryBuilder')
+        .mockReturnValue(orderQB as unknown as SelectQueryBuilder<OrderEntity>);
+
+      const result = await service.getStatsByStatus();
+
+      expect(result.new).toBe(10);
+      expect(result.in_work).toBe(0);
+      expect(result.agree).toBe(0);
+      expect(result).not.toHaveProperty('unknown_status');
     });
   });
+
   describe('update', () => {
     it('should update order and return updated order', async () => {
       const orderId = 'orderId';
