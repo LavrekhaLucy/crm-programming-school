@@ -8,11 +8,19 @@ import type {ICommentResponse} from "../models/interfaces/IComments/ICommentResp
 import type {IGroup} from "../models/interfaces/IGroup/IGroup.ts";
 import type {IOrder} from "../models/interfaces/IOrders/IOrder.ts";
 import type {IUpdateOrder} from "../models/interfaces/IOrders/IUpdateOrder.ts";
+import type {IOrdersStats} from "../models/interfaces/IOrders/orders-stats.interface.ts";
+import type {IUser} from "../models/interfaces/IUser/IUser.ts";
+
 
 
 // Auth
 export const loginRequest = async (data: ILoginData): Promise<ILoginResponse> => {
     const { data: res } = await axiosInstance.post<ILoginResponse>('/auth/login', data);
+    return res;
+};
+
+export const getMeRequest = async (): Promise<IUser> => {
+    const { data: res } = await axiosInstance.get<IUser>('/auth/me');
     return res;
 };
 
@@ -36,6 +44,13 @@ export const exportOrdersToExcel = async (filters: IOrderFilters): Promise<Blob>
     });
     return data;
 };
+
+//Admin
+export const getStatsByStatus = async ():Promise<IOrdersStats> => {
+    const { data } = await axiosInstance.get('/admin/orders/stats', {});
+    return data;
+
+}
 
 
 // Comments

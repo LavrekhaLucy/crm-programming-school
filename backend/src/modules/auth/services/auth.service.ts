@@ -9,7 +9,6 @@ import { ConfigService } from '@nestjs/config';
 import { ITokens } from '../interfaces/token.interface';
 import { RefreshTokenDto } from '../models/refresh-token.dto';
 import { IJwtPayload } from '../interfaces/jwt-payload.interface';
-import { RegisterReqDto } from '../dto/req/register.req.dto';
 import { UserResDto } from '../../users/models/dto/res/user.res.dto';
 import { UserRepository } from '../../repository/services/user.repository';
 import { TokenRepository } from '../../repository/services/token.repository';
@@ -33,20 +32,20 @@ export class AuthService {
       this.configService.get<number>('JWT_REFRESH_EXPIRES_IN') || 0;
   }
 
-  async register(registerReqDto: RegisterReqDto): Promise<UserResDto> {
-    const user = this.userRepository.create(registerReqDto);
-    const saved = await this.userRepository.save(user);
-
-    return {
-      id: saved.id,
-      email: saved.email,
-      role: saved.role,
-      name: saved.name,
-      avatarUrl: saved.avatarUrl,
-      locale: saved.locale,
-      isAdultAccepted: saved.isAdultAccepted,
-    };
-  }
+  // async register(registerReqDto: RegisterReqDto): Promise<UserResDto> {
+  //   const user = this.userRepository.create(registerReqDto);
+  //   const saved = await this.userRepository.save(user);
+  //
+  //   return {
+  //     id: saved.id,
+  //     email: saved.email,
+  //     role: saved.role,
+  //     name: saved.name,
+  //     avatarUrl: saved.avatarUrl,
+  //     locale: saved.locale,
+  //     isAdultAccepted: saved.isAdultAccepted,
+  //   };
+  // }
 
   async login(loginDto: LoginReqDto): Promise<ITokens> {
     return this.entityManager.transaction(async (manager) => {
@@ -147,6 +146,18 @@ export class AuthService {
       tokenEntity.isBlocked = true;
       await this.tokenRepository.save(tokenEntity);
     }
+  }
+
+  async getMe(user: Partial<UserEntity>): Promise<UserResDto> {
+    return Promise.resolve({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      avatarUrl: user.avatarUrl,
+      locale: user.locale,
+      isAdultAccepted: user.isAdultAccepted,
+    });
   }
 
   private async saveTokens(

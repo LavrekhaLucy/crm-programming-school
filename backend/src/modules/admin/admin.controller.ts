@@ -17,12 +17,13 @@ import { AdminService } from './services/admin.service';
 import { OrdersStatsDto } from '../orders/models/dto/req/order-stats.dto';
 import { UserResDto } from '../users/models/dto/res/user.res.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserBaseResDto } from '../users/models/dto/res/user-base.res.dto';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateManagerReqDto } from './models/dto/req/create-manager.req.dto';
 
 @ApiTags('Admin')
+@ApiBearerAuth('access-token')
 @Controller('admin')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)

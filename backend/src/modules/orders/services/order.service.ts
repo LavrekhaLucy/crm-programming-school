@@ -19,11 +19,7 @@ import { parseOrder } from '../utils/order-query.util';
 import { OrdersMapper } from '../orders.mapper';
 import { GroupEntity } from '../../../database/entities/group.entity';
 import * as ExcelJS from 'exceljs';
-
-type OrderRawStats = {
-  status: string;
-  count: string;
-};
+import { IOrderRawStats } from '../interfaces/order-raw-stats.interface';
 
 @Injectable()
 export class OrdersService {
@@ -218,7 +214,7 @@ export class OrdersService {
   }
 
   async getStatsByStatus(): Promise<OrdersStatsDto> {
-    const rows: OrderRawStats[] = await this.orderRepository
+    const rows: IOrderRawStats[] = await this.orderRepository
       .createQueryBuilder('o')
       .select('o.status', 'status')
       .addSelect('COUNT(o.id)', 'count')

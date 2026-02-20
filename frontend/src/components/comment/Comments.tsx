@@ -37,7 +37,8 @@ export const Comments = ({ orderId }: CommentsProps) => {
 
         <div className="p-5 max-w-150">
 
-            {error && <div className="text-red-500 mb-2 font-medium">Error: {error}</div>}
+            {error &&
+                <div className="text-red-500 mb-2 font-medium">Error: {error}</div>}
 
             <div className="border border-gray-200 rounded-lg p-2.5 mb-2.5 min-h-12.5">
                 {loading && comments.length === 0 && (

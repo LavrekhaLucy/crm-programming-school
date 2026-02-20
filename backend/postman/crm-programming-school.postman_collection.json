@@ -194,54 +194,6 @@
       "name": "Auth",
       "item": [
         {
-          "name": "register",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const body = pm.response.json();\r",
-                  "const role = body.user.role;\r",
-                  "\r",
-                  "pm.environment.set(`${role}AccessToken`, body.tokens.accessToken);\r",
-                  "pm.environment.set(`${role}RefreshToken`, body.tokens.refreshToken);\r",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"username\":\"Artem8\",\r\n    \"password\":\"p@ssword8\",\r\n    \"email\":\"Artem8@gmail.com\",\r\n    \"name\":\"Artem\",\r\n    \"surname\":\"Pivovarov\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseURL}}/auth/register",
-              "host": [
-                "{{baseURL}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "login",
           "event": [
             {
@@ -259,6 +211,13 @@
                 "packages": {},
                 "requests": {}
               }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "packages": {},
+                "type": "text/javascript"
+              }
             }
           ],
           "request": {
@@ -269,7 +228,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n     \"login\":\"admin@gmail.com\",\r\n    \"password\":\"admin\"\r\n         \r\n    //  \"login\":\"Artem8@gmail.com\",\r\n    // \"password\":\"p@ssword8\"\r\n    \r\n}",
+              "raw": "{\r\n     \"login\":\"admin@gmail.com\",\r\n    \"password\":\"admin\"\r\n         \r\n    // \"login\":\"Snoop@gmail.com\",\r\n    // \"password\":\"Snoop_d@@g1\"\r\n    \r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -284,6 +243,56 @@
               "path": [
                 "auth",
                 "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoibGJ1cyIsImp0aSI6Ijg5MWQwZnZzcGU0Iiwicm9sZSI6Im1hbmFnZXIiLCJpYXQiOjE3NzE1ODg3NDksImV4cCI6MTc3MTY2ODc0OX0.Jx6glqknS3VovA28kcxNj7imRjpmkY9fxGoYol4NmFU\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/logout",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
               ]
             }
           },
@@ -332,6 +341,61 @@
               "path": [
                 "auth",
                 "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "packages": {},
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{managerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/me",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "me"
               ]
             }
           },

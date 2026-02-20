@@ -13,12 +13,15 @@ async function bootstrap() {
     .setTitle('crm-programming-school')
     .setDescription('The NestJS API description')
     .setVersion('1.0')
-    .addBearerAuth({
-      in: 'header',
-      type: 'http',
-      scheme: 'bearer',
-      bearerFormat: 'JWT',
-    })
+    .addBearerAuth(
+      {
+        in: 'header',
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
     .build();
   app.useGlobalPipes(
     new ValidationPipe({

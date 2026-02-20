@@ -1,13 +1,8 @@
 import { AuthService } from '../services/auth.service';
 import { Test } from '@nestjs/testing';
-import {
-  mockUserRepository,
-  userQB,
-} from '../../users/__mocks__/user-repository.mock';
+import { userQB } from '../../users/__mocks__/user-repository.mock';
 import { mockTokenRepository } from '../__mocks__/token-repository.mock';
 import { JwtService } from '@nestjs/jwt';
-import { mockBaseUserReqDto } from '../../users/__mocks__/user-base-dto.mock';
-import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { mockLoginDto } from '../__mocks__/login-dto.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { UserEntity } from '../../../database/entities/user.entity';
@@ -32,28 +27,28 @@ describe('AuthService', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  describe('register', () => {
-    it('should register a new user and return UserResDto', async () => {
-      mockUserRepository.create.mockReturnValue(mockUserEntity);
-      mockUserRepository.save.mockResolvedValue(mockUserEntity);
-
-      const result = await service.register(mockBaseUserReqDto);
-
-      expect(mockUserRepository.create).toHaveBeenCalledWith(
-        mockBaseUserReqDto,
-      );
-      expect(mockUserRepository.save).toHaveBeenCalledWith(mockUserEntity);
-      expect(result).toEqual({
-        id: mockUserEntity.id,
-        email: mockUserEntity.email,
-        role: mockUserEntity.role,
-        name: mockUserEntity.name,
-        avatarUrl: mockUserEntity.avatarUrl,
-        locale: mockUserEntity.locale,
-        isAdultAccepted: mockUserEntity.isAdultAccepted,
-      });
-    });
-  });
+  // describe('register', () => {
+  //   it('should register a new user and return UserResDto', async () => {
+  //     mockUserRepository.create.mockReturnValue(mockUserEntity);
+  //     mockUserRepository.save.mockResolvedValue(mockUserEntity);
+  //
+  //     const result = await service.register(mockBaseUserReqDto);
+  //
+  //     expect(mockUserRepository.create).toHaveBeenCalledWith(
+  //       mockBaseUserReqDto,
+  //     );
+  //     expect(mockUserRepository.save).toHaveBeenCalledWith(mockUserEntity);
+  //     expect(result).toEqual({
+  //       id: mockUserEntity.id,
+  //       email: mockUserEntity.email,
+  //       role: mockUserEntity.role,
+  //       name: mockUserEntity.name,
+  //       avatarUrl: mockUserEntity.avatarUrl,
+  //       locale: mockUserEntity.locale,
+  //       isAdultAccepted: mockUserEntity.isAdultAccepted,
+  //     });
+  //   });
+  // });
 
   describe('login', () => {
     beforeEach(() => {
@@ -136,6 +131,16 @@ describe('AuthService', () => {
         relations: ['user'],
       });
       expect(jwtService.sign).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getMe', () => {
+    it('should return user data without sensitive information', async () => {
+      const result = await service.getMe(mockUser);
+
+      expect(result).not.toHaveProperty('password');
+      expect(result.id).toEqual(mockUser.id);
+      expect(result.email).toEqual(mockUser.email);
     });
   });
   describe('logout', () => {
