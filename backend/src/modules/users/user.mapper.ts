@@ -6,11 +6,15 @@ export class UserMapper {
     return {
       id: user.id,
       name: user.name,
+      surname: user.surname,
       email: user.email,
       role: user.role,
       avatarUrl: user.avatarUrl,
       locale: user.locale,
       isAdultAccepted: user.isAdultAccepted,
+      isActive: user.isActive,
+      lastLogin: user.lastLogin,
+      total_orders: user.orders ? user.orders.length : 0,
     };
   }
 }

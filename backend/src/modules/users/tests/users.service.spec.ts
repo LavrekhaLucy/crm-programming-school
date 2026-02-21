@@ -8,6 +8,7 @@ import { UserEntity } from '../../../database/entities/user.entity';
 import { mockUserResDto } from '../__mocks__/user-res-dto.mock';
 import { DeleteResult } from 'typeorm';
 import { usersModuleProviders } from '../__mocks__/users-module.mock';
+import { mockDisabledUserResDto } from '../__mocks__/disable-user.mock';
 
 describe('UsersService', () => {
   let service: UserService;
@@ -59,8 +60,8 @@ describe('UsersService', () => {
       const result = await service.findAll();
 
       expect(repository.find).toHaveBeenCalledWith({
-        select: ['id', 'name', 'surname', 'email'],
-        order: { surname: 'ASC' },
+        select: ['id', 'name', 'surname', 'email', 'isActive', 'lastLogin'],
+        order: { id: 'DESC' },
       });
       expect(result).toEqual([mockUserEntity]);
     });
@@ -81,6 +82,7 @@ describe('UsersService', () => {
       expect(result).toEqual(mockUserEntity);
     });
   });
+
   describe('disable', () => {
     it('should disable a user', async () => {
       const disabledUser = { ...mockUserEntity, isActive: false } as UserEntity;
@@ -91,7 +93,7 @@ describe('UsersService', () => {
 
       expect(repository.findOneBy).toHaveBeenCalledWith({ id: 1 });
       expect(repository.save).toHaveBeenCalledWith(disabledUser);
-      expect(result).toEqual(mockUserResDto);
+      expect(result).toEqual(mockDisabledUserResDto);
     });
 
     it('should throw NotFoundException when disabling a non-existing user', async () => {

@@ -6,6 +6,7 @@ import { mockCreateManagerResDto } from '../__mocks__/create-manager-res.dto.moc
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
+import { NotFoundException } from '@nestjs/common';
 
 describe(AdminController.name, () => {
   let adminController: AdminController;
@@ -54,41 +55,68 @@ describe(AdminController.name, () => {
       expect(result).toEqual([mockUserResDto]);
     });
   });
-  describe('disableUser', () => {
-    it('should disable user', async () => {
+
+  describe('re-token', () => {
+    it('should return a token when calling reToken', async () => {
+      const userId = 1;
+      const expectedResult = { token: 'mock.jwt.token' };
+
+      jest
+        .spyOn(mockAdminService, 'createActivationToken')
+        .mockResolvedValue(expectedResult);
+
+      const result = await adminController.reToken(userId);
+
+      expect(result).toEqual(expectedResult);
+      expect(mockAdminService.createActivationToken).toHaveBeenCalledWith(
+        userId,
+      );
+    });
+
+    it('should throw an error if service fails', async () => {
+      const userId = 999;
+
+      jest
+        .spyOn(mockAdminService, 'createActivationToken')
+        .mockRejectedValue(new NotFoundException('User not found'));
+
+      await expect(adminController.reToken(userId)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('banUser', () => {
+    it('should ban a user', async () => {
       const userId = 1;
 
       jest
         .spyOn(mockAdminService, 'disableUser')
         .mockResolvedValue(mockUserResDto);
 
-      const result = await adminController.disable(userId);
+      const result = await adminController.ban(userId);
 
       expect(mockAdminService.disableUser).toHaveBeenCalledTimes(1);
       expect(mockAdminService.disableUser).toHaveBeenCalledWith(userId);
       expect(result).toEqual(mockUserResDto);
     });
   });
-  describe('enableUser', () => {
-    it('should enable user', async () => {
+
+  describe('unbanUser', () => {
+    it('should unban a user', async () => {
       const userId = 1;
       jest
         .spyOn(mockAdminService, 'enableUser')
         .mockResolvedValue(mockUserResDto);
 
-      const result = await adminController.enable(userId);
+      const result = await adminController.unban(userId);
 
       expect(mockAdminService.enableUser).toHaveBeenCalledTimes(1);
       expect(mockAdminService.enableUser).toHaveBeenCalledWith(userId);
       expect(result).toEqual(mockUserResDto);
     });
   });
-  describe('getDashboard', () => {
-    it('should return dashboard message', () => {
-      const result = adminController.getDashboard();
-      expect(result).toEqual({ message: 'Admin dashboard доступний' });
-    });
-  });
+
   describe('getOrdersStats', () => {
     it('should call adminService.getOrdersStats', async () => {
       const mockOrdersStatsDto = {

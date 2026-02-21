@@ -29,17 +29,6 @@ describe(AuthController.name, () => {
   it('should be defined', () => {
     expect(authController).toBeDefined();
   });
-
-  // describe('register', () => {
-  //   it('should register a user', async () => {
-  //     jest
-  //       .spyOn(mockAuthService, 'register')
-  //       .mockResolvedValue(mockRegisterReqDto);
-  //     const result = await authController.register(mockRegisterReqDto);
-  //     expect(mockAuthService.register).toHaveBeenCalledWith(mockRegisterReqDto);
-  //     expect(result).toEqual(mockRegisterReqDto);
-  //   });
-  // });
   describe('login', () => {
     it('should login user', async () => {
       jest.spyOn(mockAuthService, 'login').mockResolvedValue(mockToken);

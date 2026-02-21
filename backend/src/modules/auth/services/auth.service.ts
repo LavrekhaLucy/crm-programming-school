@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { EntityManager } from 'typeorm';
@@ -12,6 +17,7 @@ import { IJwtPayload } from '../interfaces/jwt-payload.interface';
 import { UserResDto } from '../../users/models/dto/res/user.res.dto';
 import { UserRepository } from '../../repository/services/user.repository';
 import { TokenRepository } from '../../repository/services/token.repository';
+import { UserMapper } from '../../users/user.mapper';
 
 @Injectable()
 export class AuthService {
@@ -31,21 +37,6 @@ export class AuthService {
     this.refreshTokenExpiresIn =
       this.configService.get<number>('JWT_REFRESH_EXPIRES_IN') || 0;
   }
-
-  // async register(registerReqDto: RegisterReqDto): Promise<UserResDto> {
-  //   const user = this.userRepository.create(registerReqDto);
-  //   const saved = await this.userRepository.save(user);
-  //
-  //   return {
-  //     id: saved.id,
-  //     email: saved.email,
-  //     role: saved.role,
-  //     name: saved.name,
-  //     avatarUrl: saved.avatarUrl,
-  //     locale: saved.locale,
-  //     isAdultAccepted: saved.isAdultAccepted,
-  //   };
-  // }
 
   async login(loginDto: LoginReqDto): Promise<ITokens> {
     return this.entityManager.transaction(async (manager) => {
@@ -149,15 +140,17 @@ export class AuthService {
   }
 
   async getMe(user: Partial<UserEntity>): Promise<UserResDto> {
-    return Promise.resolve({
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      name: user.name,
-      avatarUrl: user.avatarUrl,
-      locale: user.locale,
-      isAdultAccepted: user.isAdultAccepted,
-    });
+    const userFromDb = await this.userRepository
+      .createQueryBuilder('user')
+      .loadRelationCountAndMap('user.total_orders', 'user.orders')
+      .where('user.id = :id', { id: user.id })
+      .getOne();
+
+    if (!userFromDb) {
+      throw new NotFoundException('User not found');
+    }
+
+    return UserMapper.toResDto(userFromDb);
   }
 
   private async saveTokens(
@@ -200,6 +193,12 @@ export class AuthService {
     const isPasswordValid = await user.validatePassword(password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!user.isActive) {
+      throw new ForbiddenException(
+        'User is banned. Please contact the administrator.',
+      );
     }
 
     return user;

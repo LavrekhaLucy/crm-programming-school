@@ -24,8 +24,8 @@ export class UserService {
 
   async findAll(): Promise<UserBaseResDto[]> {
     return await this.userRepository.find({
-      select: ['id', 'name', 'surname', 'email'],
-      order: { surname: 'ASC' },
+      select: ['id', 'name', 'surname', 'email', 'isActive', 'lastLogin'],
+      order: { id: 'DESC' },
     });
   }
 

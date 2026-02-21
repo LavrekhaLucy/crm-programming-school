@@ -7,6 +7,9 @@ import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock';
+import { UserEntity } from '../../../database/entities/user.entity';
+import { mockJwtService } from '../../auth/__mocks__/jwt-service.mock';
+import { NotFoundException } from '@nestjs/common';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -31,6 +34,46 @@ describe('AdminService', () => {
         mockCreateManagerReqDto,
       );
       expect(result).toEqual(mockUserEntity);
+    });
+  });
+  describe('createActivationToken', () => {
+    const managerId = 1;
+
+    it('should successfully create an activation link', async () => {
+      const mockManager = Object.assign(new UserEntity(), {
+        id: managerId,
+        email: 'manager@example.com',
+      });
+
+      jest
+        .spyOn(mockUserService, 'findById')
+        .mockResolvedValueOnce(mockManager);
+      mockJwtService.sign.mockReturnValue('mocked_jwt_token');
+
+      const result = await service.createActivationToken(managerId);
+
+      expect(result).toEqual({
+        link: 'http://localhost:3000/activate/mocked_jwt_token',
+      });
+
+      expect(mockJwtService.sign).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sub: managerId,
+          email: 'manager@example.com',
+          action: 'activate',
+        }),
+        { expiresIn: '30m' },
+      );
+    });
+
+    it('should throw NotFoundException when manager is not found', async () => {
+      jest.spyOn(mockUserService, 'findById').mockResolvedValueOnce(null);
+
+      const attempt = service.createActivationToken(999);
+
+      await expect(attempt).rejects.toThrow(NotFoundException);
+      await expect(attempt).rejects.toThrow(`Manager with ID 999 not found`);
+      expect(mockJwtService.sign as jest.Mock).not.toHaveBeenCalled();
     });
   });
   describe('getAllUsers', () => {

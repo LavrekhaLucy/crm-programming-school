@@ -6,6 +6,8 @@ export const mockQueryBuilder = <T>(): jest.Mocked<SelectQueryBuilder<T>> => {
     select: jest.fn().mockReturnThis(),
     addSelect: jest.fn().mockReturnThis(),
 
+    loadRelationCountAndMap: jest.fn().mockReturnThis(),
+
     // filtering
     leftJoinAndSelect: jest.fn().mockReturnThis(),
     where: jest.fn().mockReturnThis(),

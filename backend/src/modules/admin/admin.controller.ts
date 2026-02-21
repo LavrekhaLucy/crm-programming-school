@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -31,13 +30,6 @@ import { CreateManagerReqDto } from './models/dto/req/create-manager.req.dto';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get('dashboard')
-  getDashboard() {
-    return {
-      message: 'Admin dashboard доступний',
-    };
-  }
-
   @Post('managers')
   createManager(
     @Body() createManagerReqDto: CreateManagerReqDto,
@@ -50,14 +42,19 @@ export class AdminController {
     return this.adminService.getAllUsers();
   }
 
-  @Patch('users/:id/disable')
-  disable(@Param('id', ParseIntPipe) id: number): Promise<UserResDto> {
-    return this.adminService.disableUser(id);
+  @Post(':id/re-token')
+  async reToken(@Param('id') id: number) {
+    return await this.adminService.createActivationToken(id);
   }
 
-  @Patch('users/:id/enable')
-  enable(@Param('id', ParseIntPipe) id: number): Promise<UserResDto> {
-    return this.adminService.enableUser(id);
+  @Patch(':id/ban')
+  async ban(@Param('id') id: number): Promise<UserResDto> {
+    return await this.adminService.disableUser(id);
+  }
+
+  @Patch(':id/unban')
+  async unban(@Param('id') id: number): Promise<UserResDto> {
+    return await this.adminService.enableUser(id);
   }
 
   @Get('orders/stats')

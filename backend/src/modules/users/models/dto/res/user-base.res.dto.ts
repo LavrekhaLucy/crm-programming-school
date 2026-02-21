@@ -1,5 +1,5 @@
 import { UserRoleEnum } from '../../../../../database/entities/enums/user-role.enum';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserBaseResDto {
   @ApiProperty({ example: 1 })
@@ -14,6 +14,9 @@ export class UserBaseResDto {
   @ApiProperty({ example: 'Alice' })
   name: string;
 
+  @ApiProperty({ example: 'Armstrong' })
+  surname: string;
+
   @ApiProperty()
   avatarUrl: string | null;
 
@@ -22,4 +25,13 @@ export class UserBaseResDto {
 
   @ApiProperty()
   isAdultAccepted: boolean;
+
+  @ApiProperty()
+  isActive: boolean;
+
+  @ApiProperty()
+  lastLogin: Date | null;
+
+  @ApiPropertyOptional({ example: 12 })
+  total_orders?: number;
 }

@@ -11,11 +11,6 @@ import { UserRequest } from './interfaces/user-request.interface';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('register')
-  // async register(@Body() registerReqDto: RegisterReqDto) {
-  //   return this.authService.register(registerReqDto);
-  // }
-
   @Post('login')
   async login(@Body() loginDto: LoginReqDto) {
     return this.authService.login(loginDto);

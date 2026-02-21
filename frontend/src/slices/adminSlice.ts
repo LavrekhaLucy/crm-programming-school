@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice, type PayloadAction} from '@reduxjs/toolkit';
 import type {IOrdersStats} from "../models/interfaces/IOrders/orders-stats.interface.ts";
-import {createManager, getAllUsers, getStatsByStatus} from "../services/api.service.tsx";
+import {banUser, createManager, getActivationLink, getAllUsers, getStatsByStatus, unbanUser} from "../services/api.service.tsx";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 import type {IManager} from "../models/interfaces/IManager/IManager.ts";
 
@@ -9,6 +9,7 @@ interface OrdersState {
     stats: IOrdersStats | null;
     loading: boolean;
     error: string | null;
+    items: [];
 }
 
 const initialAdminState: OrdersState = {
@@ -16,6 +17,7 @@ const initialAdminState: OrdersState = {
     stats: null,
     loading: false,
     error: null,
+    items: [],
 };
 
 export const fetchOrdersStats = createAsyncThunk(
@@ -54,7 +56,42 @@ export const addManager = createAsyncThunk(
             return rejectWithValue(error as string);
         }
     }
-)
+);
+export const copyActivationLink = createAsyncThunk(
+    'admin/copyActivationLink',
+    async (userId: number, { rejectWithValue }) => {
+        try {
+            const response = await getActivationLink(userId);
+            const link = response.link;
+
+            if (!navigator.clipboard) {
+                return rejectWithValue('Clipboard API not available');
+            }
+
+            await navigator.clipboard.writeText(link);
+            alert('Link copied to clipboard!');
+
+            return { userId, link };
+
+        } catch (error) {
+            const message = error as string || 'Failed to copy link';
+            alert (message);
+            return rejectWithValue(message);
+        }
+    }
+);
+
+export const toggleUserBan = createAsyncThunk(
+    'admin/toggleUserBan',
+    async ({ userId, action }: { userId: number; action: 'ban' | 'unban' }, { rejectWithValue }) => {
+        try {
+            const data = action === 'ban' ? await banUser(userId) : await unbanUser(userId);
+            return data;
+        } catch (error) {
+            return rejectWithValue(error as string);
+        }
+    }
+);
 
 const adminSlice = createSlice({
     name: 'orders',
@@ -102,9 +139,38 @@ const adminSlice = createSlice({
             .addCase(addManager.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+
+            //copyActivationLink
+            .addCase(copyActivationLink.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(copyActivationLink.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(copyActivationLink.rejected, (state) => {
+                state.loading = false;
+            })
+        //toggleUserBan
+            .addCase(toggleUserBan.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(toggleUserBan.fulfilled, (state, action) => {
+                const { userId, action: banAction } = action.meta.arg;
+
+                const user = state.users.find(u => u.id === userId);
+
+                if (user) {
+                    user.isActive = (banAction === 'unban');
+                }
+            })
+            .addCase(toggleUserBan.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
             });
     },
 });
 
-
+export const adminActions = {...adminSlice.actions, fetchAllUsers, addManager, copyActivationLink, fetchOrdersStats, toggleUserBan};
 export default adminSlice;

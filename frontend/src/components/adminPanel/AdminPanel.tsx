@@ -32,13 +32,14 @@ export const AdminPanel = () => {
 
                 <div className="flex flex-col items-center justify-center text-center">
                     <h2 className="text-xl font-bold mb-4">Orders statistic</h2>
-                    <div className="space-y-1 font-semibold text-gray-700">
+
+                    <div className=" flex gap-2 space-y-1 font-semibold text-gray-700">
                         <p>Total: {stats?.total || 0}</p>
                         <p>Agree: {stats?.agree || 0}</p>
                         <p>In work: {stats?.in_work || 0}</p>
                         <p>Disagree: {stats?.disagree || 0}</p>
                         <p>Dubbing: {stats?.dubbing || 0}</p>
-                        <p className="mt-2 text-lg text-green-700">New: {stats?.new || 0}</p>
+                        <p >New: {stats?.new || 0}</p>
                     </div>
                 </div>
             </div>

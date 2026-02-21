@@ -52,6 +52,9 @@ export class UserEntity extends CreateUpdateModel {
   @Column({ type: 'boolean', default: false })
   isAdultAccepted: boolean;
 
+  @Column({ type: 'timestamp', nullable: true })
+  lastLogin: Date | null;
+
   @OneToMany(() => TokenEntity, (token: TokenEntity) => token.user)
   tokens: TokenEntity[];
 

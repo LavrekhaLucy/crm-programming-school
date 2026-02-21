@@ -6,7 +6,11 @@ import { JwtService } from '@nestjs/jwt';
 import { mockLoginDto } from '../__mocks__/login-dto.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { UserEntity } from '../../../database/entities/user.entity';
-import { UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { mockUser, validatePasswordMock } from '../__mocks__/user.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockToken } from '../__mocks__/token.mock';
@@ -27,28 +31,6 @@ describe('AuthService', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  // describe('register', () => {
-  //   it('should register a new user and return UserResDto', async () => {
-  //     mockUserRepository.create.mockReturnValue(mockUserEntity);
-  //     mockUserRepository.save.mockResolvedValue(mockUserEntity);
-  //
-  //     const result = await service.register(mockBaseUserReqDto);
-  //
-  //     expect(mockUserRepository.create).toHaveBeenCalledWith(
-  //       mockBaseUserReqDto,
-  //     );
-  //     expect(mockUserRepository.save).toHaveBeenCalledWith(mockUserEntity);
-  //     expect(result).toEqual({
-  //       id: mockUserEntity.id,
-  //       email: mockUserEntity.email,
-  //       role: mockUserEntity.role,
-  //       name: mockUserEntity.name,
-  //       avatarUrl: mockUserEntity.avatarUrl,
-  //       locale: mockUserEntity.locale,
-  //       isAdultAccepted: mockUserEntity.isAdultAccepted,
-  //     });
-  //   });
-  // });
 
   describe('login', () => {
     beforeEach(() => {
@@ -56,7 +38,8 @@ describe('AuthService', () => {
     });
 
     it('should login successfully', async () => {
-      userQB.getOne.mockResolvedValueOnce(mockUser as UserEntity);
+      const activeUser = { ...mockUser, isActive: true };
+      userQB.getOne.mockResolvedValueOnce(activeUser as UserEntity);
       validatePasswordMock.mockResolvedValueOnce(true);
 
       jwtService.sign.mockReturnValue('signedToken');
@@ -70,7 +53,6 @@ describe('AuthService', () => {
         refreshToken: 'signedToken',
       });
     });
-
     it('should throw UnauthorizedException if user not found', async () => {
       userQB.getOne.mockResolvedValueOnce(null);
 
@@ -86,6 +68,21 @@ describe('AuthService', () => {
         UnauthorizedException,
       );
       expect(validatePasswordMock).toHaveBeenCalledWith(mockLoginDto.password);
+    });
+    it('should throw ForbiddenException if the user is inactive', async () => {
+      const bannedUser = Object.assign(new UserEntity(), mockUser, {
+        isActive: false,
+      });
+
+      userQB.getOne.mockResolvedValueOnce(bannedUser);
+      validatePasswordMock.mockResolvedValueOnce(true);
+
+      const loginAttempt = service.login(mockLoginDto);
+
+      await expect(loginAttempt).rejects.toThrow(ForbiddenException);
+      await expect(loginAttempt).rejects.toThrow(
+        'User is banned. Please contact the administrator.',
+      );
     });
   });
 
@@ -136,13 +133,38 @@ describe('AuthService', () => {
 
   describe('getMe', () => {
     it('should return user data without sensitive information', async () => {
-      const result = await service.getMe(mockUser);
+      const loadCountSpy = jest.spyOn(userQB, 'loadRelationCountAndMap');
 
-      expect(result).not.toHaveProperty('password');
+      const mockUserFromDb = Object.assign(new UserEntity(), mockUser, {
+        isActive: true,
+      });
+      userQB.getOne.mockResolvedValueOnce(mockUserFromDb);
+
+      const result = await service.getMe(mockUser as UserEntity);
+      expect(loadCountSpy).toHaveBeenCalledWith(
+        'user.total_orders',
+        'user.orders',
+      );
       expect(result.id).toEqual(mockUser.id);
-      expect(result.email).toEqual(mockUser.email);
+    });
+
+    it('should throw NotFoundException if user does not exist in db', async () => {
+      userQB.getOne.mockResolvedValueOnce(null);
+
+      try {
+        await service.getMe({ id: 999 } as UserEntity);
+        fail('Should have thrown an error'); // Якщо помилка не виникла — тест провалено
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+
+      expect(userQB.where.mock.calls).toContainEqual([
+        'user.id = :id',
+        { id: 999 },
+      ]);
     });
   });
+
   describe('logout', () => {
     it('should block the refresh token if it exists', async () => {
       mockTokenRepository.findOne.mockResolvedValue(mockToken);

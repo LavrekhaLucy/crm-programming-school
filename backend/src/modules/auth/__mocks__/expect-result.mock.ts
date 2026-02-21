@@ -4,9 +4,12 @@ import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 export const mockExpectedResult: UserResDto = {
   id: 1,
   name: 'John',
+  surname: 'Doe',
   role: UserRoleEnum.ADMIN,
   email: 'a@a.com',
   avatarUrl: null,
   locale: 'en',
   isAdultAccepted: true,
+  isActive: true,
+  lastLogin: new Date(),
 };
