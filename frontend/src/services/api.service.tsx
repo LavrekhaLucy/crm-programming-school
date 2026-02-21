@@ -10,6 +10,7 @@ import type {IOrder} from "../models/interfaces/IOrders/IOrder.ts";
 import type {IUpdateOrder} from "../models/interfaces/IOrders/IUpdateOrder.ts";
 import type {IOrdersStats} from "../models/interfaces/IOrders/orders-stats.interface.ts";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
+import type {IManager} from "../models/interfaces/IManager/IManager.ts";
 
 
 
@@ -51,7 +52,14 @@ export const getStatsByStatus = async ():Promise<IOrdersStats> => {
     return data;
 
 }
-
+export const  getAllUsers = async (): Promise<IUser[]> => {
+    const { data } = await axiosInstance.get('admin/users', {});
+    return data;
+}
+export const createManager = async (managerData: IManager):Promise<IUser> => {
+    const { data } = await axiosInstance.post<IUser>('admin/managers', managerData);
+    return data;
+}
 
 // Comments
 export const createComments = async (orderId: string, data: IComment): Promise<ICommentResponse> => {

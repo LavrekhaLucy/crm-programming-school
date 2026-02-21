@@ -11,4 +11,6 @@ export interface IUser {
     avatarUrl: string | null;
     isActive: boolean;
     locale: string;
+    last_login: string | null;
+    total_orders?: number;
 }
