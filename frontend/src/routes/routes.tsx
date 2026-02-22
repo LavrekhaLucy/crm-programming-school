@@ -4,6 +4,7 @@ import Login from '../components/login/login.tsx';
 import OrdersPage from '../pages/OrdersPage.tsx';
 import { MainPage } from '../pages/MainPage.tsx';
 import {AdminPage} from "../pages/AdminPage.tsx";
+import {ActivatePage} from "../pages/ActivatePage.tsx";
 
 
 export const routes = createBrowserRouter([
@@ -19,5 +20,5 @@ export const routes = createBrowserRouter([
         ],
     },
     {path: "/admin", element: <AdminPage />},
-    // {path:"activate/:token", element:<ActivatePage/>}
+    { path: "/auth/activate/:token", element: <ActivatePage /> }
     ]);

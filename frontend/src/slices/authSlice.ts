@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import {getMeRequest, loginRequest} from "../services/api.service.tsx";
+import {activateUserAccount, getMeRequest, loginRequest} from "../services/api.service.tsx";
 import type {ILoginData} from "../models/interfaces/ILogin/ILoginData.ts";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 
@@ -49,6 +49,18 @@ export const fetchMe = createAsyncThunk<IUser, void>(
     }
 );
 
+export const activateAccount = createAsyncThunk<void, { token: string; password: string }>(
+    'auth/activateAccount',
+    async ({ token, password }, { rejectWithValue }) => {
+        try {
+            await activateUserAccount({ token, password });
+        } catch (error) {
+            return rejectWithValue(error as string);
+        }
+    }
+);
+
+
 const authSlice = createSlice({
     name: "auth",
     initialState:initialAuthState,
@@ -61,6 +73,7 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            //login
             .addCase(login.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -73,7 +86,7 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = (action.payload as string) ?? "Incorrect login or password";
             })
-
+            //fetchMe
             .addCase(fetchMe.pending, (state) => {
                 state.loading = true;
             })
@@ -86,12 +99,25 @@ const authSlice = createSlice({
                 state.token = null;
                 localStorage.removeItem("token");
                 state.error = action.payload as string;
+            })
+
+            //activateAccount
+            .addCase(activateAccount.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(activateAccount.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(activateAccount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
             });
     },
 });
 
 export const { logout } = authSlice.actions;
-export const authActions = {...authSlice.actions, login,fetchMe};
+export const authActions = {...authSlice.actions, login, fetchMe, activateAccount};
 export default authSlice;
 
 

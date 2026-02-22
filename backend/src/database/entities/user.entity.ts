@@ -55,6 +55,9 @@ export class UserEntity extends CreateUpdateModel {
   @Column({ type: 'timestamp', nullable: true })
   lastLogin: Date | null;
 
+  @Column({ type: 'varchar', length: 255, nullable: true, select: false })
+  actionToken: string | null;
+
   @OneToMany(() => TokenEntity, (token: TokenEntity) => token.user)
   tokens: TokenEntity[];
 

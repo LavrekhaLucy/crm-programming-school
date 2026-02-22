@@ -53,7 +53,7 @@ describe('AdminService', () => {
       const result = await service.createActivationToken(managerId);
 
       expect(result).toEqual({
-        link: 'http://localhost:3000/activate/mocked_jwt_token',
+        link: 'http://localhost:3000/auth/activate/mocked_jwt_token',
       });
 
       expect(mockJwtService.sign).toHaveBeenCalledWith(

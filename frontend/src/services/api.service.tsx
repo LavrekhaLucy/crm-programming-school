@@ -11,6 +11,7 @@ import type {IUpdateOrder} from "../models/interfaces/IOrders/IUpdateOrder.ts";
 import type {IOrdersStats} from "../models/interfaces/IOrders/orders-stats.interface.ts";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 import type {IManager} from "../models/interfaces/IManager/IManager.ts";
+import type {IActivateUser} from "../models/interfaces/IUser/IActivateUser.ts";
 
 
 
@@ -24,6 +25,11 @@ export const getMeRequest = async (): Promise<IUser> => {
     const { data: res } = await axiosInstance.get<IUser>('/auth/me');
     return res;
 };
+
+export const activateUserAccount = async (data:IActivateUser): Promise<void> => {
+    await axiosInstance.patch('/auth/activate', data);
+};
+
 
 // Orders
 export const getOrders = async (filters: IOrderFilters,): Promise<IOrdersResponseModel> => {

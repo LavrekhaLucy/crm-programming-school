@@ -33,7 +33,7 @@ export class AdminService {
     };
 
     const token = this.jwtService.sign(payload, { expiresIn: '30m' });
-    const link = `http://localhost:3000/activate/${token}`;
+    const link = `http://localhost:3000/auth/activate/${token}`;
 
     return { link };
   }

@@ -400,6 +400,36 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "activate",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"token\": \"test-token-12345\",\r\n  \"password\": \"NewStrongPassword123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/activate",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "activate"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },

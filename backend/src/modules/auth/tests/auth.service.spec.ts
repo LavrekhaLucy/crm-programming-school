@@ -1,12 +1,16 @@
 import { AuthService } from '../services/auth.service';
 import { Test } from '@nestjs/testing';
-import { userQB } from '../../users/__mocks__/user-repository.mock';
+import {
+  mockUserRepository,
+  userQB,
+} from '../../users/__mocks__/user-repository.mock';
 import { mockTokenRepository } from '../__mocks__/token-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { mockLoginDto } from '../__mocks__/login-dto.mock';
 import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { UserEntity } from '../../../database/entities/user.entity';
 import {
+  BadRequestException,
   ForbiddenException,
   NotFoundException,
   UnauthorizedException,
@@ -14,6 +18,10 @@ import {
 import { mockUser, validatePasswordMock } from '../__mocks__/user.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockToken } from '../__mocks__/token.mock';
+import * as bcrypt from 'bcrypt';
+import { mockJwtService } from '../__mocks__/jwt-service.mock';
+
+jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -128,6 +136,82 @@ describe('AuthService', () => {
         relations: ['user'],
       });
       expect(jwtService.sign).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('activate', () => {
+    it('should activate user successfully', async () => {
+      const dto = { token: 'valid-token', password: '12345678' };
+
+      mockJwtService.verify.mockReturnValue({
+        sub: 1,
+        action: 'activate',
+      });
+
+      mockUserRepository.findOne.mockResolvedValue({
+        id: 1,
+        isActive: false,
+      } as UserEntity);
+
+      jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPassword' as never);
+
+      const result = await service.activate(dto);
+
+      expect(result).toEqual({ message: 'Account activated successfully' });
+      expect(mockUserRepository.update).toHaveBeenCalledWith(1, {
+        password: 'hashedPassword',
+        isActive: true,
+      });
+    });
+
+    it('should throw if token invalid', async () => {
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error();
+      });
+
+      await expect(
+        service.activate({ token: 'bad', password: '123' }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw if token type invalid', async () => {
+      mockJwtService.verify.mockReturnValue({
+        sub: 1,
+        action: 'wrong',
+      });
+
+      await expect(
+        service.activate({ token: 'token', password: '123' }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should throw if user not found', async () => {
+      mockJwtService.verify.mockReturnValue({
+        sub: 1,
+        action: 'activate',
+      });
+
+      mockUserRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.activate({ token: 'token', password: '123' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw if user already active', async () => {
+      mockJwtService.verify.mockReturnValue({
+        sub: 1,
+        action: 'activate',
+      });
+
+      mockUserRepository.findOne.mockResolvedValue({
+        id: 1,
+        isActive: true,
+      } as UserEntity);
+
+      await expect(
+        service.activate({ token: 'token', password: '123' }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

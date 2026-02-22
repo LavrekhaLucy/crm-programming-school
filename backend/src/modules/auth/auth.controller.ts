@@ -1,10 +1,19 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { LoginReqDto } from './dto/req/login.req.dto';
 import { RefreshTokenDto } from './models/refresh-token.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UserRequest } from './interfaces/user-request.interface';
+import { ActivateDto } from './dto/req/activate-token.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -19,6 +28,11 @@ export class AuthController {
   @Post('refresh')
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refresh(refreshTokenDto);
+  }
+
+  @Patch('activate')
+  async activate(@Body() activateDto: ActivateDto) {
+    return await this.authService.activate(activateDto);
   }
 
   @ApiOperation({ summary: 'Get current user profile' })

@@ -49,6 +49,7 @@ async function bootstrap() {
   if (!appConfig) {
     throw new Error('App configuration is missing in config service');
   }
+
   await app.listen(appConfig.port, () => {
     console.log(
       `Server is running on port: http://${appConfig.host}:${appConfig.port}`,

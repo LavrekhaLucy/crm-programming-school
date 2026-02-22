@@ -8,6 +8,7 @@ import { mockUser } from '../__mocks__/user.mock';
 import { UserRequest } from '../interfaces/user-request.interface';
 import { mockRequest } from '../__mocks__/request.mock';
 import { mockExpectedResult } from '../__mocks__/expect-result.mock';
+import { activateDtoMock } from '../__mocks__/activate-dto.mock';
 
 describe(AuthController.name, () => {
   let authController: AuthController;
@@ -48,6 +49,18 @@ describe(AuthController.name, () => {
     });
   });
 
+  describe('activate', () => {
+    it('should call authService.activate with correct parameters', async () => {
+      const expectedResult = { message: 'Account activated successfully' };
+      mockAuthService.activate.mockResolvedValue(expectedResult);
+
+      const result = await authController.activate(activateDtoMock);
+
+      expect(mockAuthService.activate).toHaveBeenCalledWith(activateDtoMock);
+
+      expect(result).toEqual(expectedResult);
+    });
+  });
   describe('getMe', () => {
     it('should return result from authService.getMe', async () => {
       jest

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -18,6 +19,16 @@ import { UserResDto } from '../../users/models/dto/res/user.res.dto';
 import { UserRepository } from '../../repository/services/user.repository';
 import { TokenRepository } from '../../repository/services/token.repository';
 import { UserMapper } from '../../users/user.mapper';
+import { ActivateDto } from '../dto/req/activate-token.dto';
+import * as bcrypt from 'bcrypt';
+
+export interface IActivateTokenPayload {
+  sub: number;
+  email: string;
+  action: 'activate';
+  iat?: number;
+  exp?: number;
+}
 
 @Injectable()
 export class AuthService {
@@ -126,6 +137,41 @@ export class AuthService {
         refreshToken: newRefreshToken,
       };
     });
+  }
+
+  async activate(dto: ActivateDto) {
+    let payload: IActivateTokenPayload;
+
+    try {
+      payload = this.jwtService.verify(dto.token);
+    } catch {
+      throw new BadRequestException('Invalid or expired token');
+    }
+
+    if (payload.action !== 'activate') {
+      throw new BadRequestException('Invalid token type');
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id: payload.sub },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.isActive) {
+      throw new BadRequestException('Account already activated');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    await this.userRepository.update(user.id, {
+      password: hashedPassword,
+      isActive: true,
+    });
+
+    return { message: 'Account activated successfully' };
   }
 
   async logOut(refreshTokenDto: RefreshTokenDto): Promise<void> {
