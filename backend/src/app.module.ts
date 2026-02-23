@@ -13,17 +13,12 @@ import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './common/filters/global-filter';
 import { CommentsModule } from './modules/comments/comments.module';
 import { GroupModule } from './modules/groups/group.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'client'),
     }),
     TypeormModule,
     OrdersModule,

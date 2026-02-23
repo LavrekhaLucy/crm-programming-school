@@ -10,8 +10,8 @@ services:
       - ./backend:/app
       - ./client:/app/client
       - /app/node_modules
-    ports:
-      - "3000:3000"
+#    ports:
+#      - "3000:3000"
     command: sh -c "npm install && npm run migration:run && npm run seed && npm run start:dev"
 
 

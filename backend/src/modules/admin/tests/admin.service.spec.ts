@@ -50,10 +50,13 @@ describe('AdminService', () => {
         .mockResolvedValueOnce(mockManager);
       mockJwtService.sign.mockReturnValue('mocked_jwt_token');
 
+      const expectedUrl = 'http://localhost:3000';
+      process.env.FRONTEND_URL = expectedUrl;
+
       const result = await service.createActivationToken(managerId);
 
       expect(result).toEqual({
-        link: 'http://localhost:3000/auth/activate/mocked_jwt_token',
+        link: `${expectedUrl}/auth/activate/mocked_jwt_token`,
       });
 
       expect(mockJwtService.sign).toHaveBeenCalledWith(
