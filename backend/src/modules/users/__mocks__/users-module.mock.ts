@@ -22,6 +22,8 @@ import { mockAdminService } from '../../admin/__mocks__/admin-service.mock';
 import { CommentsService } from '../../comments/services/comments.service';
 import { mockCommentsService } from '../../comments/__mocks__/comments-service.mock';
 import { CommentsRepository } from '../../repository/services/comments.repository';
+import { EmailService } from '../../auth/services/email.service';
+import { mockEmailService } from '../../auth/__mocks__/email-service.mock';
 
 export const usersModuleProviders: Provider[] = [
   {
@@ -72,5 +74,9 @@ export const usersModuleProviders: Provider[] = [
   {
     provide: CommentsService,
     useValue: mockCommentsService,
+  },
+  {
+    provide: EmailService,
+    useValue: mockEmailService,
   },
 ];

@@ -1,5 +1,5 @@
-import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { OrdersRepository } from '../../repository/services/orders.repository';
+import { MockServiceType } from '../../../types/mock-service.type';
 
 export const mockOrderRepository: MockServiceType<Partial<OrdersRepository>> = {
   create: jest.fn(),

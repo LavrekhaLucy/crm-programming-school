@@ -21,6 +21,8 @@ import { TokenRepository } from '../../repository/services/token.repository';
 import { UserMapper } from '../../users/user.mapper';
 import { ActivateDto } from '../dto/req/activate-token.dto';
 import * as bcrypt from 'bcrypt';
+import { EmailTypeEnum } from '../../../database/entities/enums/email-type.enum';
+import { EmailService } from './email.service';
 
 export interface IActivateTokenPayload {
   sub: number;
@@ -38,6 +40,7 @@ export class AuthService {
   constructor(
     private userRepository: UserRepository,
     private readonly tokenRepository: TokenRepository,
+    private readonly emailService: EmailService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectEntityManager()
@@ -151,13 +154,16 @@ export class AuthService {
     if (payload.action !== 'activate') {
       throw new BadRequestException('Invalid token type');
     }
-
     const user = await this.userRepository.findOne({
-      where: { id: payload.sub },
+      where: {
+        id: payload.sub,
+        actionToken: dto.token,
+      },
+      select: ['id', 'email', 'name', 'password', 'isActive', 'actionToken'],
     });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('User not found or token invalid');
     }
 
     if (user.isActive) {
@@ -169,7 +175,12 @@ export class AuthService {
     await this.userRepository.update(user.id, {
       password: hashedPassword,
       isActive: true,
+      actionToken: null,
     });
+
+    this.emailService
+      .sendMail(EmailTypeEnum.WELCOME, user.email, { name: user.name })
+      .catch((err) => console.error('Welcome email failed', err));
 
     return { message: 'Account activated successfully' };
   }

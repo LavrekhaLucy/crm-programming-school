@@ -1,7 +1,7 @@
-import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { UserRepository } from '../../repository/services/user.repository';
 import { mockQueryBuilder } from '../../orders/__mocks__/query-builder.mock';
 import { UserEntity } from '../../../database/entities/user.entity';
+import { MockServiceType } from '../../../types/mock-service.type';
 
 export const userQB = mockQueryBuilder<UserEntity>();
 

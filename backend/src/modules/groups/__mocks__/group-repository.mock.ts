@@ -1,5 +1,5 @@
-import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { GroupRepository } from '../../repository/services/group.repository';
+import { MockServiceType } from '../../../types/mock-service.type';
 
 export const mockRepositoryGroup: MockServiceType<Partial<GroupRepository>> = {
   create: jest.fn(),

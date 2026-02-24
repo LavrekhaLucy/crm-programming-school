@@ -1,5 +1,5 @@
-import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { JwtService } from '@nestjs/jwt';
+import { MockServiceType } from '../../../types/mock-service.type';
 
 export const mockJwtService: MockServiceType<JwtService> = {
   sign: jest.fn(),

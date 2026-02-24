@@ -5,13 +5,18 @@ import { OrdersStatsDto } from '../../orders/models/dto/req/order-stats.dto';
 import { UserBaseResDto } from '../../users/models/dto/res/user-base.res.dto';
 import { CreateManagerReqDto } from '../models/dto/req/create-manager.req.dto';
 import { JwtService } from '@nestjs/jwt';
+import { EmailTypeEnum } from '../../../database/entities/enums/email-type.enum';
+import { EmailService } from '../../auth/services/email.service';
+import { UserRepository } from '../../repository/services/user.repository';
 
 @Injectable()
 export class AdminService {
   constructor(
+    private readonly userRepository: UserRepository,
     private readonly usersService: UserService,
     private readonly ordersService: OrdersService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   createManager(
@@ -33,7 +38,19 @@ export class AdminService {
     };
 
     const token = this.jwtService.sign(payload, { expiresIn: '30m' });
-    const link = `${process.env.FRONTEND_URL}/auth/activate/${token}`;
+
+    const link = `${process.env.APP_FRONT_URL}/auth/activate/${token}`;
+
+    await this.userRepository.update(managerId, { actionToken: token });
+
+    await this.emailService
+      .sendMail(EmailTypeEnum.ACTIVATE_ACCOUNT, user.email, {
+        name: user.name,
+        link: link,
+      })
+      .catch((err) => {
+        console.error('Activation email failed to send:', err);
+      });
 
     return { link };
   }

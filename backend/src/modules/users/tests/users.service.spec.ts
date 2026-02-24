@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { UserService } from '../services/user.service';
 import { UserRepository } from '../../repository/services/user.repository';
-import { MockServiceType } from '../../../../test/types/mock-service.type';
+
 import { mockUserEntity } from '../__mocks__/user-entity.mock';
 import { mockBaseUserReqDto } from '../__mocks__/user-base-dto.mock';
 import { UserEntity } from '../../../database/entities/user.entity';
@@ -9,6 +9,7 @@ import { mockUserResDto } from '../__mocks__/user-res-dto.mock';
 import { DeleteResult } from 'typeorm';
 import { usersModuleProviders } from '../__mocks__/users-module.mock';
 import { mockDisabledUserResDto } from '../__mocks__/disable-user.mock';
+import { MockServiceType } from '../../../types/mock-service.type';
 
 describe('UsersService', () => {
   let service: UserService;

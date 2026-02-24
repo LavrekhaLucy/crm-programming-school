@@ -7,7 +7,7 @@ import {
 import { mockTokenRepository } from '../__mocks__/token-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { mockLoginDto } from '../__mocks__/login-dto.mock';
-import { MockServiceType } from '../../../../test/types/mock-service.type';
+
 import { UserEntity } from '../../../database/entities/user.entity';
 import {
   BadRequestException,
@@ -20,6 +20,10 @@ import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockToken } from '../__mocks__/token.mock';
 import * as bcrypt from 'bcrypt';
 import { mockJwtService } from '../__mocks__/jwt-service.mock';
+import { MockServiceType } from '../../../types/mock-service.type';
+import { EmailTypeEnum } from '../../../database/entities/enums/email-type.enum';
+import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
+import { mockEmailService } from '../__mocks__/email-service.mock';
 
 jest.mock('bcrypt');
 
@@ -149,7 +153,7 @@ describe('AuthService', () => {
       });
 
       mockUserRepository.findOne.mockResolvedValue({
-        id: 1,
+        ...mockUserEntity,
         isActive: false,
       } as UserEntity);
 
@@ -161,7 +165,38 @@ describe('AuthService', () => {
       expect(mockUserRepository.update).toHaveBeenCalledWith(1, {
         password: 'hashedPassword',
         isActive: true,
+        actionToken: null,
       });
+      expect(mockEmailService.sendMail).toHaveBeenCalledWith(
+        EmailTypeEnum.WELCOME,
+        mockUserEntity.email,
+        { name: mockUserEntity.name },
+      );
+    });
+
+    it('should log an error if welcome email fails', async () => {
+      const dto = { token: 'valid-token', password: 'password123' };
+
+      const consoleSpy = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      mockJwtService.verify.mockReturnValue({ sub: 1, action: 'activate' });
+      mockUserRepository.findOne.mockResolvedValue({
+        ...mockUserEntity,
+        isActive: false,
+      } as UserEntity);
+      jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPassword' as never);
+
+      const emailError = new Error('SMTP Error');
+      mockEmailService.sendMail.mockRejectedValue(emailError);
+
+      await service.activate(dto);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Welcome email failed',
+        emailError,
+      );
     });
 
     it('should throw if token invalid', async () => {

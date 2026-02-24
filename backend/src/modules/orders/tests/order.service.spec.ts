@@ -1,6 +1,5 @@
 import { Test } from '@nestjs/testing';
 import { OrdersService } from '../services/order.service';
-import { MockServiceType } from '../../../../test/types/mock-service.type';
 import { OrdersRepository } from '../../repository/services/orders.repository';
 import { mockResponseOrderDto } from '../__mocks__/res-order-dto.mock';
 import { mockCreateOrderDto } from '../__mocks__/create-order-dto.mock';
@@ -27,6 +26,7 @@ import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 import { mockGroup } from '../__mocks__/group.mock';
 import { mockManager } from '../__mocks__/manager.mock';
 import { mockOrdersQuery } from '../__mocks__/orders-query.mock';
+import { MockServiceType } from '../../../types/mock-service.type';
 
 describe('OrderService', () => {
   let service: OrdersService;

@@ -6,6 +6,7 @@ export default (): Config => ({
   app: {
     port: parseInt(process.env.APP_PORT ?? '3000', 10),
     host: process.env.APP_HOST ?? 'localhost',
+    frontUrl: process.env.APP_FRONT_URL ?? 'http://localhost',
   },
 
   database: {
@@ -27,5 +28,10 @@ export default (): Config => ({
       process.env.JWT_REFRESH_EXPIRES_IN ?? '800000',
       10,
     ),
+  },
+  email: {
+    smtpEmail: process.env.SMTP_EMAIL ?? 'smtp.email',
+    smtpPassword: process.env.SMTP_PASSWORD ?? 'smtp.password',
+    smtpManagerEmail: process.env.SMTP_MANAGER_EMAIL ?? 'smtp.managerEmail',
   },
 });

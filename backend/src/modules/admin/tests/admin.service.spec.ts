@@ -10,6 +10,7 @@ import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock
 import { UserEntity } from '../../../database/entities/user.entity';
 import { mockJwtService } from '../../auth/__mocks__/jwt-service.mock';
 import { NotFoundException } from '@nestjs/common';
+import { mockEmailService } from '../../auth/__mocks__/email-service.mock';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -51,7 +52,7 @@ describe('AdminService', () => {
       mockJwtService.sign.mockReturnValue('mocked_jwt_token');
 
       const expectedUrl = 'http://localhost:3000';
-      process.env.FRONTEND_URL = expectedUrl;
+      process.env.APP_FRONT_URL = expectedUrl;
 
       const result = await service.createActivationToken(managerId);
 
@@ -77,6 +78,38 @@ describe('AdminService', () => {
       await expect(attempt).rejects.toThrow(NotFoundException);
       await expect(attempt).rejects.toThrow(`Manager with ID 999 not found`);
       expect(mockJwtService.sign as jest.Mock).not.toHaveBeenCalled();
+    });
+
+    it('should log an error to console if email service fails but return the link', async () => {
+      const mockManager = Object.assign(new UserEntity(), {
+        id: managerId,
+        email: 'manager@example.com',
+        name: 'John Doe',
+      });
+
+      jest
+        .spyOn(mockUserService, 'findById')
+        .mockResolvedValueOnce(mockManager);
+      mockJwtService.sign.mockReturnValue('mocked_jwt_token');
+
+      const emailError = new Error('SMTP Connection Failed');
+      jest
+        .spyOn(mockEmailService, 'sendMail')
+        .mockRejectedValueOnce(emailError);
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await service.createActivationToken(managerId);
+
+      expect(result.link).toBeDefined();
+
+      await new Promise((resolve) => process.nextTick(resolve));
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Activation email failed to send:',
+        emailError,
+      );
+      consoleSpy.mockRestore();
     });
   });
   describe('getAllUsers', () => {
