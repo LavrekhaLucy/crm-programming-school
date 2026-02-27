@@ -71,6 +71,22 @@ Production frontend is built into the client/ folder
 
 Backend serves static files from client/ in production
 
+## Install dependencies (Recommended for IDE support)
+Even if you use Docker, it is recommended to install dependencies locally so your IDE (VS Code, WebStorm) can provide autocompletion and type checking.
+
+### Backend:
+
+```bash
+cd backend
+npm install
+```
+### Frontend:
+
+```bash
+cd ../frontend
+npm install
+cd ..
+```
 ## Environment Variables
 
 Copy example environment files:
@@ -94,7 +110,7 @@ cp frontend/.env.example frontend/.env
 
 ---
 
-## Run with Docker 
+## Run with Docker
 
 ### Start the full system:
 
@@ -175,7 +191,7 @@ Collection contains no sensitive data
 
 ### Author
 
-Lavrekha Liudmila
+Lavrekha Liudmyla
 
 Full-stack CRM Programming School project
 
@@ -189,5 +205,5 @@ This project was created to:
 
 - build a modern React application
 
-- work with MySQL (Aiven Cloud)
+- work with MySQL and TypeORM
 
