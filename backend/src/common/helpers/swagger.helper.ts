@@ -8,6 +8,8 @@ type OperationObject = {
 const pathMethods = ['get', 'post', 'put', 'delete', 'patch'];
 
 const generalResponses = {
+  200: { description: 'OK' },
+  201: { description: 'Created' },
   400: { description: 'Bad Request' },
   422: { description: 'Unprocessable Entity' },
   500: { description: 'Internal Server Error' },
@@ -31,16 +33,39 @@ export class SwaggerHelper {
           | undefined;
         if (!route) continue;
 
-        route.responses = route.responses || {};
-        Object.assign(route.responses, generalResponses);
+        const baseErrors = {
+          400: generalResponses[400],
+          422: generalResponses[422],
+          500: generalResponses[500],
+        };
 
-        if (route.security) {
-          Object.assign(route.responses, authResponses);
+        if (method === 'post') {
+          const isLogin = key.includes('login') || key.includes('auth');
+
+          route.responses = {
+            ...baseErrors,
+            [isLogin ? 200 : 201]: { description: isLogin ? 'OK' : 'Created' },
+          };
+          continue;
         }
 
         if (method === 'delete') {
-          delete route.responses[200];
-          Object.assign(route.responses, deleteResponses);
+          route.responses = {
+            ...baseErrors,
+            ...deleteResponses,
+          };
+          continue;
+        }
+
+        if (['get', 'put', 'patch'].includes(method)) {
+          route.responses = {
+            ...baseErrors,
+            200: { description: 'OK' },
+          };
+        }
+
+        if (route.security && route.responses) {
+          Object.assign(route.responses, authResponses);
         }
       }
     }

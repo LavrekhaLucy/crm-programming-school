@@ -1,5 +1,5 @@
 
-FROM node:20-alpine
+FROM node:22-alpine
 
 LABEL maintainer="Lavrekha"
 
@@ -13,7 +13,7 @@ COPY backend .
 
 COPY client ./client
 
-RUN npm run build
+#RUN npm run build
 
 EXPOSE 3000
 

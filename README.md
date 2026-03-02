@@ -122,9 +122,9 @@ docker compose up --build
 
 Frontend: http://localhost
 
-API: http://localhost:3000
+API: http://localhost
 
-Swagger Docs: http://localhost:3000/docs
+Swagger Docs: http://localhost/docs
 
 #### Notes:
 

@@ -1,53 +1,60 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {type RootState, useAppDispatch, useAppSelector} from "../store/store";
-import { login } from "../../slices/authSlice";
+import {authActions} from "../../slices/authSlice";
 import * as React from "react";
+import {getErrorMessage} from "../../utils/mapError.ts";
+
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { loading, error, token } = useAppSelector((state: RootState) => state.authStoreSlice);
+  const { loading, token } = useAppSelector((state: RootState) => state.authStoreSlice);
 
   const [email, setEmail] = useState<string>("");
+
   const [password, setPassword] = useState<string>("");
 
-  const validate = (): boolean => {
-    if (!email || !password) {
-      alert("All fields are required.");
+  const [error, setError] = useState<string>("");
+
+  const validate = () => {
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email.trim() || !password.trim()) {
+      setError("All fields are required.");
       return false;
     }
 
-    if (!email.includes("@")) {
-      alert("Incorrect email");
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
       return false;
     }
 
     if (password.length < 5) {
-      alert("Password must be at least 5 characters long");
+      setError("Password must be at least 5 characters long");
       return false;
     }
 
+    setError("");
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log('Sending login:', { login: email, password });
-    try {
-      await dispatch(login({ login: email, password })).unwrap();
-      navigate("/app/orders");
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-      alert(e || "Incorrect login or password");
-    }
 
-  }
+    try {
+      await dispatch(authActions.login({ login: email, password })).unwrap();
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
+      }
   };
+
+
   useEffect(() => {
-    if (token) navigate("/app");
+    if (token) navigate("/app/orders");
   }, [token, navigate]);
 
   return (
@@ -66,7 +73,11 @@ const Login = () => {
                   id ='email'
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
+
                   placeholder="Enter your email"
                   className="w-full px-4 py-2 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -78,7 +89,11 @@ const Login = () => {
                   id ='password'
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
+
                   placeholder="Enter your password"
                   className="w-full px-4 py-2 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-400"
               />

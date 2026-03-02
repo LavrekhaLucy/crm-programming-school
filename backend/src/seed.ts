@@ -38,7 +38,7 @@ async function bootstrap() {
   } else {
     console.log('Admin already exists, skipping seed');
   }
-
+  await userRepo.update({ email: adminEmail }, { isActive: true });
   await app.close();
 }
 
