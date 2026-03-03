@@ -81,7 +81,7 @@ export class OrdersService {
     if (group) qb.andWhere('order.group = :group', { group });
 
     if (onlyMine === 'true') {
-      qb.andWhere('order.managerId = :userId', { userId });
+      qb.andWhere('manager.id = :userId', { userId });
     }
 
     return qb;

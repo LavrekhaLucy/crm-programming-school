@@ -121,7 +121,7 @@ describe('OrderService', () => {
       await service.findAll(query, 5);
 
       expect(andWhereSpy.mock.calls).toContainEqual([
-        'order.managerId = :userId',
+        'manager.id = :userId',
         { userId: 5 },
       ]);
     });

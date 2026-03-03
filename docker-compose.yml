@@ -14,7 +14,7 @@ services:
 #      - "3000:3000"
 #    command: sh -c "npm install && npm run migration:run && npm run seed && npm run start:dev"
     command: sh -c "npm run migration:run && npm run seed && npm run start:dev"
-
+#    command: sh -c "npm run seed && npm run start:dev"
 
 
   web:

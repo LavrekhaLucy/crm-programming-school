@@ -5,9 +5,10 @@ import { OrdersService } from './services/order.service';
 import { OrdersController } from './order.controller';
 import { UsersModule } from '../users/users.module';
 import { OrdersRepository } from '../repository/services/orders.repository';
+import { UserEntity } from '../../database/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OrderEntity]), UsersModule],
+  imports: [TypeOrmModule.forFeature([OrderEntity, UserEntity]), UsersModule],
   providers: [OrdersService, OrdersRepository],
   controllers: [OrdersController],
   exports: [OrdersService],

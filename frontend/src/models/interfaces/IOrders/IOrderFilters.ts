@@ -14,13 +14,15 @@ export interface IOrderFilters {
     surname?: string;
     email?: string;
     phone?: string;
+    age?: string;
 
     course?: CoursesEnum;
     course_format?: FormatsEnum;
     course_type?: TypesEnum;
     status?: StatusesEnum;
+    group?: string;
 
-    onlyMine?: 'true';
+    onlyMine?: boolean | string;
 
     startDate?: string;
     endDate?: string;

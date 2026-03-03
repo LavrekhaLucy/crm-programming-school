@@ -9,6 +9,9 @@ import { EnvService } from '../../shared/env.service';
 import { JwtStrategy } from './jwt.strategy';
 import { TokenRepository } from '../repository/services/token.repository';
 import { UserRepository } from '../repository/services/user.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from '../../database/entities/user.entity';
+import { TokenEntity } from '../../database/entities/token.entity';
 
 @Module({
   imports: [
@@ -24,6 +27,7 @@ import { UserRepository } from '../repository/services/user.repository';
       }),
       inject: [EnvService],
     }),
+    TypeOrmModule.forFeature([UserEntity, TokenEntity]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, UserRepository, TokenRepository],

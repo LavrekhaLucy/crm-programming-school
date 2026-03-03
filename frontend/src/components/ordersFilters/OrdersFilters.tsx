@@ -4,17 +4,24 @@ import {useEffect, useState} from "react";
 import Input from "../ui/input.tsx";
 import Select from "../ui/select.tsx";
 import {getOrderFiltersFromSearchParams} from "../../common/helper/getOrderFiltersFromSearchParams.ts";
-import {initialOrderFilters} from "../res_constants/orderFilters.ts";
+import {initialOrderFilters, ORDER_FILTER_KEYS} from "../res_constants/orderFilters.ts";
 import {groupActions} from "../../slices/groupSlice.ts";
 import { useAppDispatch, useAppSelector} from "../store/store.ts";
 import {ExportButton} from "./ExportButton.tsx";
+import type {IOrderFilters} from "../../models/interfaces/IOrders/IOrderFilters.ts";
+import type {CoursesEnum} from "../../enums/courses.enum.ts";
+import type {StatusesEnum} from "../../enums/statuses.enum.ts";
+import type {TypesEnum} from "../../enums/types.enum.ts";
+import type {FormatsEnum} from "../../enums/formats.enum.ts";
+
 
 
 const OrdersFilters = () => {
     const dispatch = useAppDispatch();
 
     const { groups } = useAppSelector((state) => state.groupStoreSlice);
-    const currentFilters = useAppSelector((state) => state.orderStoreSlice.filters);
+
+
     useEffect(() => {
         if (groups.length === 0) {
             dispatch(groupActions.fetchGroups());
@@ -22,37 +29,57 @@ const OrdersFilters = () => {
     }, [dispatch, groups.length]);
 
     const [searchParams, setSearchParams] = useSearchParams();
+
     const [localFilters, setLocalFilters] = useState(() =>
-        getOrderFiltersFromSearchParams(searchParams)
+        getOrderFiltersFromSearchParams(new URLSearchParams(window.location.search))
     );
 
     const debouncedFilters = useDebounce(localFilters, 600);
 
+    useEffect(() => {
+        const currentParams = new URLSearchParams(window.location.search);
+        const nextParams = new URLSearchParams(currentParams.toString());
+        let hasChanged = false;
+
+        for (const key in debouncedFilters) {
+            const urlKey = ORDER_FILTER_KEYS[key as keyof typeof ORDER_FILTER_KEYS] || key;
+            let newValue = String(debouncedFilters[key as keyof typeof debouncedFilters] || "");
+            const oldValue = currentParams.get(urlKey) || "";
+
+
+
+            if (newValue !== oldValue) {
+                hasChanged = true;
+                if (newValue) nextParams.set(urlKey, newValue);
+                else nextParams.delete(urlKey);
+            }
+            if (key === "onlyMine" && (newValue === "" || newValue === "undefined")) {
+                newValue = "false";
+            }
+        }
+
+        if (hasChanged) {
+            nextParams.set("page", "1");
+
+    if (nextParams.toString() !== searchParams.toString()) {
+                    setSearchParams(nextParams, { replace: true });
+                }
+        }
+    }, [debouncedFilters]);
 
     const handleReset = () => {
-        setLocalFilters(initialOrderFilters);
 
-        setSearchParams({
-            page: "1",
-            limit: "25",
-        });
+        setLocalFilters(initialOrderFilters as IOrderFilters);
+
+        const cleanParams = new URLSearchParams();
+
+        cleanParams.set("page", "1");
+
+        cleanParams.set("limit", "25");
+
+        setSearchParams(cleanParams, { replace: true });
 
     };
-
-
-    useEffect(() => {
-        setSearchParams(prev => {
-            const params = new URLSearchParams(prev);
-
-            for (const key in debouncedFilters) {
-                const value = debouncedFilters[key as keyof typeof debouncedFilters];
-
-                if (value) params.set(key, value);
-                else params.delete(key);
-            }
-            return params;
-        });
-    }, [debouncedFilters, setSearchParams]);
 
 
     return (
@@ -107,7 +134,7 @@ const OrdersFilters = () => {
                 <Select
                     value={localFilters.course}
                     onChange={(e) =>
-                        setLocalFilters(prev => ({...prev, course: e.target.value}))
+                        setLocalFilters(prev => ({...prev, course: e.target.value as CoursesEnum}))
                     }
                 >
                     <option value="">all courses</option>
@@ -123,7 +150,7 @@ const OrdersFilters = () => {
                 <Select
                     value={localFilters.course_format}
                     onChange={(e) =>
-                        setLocalFilters(prev => ({...prev, course_format: e.target.value}))
+                        setLocalFilters(prev => ({...prev, course_format: e.target.value as FormatsEnum}))
                     }
                 >
                     <option value="">all formats</option>
@@ -135,7 +162,7 @@ const OrdersFilters = () => {
                 <Select
                     value={localFilters.course_type}
                     onChange={(e) =>
-                        setLocalFilters(prev => ({...prev, course_type: e.target.value}))
+                        setLocalFilters(prev => ({...prev, course_type: e.target.value as TypesEnum}))
                     }
                 >
                     <option value="">all types</option>
@@ -151,7 +178,7 @@ const OrdersFilters = () => {
                 <Select
                     value={localFilters.status}
                     onChange={(e) =>
-                        setLocalFilters(prev => ({...prev, status: e.target.value}))
+                        setLocalFilters(prev => ({...prev, status: e.target.value as StatusesEnum}))
                     }
                 >
                     <option value="">all statuses</option>
@@ -214,7 +241,7 @@ const OrdersFilters = () => {
                     onChange={(e) =>
                         setLocalFilters(prev => ({
                             ...prev,
-                            onlyMine: e.target.checked ? "true" : "",
+                            onlyMine: e.target.checked ? "true" : "false"
                         }))
                     }
                 />
@@ -228,7 +255,7 @@ const OrdersFilters = () => {
                     className="bg-[#2e7d32] hover:bg-[#43a047] transition-colors bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]">
                 </button>
 
-                <ExportButton filters={currentFilters} />
+                <ExportButton filters={debouncedFilters} />
             </div>
 
 

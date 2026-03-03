@@ -13,7 +13,7 @@ COPY backend .
 
 COPY client ./client
 
-#RUN npm run build
+RUN npm run build
 
 EXPOSE 3000
 
