@@ -77,7 +77,16 @@ export class OrdersService {
       qb.andWhere('order.course_format = :course_format', { course_format });
     if (course_type)
       qb.andWhere('order.course_type = :course_type', { course_type });
-    if (status) qb.andWhere('order.status = :status', { status });
+
+    if (status) {
+      if (status === 'new') {
+        qb.andWhere('(order.status = :status OR order.status IS NULL)', {
+          status,
+        });
+      } else {
+        qb.andWhere('order.status = :status', { status });
+      }
+    }
     if (group) qb.andWhere('order.group = :group', { group });
 
     if (onlyMine === 'true') {

@@ -1,5 +1,5 @@
 import {useSearchParams} from "react-router-dom";
-import {useAppDispatch} from "../components/store/store.ts";
+import {useAppDispatch, useAppSelector} from "../components/store/store.ts";
 import {useEffect} from "react";
 import {ordersActions} from "../slices/ordersSlice.ts";
 import OrdersFilters from "../components/ordersFilters/OrdersFilters.tsx";
@@ -10,6 +10,10 @@ const OrdersPage = () => {
 
     const dispatch = useAppDispatch();
     const [searchParams, setSearchParams] = useSearchParams();
+
+    const pageData = useAppSelector(state => state.orderStoreSlice.pageData);
+
+    const totalPages = pageData ? Math.ceil(pageData.total / pageData.limit) : 1;
 
     const onSort = (field: string) => {
         const currentOrder = searchParams.get("order");
@@ -39,7 +43,7 @@ const OrdersPage = () => {
             <>
                 <OrdersFilters/>
                 <OrdersTable onSort={onSort}/>
-                <Pagination totalPages={20}/>
+                <Pagination totalPages={totalPages}/>
             </>
         );
     };

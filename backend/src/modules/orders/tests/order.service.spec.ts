@@ -109,6 +109,28 @@ describe('OrderService', () => {
       });
     });
 
+    it('should filter by specific status', async () => {
+      const qb = mockQueryBuilder<OrderEntity>();
+      qb.getManyAndCount.mockResolvedValue([mockOrderEntities, 1]);
+
+      jest
+        .spyOn(repository, 'createQueryBuilder')
+        .mockReturnValue(qb as unknown as SelectQueryBuilder<OrderEntity>);
+
+      const queryWithInWorkStatus = { ...mockOrdersQuery, status: 'in_work' };
+
+      const result = await service.findAll(queryWithInWorkStatus, 1);
+
+      expect(jest.spyOn(qb, 'andWhere')).toHaveBeenCalledWith(
+        'order.status = :status',
+        {
+          status: 'in_work',
+        },
+      );
+      expect(result.data).toEqual(mockOrderEntities);
+      expect(result.total).toBe(1);
+    });
+
     it('should filter only mine orders', async () => {
       qb.getManyAndCount.mockResolvedValue([[], 0]);
 
