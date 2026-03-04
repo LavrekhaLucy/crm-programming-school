@@ -5,7 +5,7 @@ import { mockResponseOrderDto } from '../__mocks__/res-order-dto.mock';
 import { mockCreateOrderDto } from '../__mocks__/create-order-dto.mock';
 import { mockCreatedEntity } from '../__mocks__/create-entity.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { mockOrderRepository } from '../__mocks__/order-repository.mock';
 import { mockUserRepository } from '../../users/__mocks__/user-repository.mock';
 import { UserEntity } from '../../../database/entities/user.entity';
@@ -27,11 +27,15 @@ import { mockGroup } from '../__mocks__/group.mock';
 import { mockManager } from '../__mocks__/manager.mock';
 import { mockOrdersQuery } from '../__mocks__/orders-query.mock';
 import { MockServiceType } from '../../../types/mock-service.type';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
+import { updateDto } from '../__mocks__/updateDto.mock';
 
 describe('OrderService', () => {
   let service: OrdersService;
   let repository: MockServiceType<OrdersRepository>;
   let qb: jest.Mocked<SelectQueryBuilder<OrderEntity>>;
+
+  const mockAdmin = { id: 1, role: UserRoleEnum.ADMIN } as UserEntity;
 
   beforeEach(async () => {
     qb = mockQueryBuilder<OrderEntity>();
@@ -288,7 +292,6 @@ describe('OrderService', () => {
       expect(mockOrderRepository.update).not.toHaveBeenCalled();
     });
   });
-
   describe('getStatsByStatus', () => {
     beforeEach(() => {
       jest.clearAllMocks();
@@ -372,6 +375,7 @@ describe('OrderService', () => {
   describe('update', () => {
     it('should update order and return updated order', async () => {
       const orderId = 'orderId';
+      const mockAdmin = { id: 1, role: UserRoleEnum.ADMIN } as UserEntity;
 
       const existingOrder = { ...mockOrderEntity, group: null, manager: null };
 
@@ -398,10 +402,11 @@ describe('OrderService', () => {
 
       mockOrderRepository.save.mockResolvedValue(fullUpdatedOrder);
 
-      const result = await service.update(orderId, updateDto);
+      const result = await service.update(orderId, mockAdmin, updateDto);
 
       expect(mockOrderRepository.findOne).toHaveBeenNthCalledWith(1, {
         where: { id: orderId },
+        relations: ['manager'],
       });
 
       expect(mockOrderRepository.save).toHaveBeenCalledWith(
@@ -427,12 +432,42 @@ describe('OrderService', () => {
         .mockResolvedValueOnce(existingOrder)
         .mockResolvedValueOnce({ ...existingOrder, name: 'Only Name' });
 
-      await service.update(orderId, updateDto as UpdateOrderDto);
+      await service.update(orderId, mockAdmin, updateDto as UpdateOrderDto);
 
       expect(mockOrderRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Only Name' }),
       );
     });
+
+    it('should throw ForbiddenException if a non-admin manager tries to edit someone else’s order', async () => {
+      const orderId = 'order-123';
+
+      const otherManager = {
+        id: 99,
+        role: UserRoleEnum.MANAGER,
+      } as UserEntity;
+
+      const currentUser = { id: 1, role: UserRoleEnum.MANAGER } as UserEntity;
+
+      await expect(
+        service.update(orderId, currentUser, updateDto),
+      ).rejects.toThrow(ForbiddenException);
+
+      const existingOrder = {
+        ...mockOrderEntity,
+        id: orderId,
+        manager: otherManager,
+      };
+
+      mockOrderRepository.findOne.mockResolvedValue(existingOrder);
+
+      await expect(
+        service.update(orderId, currentUser, updateDto),
+      ).rejects.toThrow(ForbiddenException);
+
+      expect(mockOrderRepository.save).not.toHaveBeenCalled();
+    });
+
     it('should throw NotFoundException if order not found', async () => {
       const orderId = 'missingOrder';
       const updateDto: UpdateOrderDto = {
@@ -442,9 +477,9 @@ describe('OrderService', () => {
       };
       mockOrderRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.update(orderId, updateDto)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update(orderId, mockAdmin, updateDto),
+      ).rejects.toThrow(NotFoundException);
 
       expect(mockOrderRepository.save).not.toHaveBeenCalled();
       expect(mockOrderRepository.findOne).toHaveBeenCalledTimes(1);

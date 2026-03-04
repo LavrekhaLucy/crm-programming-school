@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { IComment } from "../../models/interfaces/IComments/IComment";
 import {useAppDispatch, useAppSelector} from "../store/store.ts";
 import {commentActions} from "../../slices/commentSlice.ts";
+import {usePermissions} from "../hooks/usePermissions.ts";
 
 interface CommentsProps {
     orderId: string;
@@ -12,6 +13,11 @@ export const Comments = ({ orderId }: CommentsProps) => {
     const { items: comments, loading, error } = useAppSelector((state) => state.commentStoreSlice);
 
     const [inputValue, setInputValue] = useState("");
+
+    const { pageData } = useAppSelector((state) => state.orderStoreSlice);
+
+    const currentOrder = pageData?.data.find(o => String(o.id) === String(orderId));
+    const { canComment } = usePermissions(currentOrder);
 
 
     useEffect(() => {
@@ -64,19 +70,20 @@ export const Comments = ({ orderId }: CommentsProps) => {
                 ))}
             </div>
 
+
             <div className="flex gap-2.5">
                 <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Comment"
-                    disabled={loading}
+                    disabled={loading || !canComment}
+                    placeholder={canComment ? "Comment" : "Access denied"}
                     className="grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#43a047] disabled:bg-gray-50"
                 />
 
                 <button
                     onClick={handleSubmit}
-                    disabled={loading || !inputValue.trim()}
+                    disabled={loading || !inputValue.trim() || !canComment}
                     className="bg-[#43a047] text-white px-4 py-2 rounded-md cursor-pointer hover:bg-[#2e7d32] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
                 >
                     SUBMIT

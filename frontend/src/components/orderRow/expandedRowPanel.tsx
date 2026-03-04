@@ -1,12 +1,17 @@
 import type {IOrder} from "../../models/interfaces/IOrders/IOrder.ts";
 import type {FC} from "react";
 import {Comments} from "../comment/Comments.tsx";
+import {usePermissions} from "../hooks/usePermissions.ts";
+
 type ExpandedOrderPanelProps = {
     order: IOrder;
     onEdit: () => void;
 };
 
 export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit }) => {
+    const { canEdit } = usePermissions(order);
+
+
     return (
         <tr>
             <td colSpan={12}>
@@ -42,7 +47,13 @@ export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit }
                             e.stopPropagation();
                             onEdit();
                         }}
-                        className="px-4 py-2 bg-[#43a047] text-white rounded-[5px] self-start"
+                        disabled={!canEdit}
+                        className={`px-4 py-2 text-white rounded-[5px] self-start transition-colors ${
+                            canEdit
+                                ? "bg-[#43a047] hover:bg-[#2e7d32] cursor-pointer"
+                                : "bg-gray-300 cursor-not-allowed"
+                        }`}
+                        title={!canEdit ? "Ви не можете редагувати чужу заявку" : ""}
                     >
                         EDIT
                     </button>

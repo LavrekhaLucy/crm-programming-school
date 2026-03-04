@@ -4,6 +4,7 @@ import type {IOrdersResponseModel} from "../models/interfaces/IOrders/IOrdersRes
 import type {IOrderFilters} from "../models/interfaces/IOrders/IOrderFilters.ts";
 import type {IOrder} from "../models/interfaces/IOrders/IOrder.ts";
 import type {IUpdateOrder} from "../models/interfaces/IOrders/IUpdateOrder.ts";
+import {addComment} from "./commentSlice.ts";
 
 
 type OrderSliceType = {
@@ -102,6 +103,22 @@ const ordersSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload ?? "Failed to load orders";
             })
+
+            .addCase(addComment.fulfilled, (state, action) => {
+            if (!state.pageData || !state.pageData.data) return;
+
+            const { order: updatedOrder, user: manager } = action.payload;
+
+            state.pageData.data = state.pageData.data.map((order) =>
+                order.id === updatedOrder.id
+                    ? {
+                        ...order,
+                        manager: manager,
+                        status: updatedOrder.status
+                    }
+                    : order
+            );
+        })
 
             .addCase(exportOrders.pending, (state) => {
                 state.isExporting = true;

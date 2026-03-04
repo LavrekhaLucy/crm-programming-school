@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { OrdersMapper } from '../orders.mapper';
 import { GroupEntity } from '../../../database/entities/group.entity';
 import * as ExcelJS from 'exceljs';
 import { IOrderRawStats } from '../interfaces/order-raw-stats.interface';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 
 @Injectable()
 export class OrdersService {
@@ -250,10 +252,25 @@ export class OrdersService {
     return statsResult;
   }
 
-  async update(id: string, dto: UpdateOrderDto): Promise<ResponseOrderDto> {
-    const order = await this.orderRepository.findOne({ where: { id } });
+  async update(
+    id: string,
+    currentUser: UserEntity,
+    dto: UpdateOrderDto,
+  ): Promise<ResponseOrderDto> {
+    const order = await this.orderRepository.findOne({
+      where: { id },
+      relations: ['manager'],
+    });
 
     if (!order) throw new NotFoundException(`Order #${id} not found`);
+
+    const isAdmin = currentUser.role === UserRoleEnum.ADMIN;
+    const isOwner = order.manager?.id === currentUser.id;
+    const hasNoManager = !order.manager;
+
+    if (!isAdmin && !hasNoManager && !isOwner) {
+      throw new ForbiddenException('Ви не можете редагувати чужу заявку');
+    }
 
     if (dto.group) order.group = { id: dto.group } as GroupEntity;
     if (dto.manager) order.manager = { id: dto.manager } as UserEntity;

@@ -26,6 +26,7 @@ import { CurrentUser } from '../../common/decorators/user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
 import { Response } from 'express';
+import { UserEntity } from '../../database/entities/user.entity';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Orders')
@@ -77,8 +78,9 @@ export class OrdersController {
   update(
     @Param('id') id: string,
     @Body() dto: UpdateOrderDto,
+    @CurrentUser() user: UserEntity,
   ): Promise<ResponseOrderDto> {
-    return this.ordersService.update(id, dto);
+    return this.ordersService.update(id, user, dto);
   }
 
   @Roles(UserRoleEnum.ADMIN)

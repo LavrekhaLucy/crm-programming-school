@@ -5,12 +5,14 @@ import type {ILoginData} from "../models/interfaces/ILogin/ILoginData.ts";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 
 type AuthState = {
+    me: IUser | null;
     token: string | null;
     loading: boolean;
     error: string | null;
 };
 
 const initialAuthState: AuthState = {
+    me: null,
     token: localStorage.getItem("token"),
     loading: false,
     error: null,
@@ -90,9 +92,10 @@ const authSlice = createSlice({
             .addCase(fetchMe.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(fetchMe.fulfilled, (state) => {
+            .addCase(fetchMe.fulfilled, (state, action) => {
                 state.loading = false;
                 state.error = null;
+                state.me = action.payload;
             })
             .addCase(fetchMe.rejected, (state, action) => {
                 state.loading = false;

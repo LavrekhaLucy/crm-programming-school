@@ -2,7 +2,6 @@ import { OrdersController } from '../order.controller';
 import { Test } from '@nestjs/testing';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
-import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
 import { UserRequest } from '../../auth/interfaces/user-request.interface';
 import { mockCreateOrderDto } from '../__mocks__/create-order-dto.mock';
 import { mockResponseOrderDto } from '../__mocks__/res-order-dto.mock';
@@ -10,6 +9,9 @@ import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockOrdersService } from '../__mocks__/orders-service.mock';
 import { OrdersQueryDto } from '../models/dto/req/orders-query.dto';
 import { Response } from 'express';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
+import { UserEntity } from '../../../database/entities/user.entity';
+import { updateDto } from '../__mocks__/updateDto.mock';
 
 describe(OrdersController.name, () => {
   let ordersController: OrdersController;
@@ -114,25 +116,28 @@ describe(OrdersController.name, () => {
     it('should update order', async () => {
       const orderId = 'order-id';
 
-      const mockUpdateDto: UpdateOrderDto = {
-        status: StatusesEnum.AGREE,
-      };
+      const mockUser = { id: 1, role: UserRoleEnum.MANAGER } as UserEntity;
 
-      const updatedOrder: ResponseOrderDto = {
-        ...mockResponseOrderDto,
-        status: StatusesEnum.AGREE,
-      };
+      const updatedOrder = mockResponseOrderDto;
 
       mockOrdersService.update.mockResolvedValue(updatedOrder);
 
-      const result = await ordersController.update(orderId, mockUpdateDto);
+      const result = await ordersController.update(
+        orderId,
+        updateDto,
+        mockUser,
+      );
+
       expect(mockOrdersService.update).toHaveBeenCalledWith(
         orderId,
-        mockUpdateDto,
+        mockUser,
+        updateDto,
       );
+
       expect(result).toEqual(updatedOrder);
     });
   });
+
   describe('assign', () => {
     it('should assign manager to order', async () => {
       const orderId = 'order-id';
