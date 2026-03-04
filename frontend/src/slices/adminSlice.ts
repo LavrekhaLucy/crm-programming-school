@@ -3,6 +3,8 @@ import type {IOrdersStats} from "../models/interfaces/IOrders/orders-stats.inter
 import {banUser, createManager, getActivationLink, getAllUsers, getStatsByStatus, unbanUser} from "../services/api.service.tsx";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 import type {IManager} from "../models/interfaces/IManager/IManager.ts";
+import type {IFetchAllUsersResponse} from "../models/interfaces/IUser/IFetchAllUsersResponse.ts";
+
 
 interface OrdersState {
     users: IUser[];
@@ -118,9 +120,15 @@ const adminSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchAllUsers.fulfilled, (state, action: PayloadAction<IUser[]>) => {
+            .addCase(fetchAllUsers.fulfilled, (state, action: PayloadAction<IFetchAllUsersResponse>) => {
                 state.loading = false;
-                state.users = action.payload;
+
+                if (action.payload.users) {
+                    state.users = action.payload.users;
+                }
+                if (action.payload.stats) {
+                    state.stats = action.payload.stats;
+                }
             })
             .addCase(fetchAllUsers.rejected, (state, action) => {
                 state.loading = false;

@@ -7,6 +7,7 @@ import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
 import { NotFoundException } from '@nestjs/common';
+import { mockStats } from '../__mocks__/stats.mock';
 
 describe(AdminController.name, () => {
   let adminController: AdminController;
@@ -44,15 +45,22 @@ describe(AdminController.name, () => {
   });
 
   describe('getAllUsers', () => {
-    it('should return all users', async () => {
-      jest
-        .spyOn(mockAdminService, 'getAllUsers')
-        .mockResolvedValue([mockUserResDto]);
+    it('should return an object containing users and statistics', async () => {
+      jest.spyOn(mockAdminService, 'getAllUsers').mockResolvedValue({
+        users: [mockUserResDto],
+        stats: mockStats,
+      });
 
       const result = await adminController.getAllUsers();
 
       expect(mockAdminService.getAllUsers).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([mockUserResDto]);
+
+      expect(result).toEqual({
+        users: [mockUserResDto],
+        stats: mockStats,
+      });
+
+      expect(result.stats.null).toBe(484);
     });
   });
 

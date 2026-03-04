@@ -38,7 +38,7 @@ export class AdminController {
   }
 
   @Get('users')
-  getAllUsers(): Promise<UserResDto[]> {
+  getAllUsers(): Promise<{ users: UserBaseResDto[]; stats: OrdersStatsDto }> {
     return this.adminService.getAllUsers();
   }
 

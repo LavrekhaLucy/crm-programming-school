@@ -18,4 +18,7 @@ export class OrdersStatsDto {
 
   @ApiProperty({ example: 200 })
   new: number;
+
+  @ApiProperty({ example: 200 })
+  null: number;
 }

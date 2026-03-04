@@ -11,6 +11,7 @@ import { UserEntity } from '../../../database/entities/user.entity';
 import { mockJwtService } from '../../auth/__mocks__/jwt-service.mock';
 import { NotFoundException } from '@nestjs/common';
 import { mockEmailService } from '../../auth/__mocks__/email-service.mock';
+import { mockStats } from '../__mocks__/stats.mock';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -113,12 +114,19 @@ describe('AdminService', () => {
     });
   });
   describe('getAllUsers', () => {
-    it('should delegate getAllUsers to UserService.findAll', async () => {
+    it('should return combined object with users and stats', async () => {
       mockUserService.findAll.mockResolvedValue([mockUserResDto]);
+      mockOrdersService.getStatsByStatus.mockResolvedValue(mockStats);
 
       const result = await service.getAllUsers();
       expect(mockUserService.findAll).toHaveBeenCalledTimes(1);
-      expect(result).toEqual([mockUserResDto]);
+
+      expect(mockOrdersService.getStatsByStatus).toHaveBeenCalledTimes(1);
+
+      expect(result).toEqual({
+        users: [mockUserResDto],
+        stats: mockStats,
+      });
     });
   });
   describe('disableUser', () => {

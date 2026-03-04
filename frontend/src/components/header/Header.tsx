@@ -1,12 +1,15 @@
 import {useAppDispatch, useAppSelector} from "../store/store.ts";
-import {useNavigate} from "react-router-dom";
 import {logout} from "../../slices/authSlice.ts";
 import {fetchOrdersStats} from "../../slices/adminSlice.ts";
 import {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 export const Header = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    const { me } = useAppSelector((state) => state.authStoreSlice);
+    const isAdmin = me?.role === 'admin';
 
     const { error } = useAppSelector(state => state.adminStoreSlice);
 
@@ -34,20 +37,24 @@ export const Header = () => {
                     </div>
 
                     <div className="w-50 h-10 flex items-center  text-2xl text-white gap-2 ">
-                        admin
-                        <button
-                            type="button"
-                            onClick={handleAdminPanel}
-                            style={{backgroundImage: `url('http://bigbird.space:81/static/media/admin.c305133bad8700df7d8be698c350c2bb.svg')`}}
-                            className="bg-[#2e7d32] hover:bg-[#1b5e20] transition-colors bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]">
-                        </button>
+                        {isAdmin && (
+                            <div className=" flex items-center text-white gap-2 ">
+                               admin
+                                <button
+                                    type="button"
+                                    onClick={handleAdminPanel}
+                                    style={{backgroundImage: `url('http://bigbird.space:81/static/media/admin.c305133bad8700df7d8be698c350c2bb.svg')`}}
+                                    className="bg-[#2e7d32] hover:bg-[#1b5e20] transition-colors bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]"
+                                />
+                            </div>
+                        )}
 
                         <button
                             type="button"
                             onClick={handleLogout}
                             style={{backgroundImage: `url('http://bigbird.space:81/static/media/logOut.7e73deefd22b4062b49d7ed47c46a9e1.svg')`}}
-                            className="bg-[#2e7d32] hover:bg-[#1b5e20] transition-colors bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]">
-                        </button>
+                            className="bg-[#2e7d32] hover:bg-[#1b5e20] transition-colors bg-center bg-no-repeat bg-size-[20px_20px] w-10 h-10 rounded-[5px]"
+                        />
                     </div>
 
                 </header>

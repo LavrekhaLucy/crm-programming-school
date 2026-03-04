@@ -4,5 +4,6 @@ export interface IOrdersStats {
   in_work: number;
   disagree: number;
   dubbing: number;
+  null: number;
   new: number;
 }

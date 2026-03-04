@@ -241,6 +241,7 @@ export class OrdersService {
       disagree: 0,
       dubbing: 0,
       new: 0,
+      null: 0,
     };
 
     for (const row of rows) {

@@ -55,8 +55,18 @@ export class AdminService {
     return { link };
   }
 
-  getAllUsers(): Promise<UserBaseResDto[]> {
-    return this.usersService.findAll();
+  async getAllUsers(): Promise<{
+    users: UserBaseResDto[];
+    stats: OrdersStatsDto;
+  }> {
+    const users = await this.usersService.findAll();
+
+    const stats = await this.ordersService.getStatsByStatus();
+
+    return {
+      users,
+      stats,
+    };
   }
 
   disableUser(userId: number): Promise<UserBaseResDto> {

@@ -12,6 +12,7 @@ import type {IOrdersStats} from "../models/interfaces/IOrders/orders-stats.inter
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 import type {IManager} from "../models/interfaces/IManager/IManager.ts";
 import type {IActivateUser} from "../models/interfaces/IUser/IActivateUser.ts";
+import type {IFetchAllUsersResponse} from "../models/interfaces/IUser/IFetchAllUsersResponse.ts";
 
 
 
@@ -58,10 +59,10 @@ export const getStatsByStatus = async ():Promise<IOrdersStats> => {
     return data;
 
 }
-export const  getAllUsers = async (): Promise<IUser[]> => {
-    const { data } = await axiosInstance.get('admin/users', {});
+export const getAllUsers = async (): Promise<IFetchAllUsersResponse> => {
+    const { data } = await axiosInstance.get('admin/users');
     return data;
-}
+};
 
 export const createManager = async (managerData: IManager):Promise<IUser> => {
     const { data } = await axiosInstance.post<IUser>('admin/managers', managerData);

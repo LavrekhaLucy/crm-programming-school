@@ -323,6 +323,7 @@ describe('OrderService', () => {
         agree: 0,
         disagree: 0,
         dubbing: 0,
+        null: 0,
       });
     });
 
@@ -344,6 +345,7 @@ describe('OrderService', () => {
         agree: 0,
         disagree: 0,
         dubbing: 0,
+        null: 0,
       });
     });
 

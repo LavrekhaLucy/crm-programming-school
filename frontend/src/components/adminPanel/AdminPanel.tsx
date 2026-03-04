@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { fetchAllUsers } from "../../slices/adminSlice.ts";
 import { ManagerCard } from "../manager/ManagerCard.tsx";
 import {CreateManagerModal} from "../manager/CreateManagerModal.tsx";
+import {BackToOrdersButton} from "./BackToOrdersButton.tsx";
 
 
 export const AdminPanel = () => {
@@ -10,6 +11,7 @@ export const AdminPanel = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { stats, users, loading } = useAppSelector((state) => state.adminStoreSlice);
+
 
     useEffect(() => {
         dispatch(fetchAllUsers());
@@ -30,6 +32,11 @@ export const AdminPanel = () => {
                     </button>
                 </div>
 
+                <div className="absolute right-0 top-0">
+
+                    <BackToOrdersButton/>
+                </div>
+
                 <div className="flex flex-col items-center justify-center text-center">
                     <h2 className="text-xl font-bold mb-4">Orders statistic</h2>
 
@@ -39,7 +46,8 @@ export const AdminPanel = () => {
                         <p>In work: {stats?.in_work || 0}</p>
                         <p>Disagree: {stats?.disagree || 0}</p>
                         <p>Dubbing: {stats?.dubbing || 0}</p>
-                        <p >New: {stats?.new || 0}</p>
+                        <p>New: {stats?.new || 0}</p>
+                        <p>Null : {stats?.null || 0}</p>
                     </div>
                 </div>
             </div>
