@@ -13,7 +13,7 @@ export class RegisterReqDto {
   @ApiProperty({ example: 'john_doe' })
   @IsOptional()
   @IsString()
-  @Length(3, 25)
+  @Length(2, 25)
   username: string;
 
   @ApiProperty({ example: 'johnDoe@gmail.com' })
@@ -24,23 +24,26 @@ export class RegisterReqDto {
   @ApiProperty({ example: 'John' })
   @IsOptional()
   @IsString()
-  @Length(3, 50)
+  @Length(2, 50)
   @Transform(TransformHelper.trim)
   name: string;
 
   @ApiProperty({ example: 'Doe' })
   @IsOptional()
   @IsString()
-  @Length(3, 50)
+  @Length(2, 50)
   @Transform(TransformHelper.trim)
   surname: string;
 
   @ApiProperty({ example: '123qwe!@#QWE' })
   @IsString()
   @Length(8, 300)
-  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&]).*$/, {
-    message:
-      'Password must contain at least one letter, one number and one special character',
-  })
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message:
+        'Password must contain at least one letter, one number and one special character',
+    },
+  )
   password: string;
 }

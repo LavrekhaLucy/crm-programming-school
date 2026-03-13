@@ -60,7 +60,7 @@ describe(AdminController.name, () => {
         stats: mockStats,
       });
 
-      expect(result.stats.null).toBe(484);
+      expect(result.stats.new).toBe(484);
     });
   });
 

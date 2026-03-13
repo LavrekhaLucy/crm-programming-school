@@ -27,10 +27,7 @@ export const fetchOrdersStats = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         console.log("Thunk started!");
         try {
-            // return await getStatsByStatus();
-            const data = await getStatsByStatus();
-            console.log("Data received:", data);
-            return data;
+            return await getStatsByStatus();
         } catch (error) {
             console.error("API Error:", error);
             return rejectWithValue(error as string);

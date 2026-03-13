@@ -21,7 +21,6 @@ import { OrdersMapper } from '../orders.mapper';
 import { GroupEntity } from '../../../database/entities/group.entity';
 import * as ExcelJS from 'exceljs';
 import { IOrderRawStats } from '../interfaces/order-raw-stats.interface';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 
 @Injectable()
 export class OrdersService {
@@ -241,21 +240,23 @@ export class OrdersService {
       disagree: 0,
       dubbing: 0,
       new: 0,
-      null: 0,
     };
 
     for (const row of rows) {
-      const statusKey = row.status as keyof OrdersStatsDto;
-      if (statusKey in statsResult) {
-        statsResult[statusKey] = Number(row.count) || 0;
+      if (row.status === 'new' || row.status === null) {
+        statsResult.new += Number(row.count) || 0;
+      } else if (row.status in statsResult) {
+        statsResult[row.status as keyof OrdersStatsDto] =
+          Number(row.count) || 0;
       }
     }
+
     return statsResult;
   }
 
   async update(
     id: string,
-    currentUser: UserEntity,
+    user: UserEntity,
     dto: UpdateOrderDto,
   ): Promise<ResponseOrderDto> {
     const order = await this.orderRepository.findOne({
@@ -265,16 +266,23 @@ export class OrdersService {
 
     if (!order) throw new NotFoundException(`Order #${id} not found`);
 
-    const isAdmin = currentUser.role === UserRoleEnum.ADMIN;
-    const isOwner = order.manager?.id === currentUser.id;
-    const hasNoManager = !order.manager;
+    if (order.manager) {
+      const isOwner = Number(order.manager.id) === Number(user.id);
 
-    if (!isAdmin && !hasNoManager && !isOwner) {
-      throw new ForbiddenException('Ви не можете редагувати чужу заявку');
+      if (!isOwner && dto.status !== StatusesEnum.NEW) {
+        throw new ForbiddenException(
+          'This application is already assigned to a manager and cannot be edited.',
+        );
+      }
+    }
+
+    if (dto.status === StatusesEnum.NEW) {
+      order.manager = null;
+    } else if (dto.manager) {
+      order.manager = { id: dto.manager } as UserEntity;
     }
 
     if (dto.group) order.group = { id: dto.group } as GroupEntity;
-    if (dto.manager) order.manager = { id: dto.manager } as UserEntity;
 
     const { group: _group, manager: _manager, ...rest } = dto;
     Object.assign(order, rest);

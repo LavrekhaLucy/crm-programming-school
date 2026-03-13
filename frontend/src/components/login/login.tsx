@@ -23,17 +23,17 @@ const Login = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email.trim() || !password.trim()) {
-      setError("All fields are required.");
+      setError("Invalid email or password");
       return false;
     }
 
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
+      setError("Invalid email or password");
       return false;
     }
 
     if (password.length < 5) {
-      setError("Password must be at least 5 characters long");
+      setError("Invalid email or password");
       return false;
     }
 

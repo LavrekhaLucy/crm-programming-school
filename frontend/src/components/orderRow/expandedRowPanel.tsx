@@ -53,7 +53,7 @@ export const ExpandedOrderPanel:FC<ExpandedOrderPanelProps> = ({ order, onEdit }
                                 ? "bg-[#43a047] hover:bg-[#2e7d32] cursor-pointer"
                                 : "bg-gray-300 cursor-not-allowed"
                         }`}
-                        title={!canEdit ? "Ви не можете редагувати чужу заявку" : ""}
+                        title={!canEdit ? "You cannot edit someone else's application" : ""}
                     >
                         EDIT
                     </button>

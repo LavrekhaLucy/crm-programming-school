@@ -6,6 +6,6 @@ export const mockStats: OrdersStatsDto = {
   in_work: 16,
   disagree: 0,
   dubbing: 0,
-  new: 0,
-  null: 484,
+  new: 484,
+  // null: 484,
 };

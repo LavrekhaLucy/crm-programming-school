@@ -21,21 +21,16 @@ import {
   mockOrderEntities,
   mockOrderEntity,
 } from '../__mocks__/mockOrderEntity';
-import { OrdersMapper } from '../orders.mapper';
 import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
-import { mockGroup } from '../__mocks__/group.mock';
-import { mockManager } from '../__mocks__/manager.mock';
 import { mockOrdersQuery } from '../__mocks__/orders-query.mock';
 import { MockServiceType } from '../../../types/mock-service.type';
-import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
-import { updateDto } from '../__mocks__/updateDto.mock';
+import { GroupEntity } from '../../../database/entities/group.entity';
+import { makeOrder } from '../__mocks__/make-order.mock';
 
 describe('OrderService', () => {
   let service: OrdersService;
   let repository: MockServiceType<OrdersRepository>;
   let qb: jest.Mocked<SelectQueryBuilder<OrderEntity>>;
-
-  const mockAdmin = { id: 1, role: UserRoleEnum.ADMIN } as UserEntity;
 
   beforeEach(async () => {
     qb = mockQueryBuilder<OrderEntity>();
@@ -323,7 +318,7 @@ describe('OrderService', () => {
         agree: 0,
         disagree: 0,
         dubbing: 0,
-        null: 0,
+        // null: 0,
       });
     });
 
@@ -345,7 +340,7 @@ describe('OrderService', () => {
         agree: 0,
         disagree: 0,
         dubbing: 0,
-        null: 0,
+        // null: 0,
       });
     });
 
@@ -372,121 +367,157 @@ describe('OrderService', () => {
       expect(result.agree).toBe(0);
       expect(result).not.toHaveProperty('unknown_status');
     });
+
+    it('should correctly sum NEW status and NULL status into "new" field', async () => {
+      const customRows = [
+        { status: StatusesEnum.NEW, count: '10' },
+        { status: null, count: '5' },
+        { status: StatusesEnum.INWORK, count: '3' },
+      ];
+
+      const orderQB = mockQueryBuilder<OrderEntity>();
+      orderQB.getRawMany.mockResolvedValue(customRows);
+      jest.spyOn(mockOrderRepository, 'count').mockResolvedValue(15);
+
+      jest
+        .spyOn(mockOrderRepository, 'createQueryBuilder')
+        .mockReturnValue(orderQB as unknown as SelectQueryBuilder<OrderEntity>);
+
+      const result = await service.getStatsByStatus();
+
+      expect(result.new).toBe(15);
+      expect(result.in_work).toBe(3);
+    });
+
+    it('should gracefully skip unknown statuses and keep stats at 0', async () => {
+      const customRows = [
+        { status: 'some_weird_status_that_does_not_exist', count: '99' },
+      ];
+
+      const orderQB = mockQueryBuilder<OrderEntity>();
+      orderQB.getRawMany.mockResolvedValue(customRows);
+      jest.spyOn(mockOrderRepository, 'count').mockResolvedValue(0);
+
+      jest
+        .spyOn(mockOrderRepository, 'createQueryBuilder')
+        .mockReturnValue(orderQB as unknown as SelectQueryBuilder<OrderEntity>);
+
+      const result = await service.getStatsByStatus();
+      expect(result).toEqual({
+        total: 0,
+        new: 0,
+        in_work: 0,
+        agree: 0,
+        disagree: 0,
+        dubbing: 0,
+      });
+    });
   });
 
   describe('update', () => {
-    it('should update order and return updated order', async () => {
-      const orderId = 'orderId';
-      const mockAdmin = { id: 1, role: UserRoleEnum.ADMIN } as UserEntity;
+    const order = makeOrder();
+    const mockUser = { id: 13 } as UserEntity;
 
-      const existingOrder = { ...mockOrderEntity, group: null, manager: null };
-
-      const updateDto: UpdateOrderDto = {
-        ...mockCreateOrderDto,
-        group: 3,
-        manager: 1,
-      };
-
-      const expectedOrderToSave = {
-        ...existingOrder,
-        group: { id: 3 },
-        manager: { id: 1 },
-      };
-
-      const fullUpdatedOrder = {
-        ...existingOrder,
-        group: mockGroup,
-        manager: mockManager,
-      };
-      mockOrderRepository.findOne
-        .mockResolvedValueOnce(existingOrder)
-        .mockResolvedValueOnce(fullUpdatedOrder);
-
-      mockOrderRepository.save.mockResolvedValue(fullUpdatedOrder);
-
-      const result = await service.update(orderId, mockAdmin, updateDto);
-
-      expect(mockOrderRepository.findOne).toHaveBeenNthCalledWith(1, {
-        where: { id: orderId },
-        relations: ['manager'],
-      });
-
-      expect(mockOrderRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining(expectedOrderToSave),
-      );
-
-      expect(mockOrderRepository.findOne).toHaveBeenNthCalledWith(2, {
-        where: { id: orderId },
-        relations: ['group', 'manager'],
-      });
-
-      expect(result).toEqual(OrdersMapper.toResDto(fullUpdatedOrder));
-    });
-    it('should update without group and manager (branch coverage)', async () => {
-      const orderId = 'id-1';
-      const existingOrder = { ...mockOrderEntity };
-
-      const updateDto: Partial<UpdateOrderDto> = {
-        name: 'Only Name',
-      };
-
-      mockOrderRepository.findOne
-        .mockResolvedValueOnce(existingOrder)
-        .mockResolvedValueOnce({ ...existingOrder, name: 'Only Name' });
-
-      await service.update(orderId, mockAdmin, updateDto as UpdateOrderDto);
-
-      expect(mockOrderRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'Only Name' }),
-      );
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
 
-    it('should throw ForbiddenException if a non-admin manager tries to edit someone else’s order', async () => {
-      const orderId = 'order-123';
-
-      const otherManager = {
-        id: 99,
-        role: UserRoleEnum.MANAGER,
-      } as UserEntity;
-
-      const currentUser = { id: 1, role: UserRoleEnum.MANAGER } as UserEntity;
+    it('should throw NotFoundException if order does not exist', async () => {
+      repository.findOne.mockResolvedValueOnce(null);
 
       await expect(
-        service.update(orderId, currentUser, updateDto),
-      ).rejects.toThrow(ForbiddenException);
-
-      const existingOrder = {
-        ...mockOrderEntity,
-        id: orderId,
-        manager: otherManager,
-      };
-
-      mockOrderRepository.findOne.mockResolvedValue(existingOrder);
-
-      await expect(
-        service.update(orderId, currentUser, updateDto),
-      ).rejects.toThrow(ForbiddenException);
-
-      expect(mockOrderRepository.save).not.toHaveBeenCalled();
-    });
-
-    it('should throw NotFoundException if order not found', async () => {
-      const orderId = 'missingOrder';
-      const updateDto: UpdateOrderDto = {
-        ...mockCreateOrderDto,
-        group: 3,
-        manager: 1,
-      };
-      mockOrderRepository.findOne.mockResolvedValue(null);
-
-      await expect(
-        service.update(orderId, mockAdmin, updateDto),
+        service.update('1', mockUser, {} as UpdateOrderDto),
       ).rejects.toThrow(NotFoundException);
+    });
 
-      expect(mockOrderRepository.save).not.toHaveBeenCalled();
-      expect(mockOrderRepository.findOne).toHaveBeenCalledTimes(1);
+    it('should throw ForbiddenException if order already has a manager (not the current user)', async () => {
+      const otherManager = { id: 99 } as UserEntity;
+
+      repository.findOne.mockResolvedValueOnce(
+        makeOrder({ manager: otherManager }),
+      );
+
+      await expect(
+        service.update('1', mockUser, {
+          status: StatusesEnum.INWORK,
+        } as UpdateOrderDto),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should set manager to null when status is NEW', async () => {
+      const initialOrder = { id: '1', manager: { id: 13 } } as OrderEntity;
+
+      repository.findOne.mockResolvedValueOnce(initialOrder);
+      repository.save.mockResolvedValue({ ...initialOrder, manager: null });
+      repository.findOne.mockResolvedValueOnce({
+        ...initialOrder,
+        manager: null,
+      });
+      await service.update('1', mockUser, { status: StatusesEnum.NEW });
+
+      expect(repository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          manager: null,
+        }),
+      );
+    });
+
+    it('should assign manager if manager id provided', async () => {
+      repository.findOne
+        .mockResolvedValueOnce(order)
+        .mockResolvedValueOnce(makeOrder({ manager: { id: 5 } as UserEntity }));
+
+      repository.save.mockResolvedValue(
+        makeOrder({ manager: { id: 5 } as UserEntity }),
+      );
+
+      await service.update('1', mockUser, { manager: 5 });
+
+      expect(repository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          manager: { id: 5 },
+        }),
+      );
+    });
+
+    it('should update group if provided', async () => {
+      const order = makeOrder();
+
+      repository.findOne
+        .mockResolvedValueOnce(order)
+        .mockResolvedValueOnce(makeOrder({ group: { id: 10 } as GroupEntity }));
+
+      repository.save.mockResolvedValue(
+        makeOrder({ group: { id: 10 } as GroupEntity }),
+      );
+
+      await service.update('1', mockUser, { group: 10 });
+
+      expect(repository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          group: { id: 10 },
+        }),
+      );
+    });
+    it('should update other fields using Object.assign', async () => {
+      const order = makeOrder({ name: 'Old' });
+
+      repository.findOne
+        .mockResolvedValueOnce(order)
+        .mockResolvedValueOnce(makeOrder({ name: 'New' }));
+
+      repository.save.mockResolvedValue(makeOrder({ name: 'New' }));
+
+      await service.update('1', mockUser, { name: 'New' } as UpdateOrderDto);
+
+      expect(repository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'New',
+        }),
+      );
     });
   });
+
   describe('delete', () => {
     it('should delete order successfully', async () => {
       const orderId = 'order1';
