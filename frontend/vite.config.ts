@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     outDir: "../client",
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1000,
   },
   plugins: [react(), tailwindcss(), ],
 })

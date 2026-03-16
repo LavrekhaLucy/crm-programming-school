@@ -18,7 +18,8 @@ export class OrdersStatsDto {
 
   @ApiProperty({ example: 200 })
   new: number;
-
-  // @ApiProperty({ example: 200 })
-  // null: number;
+}
+export class ManagerPerformanceDto extends OrdersStatsDto {
+  @ApiProperty({ example: 1 })
+  managerId: number;
 }

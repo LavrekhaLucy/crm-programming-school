@@ -11,7 +11,6 @@ import { UserEntity } from '../../../database/entities/user.entity';
 import { mockJwtService } from '../../auth/__mocks__/jwt-service.mock';
 import { NotFoundException } from '@nestjs/common';
 import { mockEmailService } from '../../auth/__mocks__/email-service.mock';
-import { mockStats } from '../__mocks__/stats.mock';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -114,21 +113,43 @@ describe('AdminService', () => {
     });
   });
   describe('getAllUsers', () => {
-    it('should return combined object with users and stats', async () => {
-      mockUserService.findAll.mockResolvedValue([mockUserResDto]);
+    it('should combine users with their performance stats', async () => {
+      const mockStats = { total: 10, completed: 10 };
+      const mockPerformance = [
+        {
+          managerId: 1,
+          total: 5,
+          new: 2,
+          agree: 3,
+          in_work: 0,
+          disagree: 0,
+          dubbing: 0,
+        },
+      ];
+
+      const user1 = { ...mockUserResDto, id: 1, name: 'User 1' };
+      const user2 = { ...mockUserResDto, id: 2, name: 'User 2' };
+
+      mockUserService.findAll.mockResolvedValue([user1, user2]);
       mockOrdersService.getStatsByStatus.mockResolvedValue(mockStats);
+      mockOrdersService.getManagersPerformance.mockResolvedValue(
+        mockPerformance,
+      );
 
       const result = await service.getAllUsers();
-      expect(mockUserService.findAll).toHaveBeenCalledTimes(1);
 
-      expect(mockOrdersService.getStatsByStatus).toHaveBeenCalledTimes(1);
+      expect(result.users).toHaveLength(2);
 
-      expect(result).toEqual({
-        users: [mockUserResDto],
-        stats: mockStats,
-      });
+      expect(result.users[0].id).toBe(1);
+      expect(result.users[0].stats.total).toBe(5);
+
+      expect(result.users[1].id).toBe(2);
+      expect(result.users[1].stats.total).toBe(0);
+
+      expect(result.stats).toEqual(mockStats);
     });
   });
+
   describe('disableUser', () => {
     it('should delegate disableUser to UserService.disable', async () => {
       const userId = 1;

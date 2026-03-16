@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailTypeEnum } from '../../../database/entities/enums/email-type.enum';
 import { EmailService } from '../../auth/services/email.service';
 import { UserRepository } from '../../repository/services/user.repository';
+import { UserWithStatsResDto } from '../../users/models/dto/res/user-with-stats-res.dto';
 
 @Injectable()
 export class AdminService {
@@ -56,15 +57,33 @@ export class AdminService {
   }
 
   async getAllUsers(): Promise<{
-    users: UserBaseResDto[];
+    users: UserWithStatsResDto[];
     stats: OrdersStatsDto;
   }> {
     const users = await this.usersService.findAll();
 
     const stats = await this.ordersService.getStatsByStatus();
 
+    const performanceArray = await this.ordersService.getManagersPerformance();
+
+    const usersWithStats = users.map((user) => {
+      const userStats = performanceArray.find((p) => p.managerId === user.id);
+
+      return {
+        ...user,
+        stats: userStats || {
+          total: 0,
+          new: 0,
+          agree: 0,
+          in_work: 0,
+          disagree: 0,
+          dubbing: 0,
+        },
+      };
+    });
+
     return {
-      users,
+      users: usersWithStats,
       stats,
     };
   }

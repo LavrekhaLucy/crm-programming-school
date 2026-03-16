@@ -13,6 +13,7 @@ import {groupActions} from "../../slices/groupSlice.ts";
 import type {IUpdateOrder} from "../../models/interfaces/IOrders/IUpdateOrder.ts";
 import {mapOrderToUpdate} from "../../utils/orderUtils.ts";
 import type {IGroup} from "../../models/interfaces/IGroup/IGroup.ts";
+import {editOrderSchema} from "../../common/order.validator.ts";
 
 
 type EditOrderModalProps = {
@@ -34,6 +35,7 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
     const [editedOrder, setEditedOrder] = useState<IUpdateOrder>(
         mapOrderToUpdate(order)
     );
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
 
     const [groupMode, setGroupMode] = useState<"add" | "select">("add");
@@ -68,6 +70,30 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
     const toNumberOrUndefined = (value: string) =>
         value === "" ? undefined : Number(value);
 
+    const validateOrder = (): boolean => {
+
+        const { error } = editOrderSchema.validate(editedOrder, {
+            abortEarly: false,
+            stripUnknown: true
+        });
+
+        if (error) {
+            const newErrors: Record<string, string> = {};
+            for (const detail of error.details) {
+                const fieldName = detail.path[0] as string;
+                if (fieldName) {
+                    newErrors[fieldName] = detail.message;
+                }
+            }
+            setErrors(newErrors);
+            return false;
+        }
+
+        setErrors({});
+        return true;
+    };
+
+
        return (
         <div
             className="fixed inset-0 flex items-center justify-center z-50"
@@ -84,8 +110,11 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
 
                     onSubmit={(e) => {
                         e.preventDefault();
-                        const payload: IUpdateOrder = { ...editedOrder };
-                        onSubmit(payload);
+
+                        if(validateOrder()) {
+                            const payload: IUpdateOrder = { ...editedOrder };
+                            onSubmit(payload);
+                        }
                     }}
 
                     className="grid grid-cols-2 gap-4"
@@ -119,9 +148,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                                     </option>
                                 ))}
                             </select>
-
-
                         )}
+                        {errors.group && <span className="text-red-500 text-xs">{errors.group}</span>}
+
                         <div className="flex justify-center gap-2 mt-2">
                             <button type="button" onClick={handleAdd} className="px-21 py-0.5 text-sm bg-[#43a047] text-white rounded-[5px]">
                                 Add
@@ -143,7 +172,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             onChange={(status) =>
                                 setEditedOrder(prev => ({...prev, status}))
                             }
-                        /></div>
+                        />
+                        {errors.status && <span className="text-red-500 text-xs">{errors.status}</span>}
+                    </div>
 
                     <div><label htmlFor="name">Name</label>
                         <Input
@@ -157,7 +188,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             }
                             className="w-full border px-3 py-2"
                             placeholder="Name"
-                        /></div>
+                        />
+                        {errors.name && <span className="text-red-500 text-xs">{errors.name}</span>}
+                    </div>
 
                     <div><label htmlFor="sum">Sum</label>
                         <Input
@@ -171,7 +204,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             }
                             className="w-full border px-3 py-2"
                             placeholder="Sum"
-                        /></div>
+                        />
+                        {errors.sum && <span className="text-red-500 text-xs">{errors.sum}</span>}
+                    </div>
 
                     <div><label htmlFor="surname">Surname</label>
                         <Input
@@ -185,7 +220,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             }
                             className="w-full border px-3 py-2"
                             placeholder="Surname"
-                        /></div>
+                        />
+                        {errors.surname && <span className="text-red-500 text-xs">{errors.surname}</span>}
+                    </div>
 
                     <div><label htmlFor="alreadyPaid">Already paid</label>
                         <Input
@@ -199,7 +236,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             }
                             className="w-full border px-3 py-2"
                             placeholder="Already Paid"
-                        /></div>
+                        />
+                        {errors.alreadyPaid && <span className="text-red-500 text-xs">{errors.alreadyPaid}</span>}
+                    </div>
 
                     <div><label htmlFor="email">Email</label>
                         <Input
@@ -213,7 +252,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             }
                             className="w-full border px-3 py-2"
                             placeholder="Email"
-                        /></div>
+                        />
+                        {errors.email && <span className="text-red-500 text-xs">{errors.email}</span>}
+                    </div>
 
                     <div><label htmlFor="course">Course</label>
                         <EnumSelect
@@ -224,7 +265,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             onChange={(course) =>
                                 setEditedOrder(prev => ({...prev, course}))
                             }
-                        /></div>
+                        />
+                        {errors.course && <span className="text-red-500 text-xs">{errors.course}</span>}
+                    </div>
 
                     <div><label htmlFor="phone">Phone</label>
                         <Input
@@ -238,7 +281,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             }
                             className="w-full border px-3 py-2"
                             placeholder="Phone"
-                        /></div>
+                        />
+                        {errors.phone && <span className="text-red-500 text-xs">{errors.phone}</span>}
+                    </div>
 
                     <div><label htmlFor="course">Course format</label>
                         <EnumSelect
@@ -249,7 +294,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             onChange={(course_format) =>
                                 setEditedOrder(prev => ({...prev, course_format}))
                             }
-                        /></div>
+                        />
+                        {errors.course_format && <span className="text-red-500 text-xs">{errors.course_format}</span>}
+                    </div>
 
                     <div><label htmlFor="age">Age</label>
                         <Input
@@ -263,7 +310,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             }
                             className="w-full border px-3 py-2"
                             placeholder="Age"
-                        /></div>
+                        />
+                        {errors.age && <span className="text-red-500 text-xs">{errors.age}</span>}
+                    </div>
 
                     <div><label htmlFor="course_type">Course type</label>
                         <EnumSelect
@@ -274,7 +323,9 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             onChange={(course_type) =>
                                 setEditedOrder(prev => ({...prev, course_type}))
                             }
-                        /></div>
+                        />
+                        {errors.course_type && <span className="text-red-500 text-xs">{errors.course_type}</span>}
+                    </div>
 
                     <div> </div>
 

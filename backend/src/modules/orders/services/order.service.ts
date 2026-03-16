@@ -9,7 +9,10 @@ import { EntityManager } from 'typeorm';
 import { OrderEntity } from '../../../database/entities/order.entity';
 import { CreateOrderDto } from '../models/dto/req/create-order.dto';
 import { UpdateOrderDto } from '../models/dto/req/update-order.dto';
-import { OrdersStatsDto } from '../models/dto/req/order-stats.dto';
+import {
+  ManagerPerformanceDto,
+  OrdersStatsDto,
+} from '../models/dto/req/order-stats.dto';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { ResponseOrderDto } from '../models/dto/res/response-order.dto';
 import { UserEntity } from '../../../database/entities/user.entity';
@@ -252,6 +255,53 @@ export class OrdersService {
     }
 
     return statsResult;
+  }
+  async getManagersPerformance(): Promise<ManagerPerformanceDto[]> {
+    const rows: IOrderRawStats[] = await this.orderRepository
+      .createQueryBuilder('o')
+      .select('o.manager_id', 'managerId')
+      .addSelect('o.status', 'status')
+      .addSelect('COUNT(o.id)', 'count')
+      .where('o.manager_id IS NOT NULL')
+      .groupBy('o.manager_id')
+      .addGroupBy('o.status')
+      .getRawMany();
+
+    const tempStats: Record<number, ManagerPerformanceDto> = {};
+
+    for (const row of rows) {
+      const mId = Number(row.managerId);
+      const count = Number(row.count) || 0;
+
+      if (!tempStats[mId]) {
+        tempStats[mId] = {
+          managerId: mId,
+          total: 0,
+          new: 0,
+          agree: 0,
+          in_work: 0,
+          disagree: 0,
+          dubbing: 0,
+        };
+      }
+
+      if (row.status === 'new' || row.status === null) {
+        tempStats[mId].new += count;
+      } else {
+        const statusKey = row.status as keyof ManagerPerformanceDto;
+        if (
+          statusKey in tempStats[mId] &&
+          statusKey !== 'managerId' &&
+          statusKey !== 'total'
+        ) {
+          tempStats[mId][statusKey] += count;
+        }
+      }
+
+      tempStats[mId].total += count;
+    }
+
+    return Object.values(tempStats);
   }
 
   async update(

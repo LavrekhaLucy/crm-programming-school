@@ -39,8 +39,14 @@ export const ManagerCard: FC<State> = ({ user }) => {
             </div>
 
             <div className="flex flex-col items-end gap-4">
-                <p className="font-bold">total: {user.total_orders || 0}</p>
+
                 <div className="flex gap-2">
+                    <p>Total: {user.stats?.total || 0}</p>
+                    <p>Agree: {user.stats?.agree || 0}</p>
+                    <p>In work: {user.stats?.in_work || 0}</p>
+                    <p>Disagree: {user.stats?.disagree || 0}</p>
+                    <p>Dubbing: {user.stats?.dubbing || 0}</p>
+                    <p>New: {user.stats?.new || 0}</p>
 
                     <div className="min-w-35 flex justify-end">
                         <button
@@ -57,19 +63,33 @@ export const ManagerCard: FC<State> = ({ user }) => {
 
                     <button
                         onClick={() => handleToggleBan(user.id, 'ban')}
-                        className="bg-green-600 text-white px-3 py-1 rounded text-xs uppercase">
+                        disabled={!user.isActive}
+                        className={`px-3 py-1 rounded text-xs uppercase transition-colors ${
+                            user.isActive
+                                ? "bg-green-600 text-white px-3 py-1 rounded text-xs uppercase"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
+                    >
+
                         Ban
                     </button>
 
                     <button
                         onClick={() => handleToggleBan(user.id, 'unban')}
-                        className="bg-green-600 text-white px-3 py-1 rounded text-xs uppercase">
+                        disabled={user.isActive}
+                        className={`px-3 py-1 rounded text-xs uppercase transition-colors ${
+                            !user.isActive
+                                ? "bg-green-600 text-white hover:bg-green-700"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
+                    >
                         Unban
                     </button>
 
                 </div>
 
                 </div>
+
             </div>
     );
 };

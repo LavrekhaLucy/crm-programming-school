@@ -47,7 +47,6 @@ export const AdminPanel = () => {
                         <p>Disagree: {stats?.disagree || 0}</p>
                         <p>Dubbing: {stats?.dubbing || 0}</p>
                         <p>New: {stats?.new || 0}</p>
-                        {/*<p>Null : {stats?.null || 0}</p>*/}
                     </div>
                 </div>
             </div>

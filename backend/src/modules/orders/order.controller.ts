@@ -11,6 +11,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { OrdersService } from './services/order.service';
 import { CreateOrderDto } from './models/dto/req/create-order.dto';
@@ -27,6 +28,8 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { StatusesEnum } from '../../database/entities/enums/statuses.enum';
 import { Response } from 'express';
 import { UserEntity } from '../../database/entities/user.entity';
+import { JoiValidationPipe } from '../../common/validators/joi-validation.pipe';
+import editOrderSchema from '../../common/validators/order.validator';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('Orders')
@@ -75,6 +78,7 @@ export class OrdersController {
 
   @Roles(UserRoleEnum.MANAGER, UserRoleEnum.ADMIN)
   @Patch(':id')
+  @UsePipes(new JoiValidationPipe(editOrderSchema))
   update(
     @Param('id') id: string,
     @Body() dto: UpdateOrderDto,

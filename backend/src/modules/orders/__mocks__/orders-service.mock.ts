@@ -8,4 +8,5 @@ export const mockOrdersService = {
   takeOrder: jest.fn(),
   delete: jest.fn(),
   getStatsByStatus: jest.fn(),
+  getManagersPerformance: jest.fn(),
 };

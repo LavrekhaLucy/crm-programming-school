@@ -414,6 +414,51 @@ describe('OrderService', () => {
     });
   });
 
+  describe('getManagersPerformance', () => {
+    it('should calculate performance correctly', async () => {
+      const rawData = [
+        { managerId: 1, status: 'new', count: '5' },
+        { managerId: 1, status: 'agree', count: '2' },
+      ];
+
+      qb.getRawMany.mockResolvedValue(rawData);
+
+      const result = await service.getManagersPerformance();
+      expect(jest.spyOn(qb, 'select')).toHaveBeenCalledWith(
+        'o.manager_id',
+        'managerId',
+      );
+      expect(jest.spyOn(qb, 'groupBy')).toHaveBeenCalledWith('o.manager_id');
+      expect(result[0].total).toBe(7);
+    });
+    it('should aggregate statuses and calculate total for managers', async () => {
+      const rawData = [
+        { managerId: 1, status: 'agree', count: '10' },
+        { managerId: 1, status: 'new', count: '5' },
+      ];
+
+      qb.getRawMany.mockResolvedValue(rawData);
+
+      const result = await service.getManagersPerformance();
+
+      const manager1 = result[0];
+
+      expect(manager1.new).toBe(5);
+
+      expect(manager1.agree).toBe(10);
+
+      expect(manager1.total).toBe(15);
+    });
+    it('should ignore unknown status keys', async () => {
+      const rawData = [{ managerId: 1, status: 'unknown_status', count: '1' }];
+
+      qb.getRawMany.mockResolvedValue(rawData);
+      const result = await service.getManagersPerformance();
+
+      expect(result[0].total).toBe(1);
+      expect(result[0].agree).toBe(0);
+    });
+  });
   describe('update', () => {
     const order = makeOrder();
     const mockUser = { id: 13 } as UserEntity;

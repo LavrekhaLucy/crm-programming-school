@@ -15,6 +15,7 @@ export const mockQueryBuilder = <T>(): jest.Mocked<SelectQueryBuilder<T>> => {
 
     // grouping / sorting
     groupBy: jest.fn().mockReturnThis(),
+    addGroupBy: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),
 
     // pagination

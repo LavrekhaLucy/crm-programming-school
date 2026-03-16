@@ -13,4 +13,12 @@ export interface IUser {
     locale: string;
     last_login: string | null;
     total_orders?: number;
+    stats?: {
+        total: number;
+        new: number;
+        agree: number;
+        in_work: number;
+        disagree: number;
+        dubbing: number;
+    };
 }
