@@ -22,21 +22,18 @@ axiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
-
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
         const status = error.response?.status;
         const responseData = error.response?.data;
 
-        const serverMessage = responseData && typeof responseData === 'object'
-            ? (Array.isArray(responseData.message) ? responseData.message[0] : responseData.message)
-            : null;
+        const serverMessage = responseData?.messages && Array.isArray(responseData.messages)
+            ? responseData.messages[0]
+            : responseData?.message;
 
-        const message =
-            serverMessage ||
-            (status === 401 ? 'Incorrect login or password' : error.message) ||
-            'Something went wrong';
+        const message = serverMessage ||
+            (status === 401 || status === 403 ? 'Incorrect login or password' : error.message);
 
         if (status === 401 && window.location.pathname !== "/login") {
             store.dispatch(authActions.logout());
@@ -47,4 +44,3 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(message);
     }
 );
-

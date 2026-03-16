@@ -4,6 +4,7 @@ import {activateUserAccount, getMeRequest, loginRequest} from "../services/api.s
 import type {ILoginData} from "../models/interfaces/ILogin/ILoginData.ts";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 
+
 type AuthState = {
     me: IUser | null;
     token: string | null;
@@ -35,8 +36,10 @@ export const login = createAsyncThunk<
 
             localStorage.setItem('token', response.accessToken);
             return response.accessToken;
+
         } catch (error) {
-          return rejectWithValue(error as string);
+            return rejectWithValue(typeof error === 'string' ? error : 'Login failed')
+
         }
     }
 );
