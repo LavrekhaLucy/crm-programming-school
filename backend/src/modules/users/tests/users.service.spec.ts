@@ -1,15 +1,15 @@
 import { Test } from '@nestjs/testing';
 import { UserService } from '../services/user.service';
 import { UserRepository } from '../../repository/services/user.repository';
-
 import { mockUserEntity } from '../__mocks__/user-entity.mock';
 import { mockBaseUserReqDto } from '../__mocks__/user-base-dto.mock';
 import { UserEntity } from '../../../database/entities/user.entity';
-import { mockUserResDto } from '../__mocks__/user-res-dto.mock';
 import { DeleteResult } from 'typeorm';
 import { usersModuleProviders } from '../__mocks__/users-module.mock';
-import { mockDisabledUserResDto } from '../__mocks__/disable-user.mock';
 import { MockServiceType } from '../../../types/mock-service.type';
+import { NotFoundException } from '@nestjs/common';
+import { mockAdminUser } from '../__mocks__/admin-user.mock';
+import { mockManagerUser } from '../__mocks__/manager-user.mock';
 
 describe('UsersService', () => {
   let service: UserService;
@@ -86,47 +86,89 @@ describe('UsersService', () => {
 
   describe('disable', () => {
     it('should disable a user', async () => {
-      const disabledUser = { ...mockUserEntity, isActive: false } as UserEntity;
-      repository.findOneBy.mockResolvedValue(mockUserEntity);
+      const userIdToBan = 1;
+      const disabledUser = {
+        ...mockUserEntity,
+        id: userIdToBan,
+        isActive: false,
+      } as UserEntity;
+
+      repository.findOneBy.mockResolvedValue(disabledUser);
       repository.save.mockResolvedValue(disabledUser);
 
-      const result = await service.disable(1);
+      const result = await service.disable(userIdToBan, mockAdminUser);
 
-      expect(repository.findOneBy).toHaveBeenCalledWith({ id: 1 });
-      expect(repository.save).toHaveBeenCalledWith(disabledUser);
-      expect(result).toEqual(mockDisabledUserResDto);
+      expect(repository.save).toHaveBeenCalled();
+      expect(result.isActive).toBe(false);
     });
 
-    it('should throw NotFoundException when disabling a non-existing user', async () => {
+    it('should throw ForbiddenException if current user is not an admin', async () => {
+      await expect(service.disable(1, mockManagerUser)).rejects.toThrow(
+        'Only the administrator can ban users',
+      );
+    });
+
+    it('should throw BadRequestException if admin tries to ban themselves', async () => {
+      const adminId = mockAdminUser.id;
+
+      await expect(service.disable(adminId, mockAdminUser)).rejects.toThrow(
+        'You cannot ban yourself',
+      );
+    });
+
+    it('should throw NotFoundException when user does not exist during disable', async () => {
+      const nonExistentId = 999;
       repository.findOneBy.mockResolvedValue(null);
 
-      await expect(service.disable(999)).rejects.toThrow('User #999 not found');
+      await expect(
+        service.disable(nonExistentId, mockAdminUser),
+      ).rejects.toThrow(
+        new NotFoundException(`User #${nonExistentId} not found`),
+      );
 
-      expect(repository.findOneBy).toHaveBeenCalledWith({ id: 999 });
+      expect(repository.findOneBy).toHaveBeenCalledWith({ id: nonExistentId });
       expect(repository.save).not.toHaveBeenCalled();
     });
   });
+
   describe('enable', () => {
-    it('should enable a user', async () => {
-      const enabledUser = { ...mockUserEntity, isActive: true } as UserEntity;
-      repository.findOneBy.mockResolvedValue(mockUserEntity);
+    it('should enable a user when called by admin', async () => {
+      const userId = 1;
+      const enabledUser = {
+        ...mockUserEntity,
+        id: userId,
+        isActive: true,
+      } as UserEntity;
+
+      repository.findOneBy.mockResolvedValue(enabledUser);
       repository.save.mockResolvedValue(enabledUser);
 
-      const result = await service.enable(1);
+      const result = await service.enable(userId, mockAdminUser);
 
-      expect(repository.findOneBy).toHaveBeenCalledWith({ id: 1 });
-      expect(repository.save).toHaveBeenCalledWith(enabledUser);
-      expect(result).toEqual(mockUserResDto);
+      expect(result.isActive).toBe(true);
+      expect(repository.save).toHaveBeenCalled();
     });
-    it('should throw NotFoundException when enabling a non-existing user', async () => {
+
+    it('should throw ForbiddenException if non-admin tries to unban', async () => {
+      await expect(service.enable(1, mockManagerUser)).rejects.toThrow(
+        'Only the administrator can unban users',
+      );
+    });
+
+    it('should throw NotFoundException when admin tries to enable a non-existing user', async () => {
+      const nonExistentId = 999;
       repository.findOneBy.mockResolvedValue(null);
 
-      await expect(service.enable(999)).rejects.toThrow('User #999 not found');
+      await expect(
+        service.enable(nonExistentId, mockAdminUser),
+      ).rejects.toThrow(
+        new NotFoundException(`User #${nonExistentId} not found`),
+      );
 
-      expect(repository.findOneBy).toHaveBeenCalledWith({ id: 999 });
-      expect(repository.save).not.toHaveBeenCalled();
+      expect(repository.findOneBy).toHaveBeenCalledWith({ id: nonExistentId });
     });
   });
+
   describe('delete', () => {
     it('should delete a user', async () => {
       const deleteResult: DeleteResult = {

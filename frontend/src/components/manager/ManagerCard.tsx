@@ -1,6 +1,6 @@
 import {type FC, useState} from "react";
 import type {IUser} from "../../models/interfaces/IUser/IUser.ts";
-import {useAppDispatch} from "../store/store.ts";
+import {useAppDispatch, useAppSelector} from "../store/store.ts";
 import {adminActions} from "../../slices/adminSlice.ts";
 
 type State = {
@@ -11,6 +11,10 @@ export const ManagerCard: FC<State> = ({ user }) => {
     const [isCopied, setIsCopied] = useState(false);
     const dispatch = useAppDispatch();
 
+    const { me } = useAppSelector(state => state.authStoreSlice);
+
+    const isSelf = me?.id === user.id;
+
 
     const handleCopyLink = (userId: number) => {
         dispatch(adminActions.copyActivationLink(userId));
@@ -20,13 +24,27 @@ export const ManagerCard: FC<State> = ({ user }) => {
     };
     const handleToggleBan = (userId: number, action: 'ban' | 'unban') => {
         setIsCopied(false);
+        if (isSelf) return;
         dispatch(adminActions.toggleUserBan({ userId, action }));
     };
 
 
     return (
-        <div className="border-2 border-green-600 rounded-xl p-4 flex justify-between items-start">
-            <div className="text-sm space-y-1">
+        // <div className="border-2 border-green-600 rounded-xl p-4 flex justify-between items-start">
+
+            <div className={`border-2 rounded-xl p-4 flex justify-between items-start transition-all ${
+                isSelf ? "border-blue-400 bg-blue-50/10" : "border-green-600"
+            }`}>
+                <div className="text-sm space-y-1">
+                    <div className="flex items-center gap-2">
+                        <p className="font-bold">id: {user.id}</p>
+                        {isSelf && (
+                            <span className="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase">
+                            You
+                        </span>
+                        )}
+                    </div>
+            {/*<div className="text-sm space-y-1">*/}
                 <p>id: {user.id}</p>
                 <p>email: {user.email}</p>
                 <p>name: {user.name}</p>
@@ -51,7 +69,14 @@ export const ManagerCard: FC<State> = ({ user }) => {
                     <div className="min-w-35 flex justify-end">
                         <button
                             onClick={() => handleCopyLink(user.id)}
-                            className="w-fit whitespace-nowrap bg-green-600 text-white px-3 py-1 rounded text-xs uppercase"
+                            disabled={isSelf}
+                            // className="w-fit whitespace-nowrap bg-green-600 text-white px-3 py-1 rounded text-xs uppercase"
+                            className={`w-fit whitespace-nowrap px-3 py-1 rounded text-xs uppercase transition-colors ${
+                                isSelf
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-green-600 text-white hover:bg-green-700"
+                            }`}
+                            title={isSelf ? "You cannot copy your own activation link" : ""}
                         >
                             {isCopied
                                 ? "COPY TO CLIPBOARD"
@@ -63,12 +88,13 @@ export const ManagerCard: FC<State> = ({ user }) => {
 
                     <button
                         onClick={() => handleToggleBan(user.id, 'ban')}
-                        disabled={!user.isActive}
+                        disabled={!user.isActive || isSelf}
                         className={`px-3 py-1 rounded text-xs uppercase transition-colors ${
-                            user.isActive
+                            user.isActive && !isSelf
                                 ? "bg-green-600 text-white px-3 py-1 rounded text-xs uppercase"
                                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
+                        title={isSelf ? "You cannot ban yourself" : ""}
                     >
 
                         Ban
@@ -76,12 +102,13 @@ export const ManagerCard: FC<State> = ({ user }) => {
 
                     <button
                         onClick={() => handleToggleBan(user.id, 'unban')}
-                        disabled={user.isActive}
+                        disabled={user.isActive || isSelf}
                         className={`px-3 py-1 rounded text-xs uppercase transition-colors ${
-                            !user.isActive
+                            !user.isActive && !isSelf
                                 ? "bg-green-600 text-white hover:bg-green-700"
                                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
+                        title={isSelf ? "You cannot unban yourself" : ""}
                     >
                         Unban
                     </button>

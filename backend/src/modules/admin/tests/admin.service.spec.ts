@@ -11,9 +11,17 @@ import { UserEntity } from '../../../database/entities/user.entity';
 import { mockJwtService } from '../../auth/__mocks__/jwt-service.mock';
 import { NotFoundException } from '@nestjs/common';
 import { mockEmailService } from '../../auth/__mocks__/email-service.mock';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 
 describe('AdminService', () => {
   let service: AdminService;
+
+  const userId = 1;
+  const currentUser = {
+    id: 99,
+    role: UserRoleEnum.ADMIN,
+    email: 'admin@test.com',
+  } as UserEntity;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -152,21 +160,19 @@ describe('AdminService', () => {
 
   describe('disableUser', () => {
     it('should delegate disableUser to UserService.disable', async () => {
-      const userId = 1;
       mockUserService.disable.mockResolvedValue(mockUserResDto);
 
-      const result = await service.disableUser(userId);
-      expect(mockUserService.disable).toHaveBeenCalledWith(userId);
+      const result = await service.disableUser(userId, currentUser);
+      expect(mockUserService.disable).toHaveBeenCalledWith(userId, currentUser);
       expect(result).toEqual(mockUserResDto);
     });
   });
   describe('enableUser', () => {
     it('should delegate enableUser to UserService.enable', async () => {
-      const userId = 1;
       mockUserService.enable.mockResolvedValue(mockUserResDto);
 
-      const result = await service.enableUser(userId);
-      expect(mockUserService.enable).toHaveBeenCalledWith(userId);
+      const result = await service.enableUser(userId, currentUser);
+      expect(mockUserService.enable).toHaveBeenCalledWith(userId, currentUser);
       expect(result).toEqual(mockUserResDto);
     });
   });

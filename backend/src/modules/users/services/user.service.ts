@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { UpdateUserReqDto } from '../models/dto/req/update-user.req.dto';
 import { UserBaseResDto } from '../models/dto/res/user-base.res.dto';
@@ -6,6 +11,7 @@ import { UserResDto } from '../models/dto/res/user.res.dto';
 import { BaseUserReqDto } from '../models/dto/req/user-base.req.dto';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UserMapper } from '../user.mapper';
+import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
 
 @Injectable()
 export class UserService {
@@ -34,18 +40,28 @@ export class UserService {
     return this.userRepository.findOneBy({ id });
   }
 
-  async disable(id: number): Promise<UserResDto> {
-    const user = await this.userRepository.findOneBy({ id });
-    if (!user) {
-      throw new NotFoundException(`User #${id} not found`);
+  async disable(idToBan: number, currentUser: UserResDto): Promise<UserResDto> {
+    const userToBan = await this.userRepository.findOneBy({ id: idToBan });
+    if (!userToBan) {
+      throw new NotFoundException(`User #${idToBan} not found`);
     }
-    user.isActive = false;
-    const updatedUser = await this.userRepository.save(user);
+    if (currentUser.role !== UserRoleEnum.ADMIN) {
+      throw new ForbiddenException('Only the administrator can ban users');
+    }
+    if (idToBan === currentUser.id) {
+      throw new BadRequestException('You cannot ban yourself');
+    }
+    userToBan.isActive = false;
+    const updatedUser = await this.userRepository.save(userToBan);
 
     return UserMapper.toResDto(updatedUser);
   }
 
-  async enable(id: number): Promise<UserResDto> {
+  async enable(id: number, currentUser: UserResDto): Promise<UserResDto> {
+    if (currentUser.role !== UserRoleEnum.ADMIN) {
+      throw new ForbiddenException('Only the administrator can unban users');
+    }
+
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);

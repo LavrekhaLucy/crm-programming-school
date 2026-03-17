@@ -1,4 +1,4 @@
-import { AdminController } from '../admin.controller';
+import { AdminController, RequestWithUser } from '../admin.controller';
 import { Test } from '@nestjs/testing';
 import { StatusesEnum } from '../../../database/entities/enums/statuses.enum';
 import { mockAdminService } from '../__mocks__/admin-service.mock';
@@ -95,17 +95,26 @@ describe(AdminController.name, () => {
   });
 
   describe('banUser', () => {
-    it('should ban a user', async () => {
+    it('should ban a user ', async () => {
       const userId = 1;
+      const mockRequest = {
+        user: mockUserResDto,
+      };
 
       jest
         .spyOn(mockAdminService, 'disableUser')
         .mockResolvedValue(mockUserResDto);
 
-      const result = await adminController.ban(userId);
+      const result = await adminController.ban(
+        userId,
+        mockRequest as RequestWithUser,
+      );
 
       expect(mockAdminService.disableUser).toHaveBeenCalledTimes(1);
-      expect(mockAdminService.disableUser).toHaveBeenCalledWith(userId);
+      expect(mockAdminService.disableUser).toHaveBeenCalledWith(
+        userId,
+        mockRequest.user,
+      );
       expect(result).toEqual(mockUserResDto);
     });
   });
@@ -113,14 +122,24 @@ describe(AdminController.name, () => {
   describe('unbanUser', () => {
     it('should unban a user', async () => {
       const userId = 1;
+      const mockRequest = {
+        user: mockUserResDto,
+      };
+
       jest
         .spyOn(mockAdminService, 'enableUser')
         .mockResolvedValue(mockUserResDto);
 
-      const result = await adminController.unban(userId);
+      const result = await adminController.unban(
+        userId,
+        mockRequest as RequestWithUser,
+      );
 
       expect(mockAdminService.enableUser).toHaveBeenCalledTimes(1);
-      expect(mockAdminService.enableUser).toHaveBeenCalledWith(userId);
+      expect(mockAdminService.enableUser).toHaveBeenCalledWith(
+        userId,
+        mockRequest.user,
+      );
       expect(result).toEqual(mockUserResDto);
     });
   });

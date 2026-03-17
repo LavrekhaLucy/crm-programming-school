@@ -9,6 +9,7 @@ import { EmailTypeEnum } from '../../../database/entities/enums/email-type.enum'
 import { EmailService } from '../../auth/services/email.service';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UserWithStatsResDto } from '../../users/models/dto/res/user-with-stats-res.dto';
+import { UserResDto } from '../../users/models/dto/res/user.res.dto';
 
 @Injectable()
 export class AdminService {
@@ -88,11 +89,12 @@ export class AdminService {
     };
   }
 
-  disableUser(userId: number): Promise<UserBaseResDto> {
-    return this.usersService.disable(userId);
+  disableUser(userId: number, user: UserResDto): Promise<UserResDto> {
+    return this.usersService.disable(userId, user);
   }
-  enableUser(userId: number): Promise<UserBaseResDto> {
-    return this.usersService.enable(userId);
+
+  enableUser(userId: number, user: UserResDto): Promise<UserResDto> {
+    return this.usersService.enable(userId, user);
   }
 
   getOrdersStats(): Promise<OrdersStatsDto> {
