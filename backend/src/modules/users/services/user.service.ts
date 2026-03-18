@@ -28,11 +28,23 @@ export class UserService {
     });
   }
 
-  async findAll(): Promise<UserBaseResDto[]> {
-    return await this.userRepository.find({
+  async findAll(
+    page: number = 1,
+    limit: number = 5,
+  ): Promise<{ items: UserBaseResDto[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await this.userRepository.findAndCount({
       select: ['id', 'name', 'surname', 'email', 'isActive', 'lastLogin'],
       order: { id: 'DESC' },
+      take: limit,
+      skip: skip,
     });
+
+    return {
+      items,
+      total,
+    };
   }
 
   async update(id: number, dto: UpdateUserReqDto): Promise<UserEntity> {

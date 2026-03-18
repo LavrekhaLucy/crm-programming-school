@@ -45,6 +45,7 @@ describe('AdminService', () => {
       expect(result).toEqual(mockUserEntity);
     });
   });
+
   describe('createActivationToken', () => {
     const managerId = 1;
 
@@ -120,8 +121,11 @@ describe('AdminService', () => {
       consoleSpy.mockRestore();
     });
   });
+
   describe('getAllUsers', () => {
-    it('should combine users with their performance stats', async () => {
+    it('should combine users with their performance stats and return total count', async () => {
+      const mockTotal = 2;
+
       const mockStats = { total: 10, completed: 10 };
       const mockPerformance = [
         {
@@ -138,23 +142,41 @@ describe('AdminService', () => {
       const user1 = { ...mockUserResDto, id: 1, name: 'User 1' };
       const user2 = { ...mockUserResDto, id: 2, name: 'User 2' };
 
-      mockUserService.findAll.mockResolvedValue([user1, user2]);
+      mockUserService.findAll.mockResolvedValue({
+        items: [user1, user2],
+        total: mockTotal,
+      });
+
       mockOrdersService.getStatsByStatus.mockResolvedValue(mockStats);
       mockOrdersService.getManagersPerformance.mockResolvedValue(
         mockPerformance,
       );
 
-      const result = await service.getAllUsers();
+      const result = await service.getAllUsers(1, 5);
 
       expect(result.users).toHaveLength(2);
+      expect(result.total).toBe(mockTotal);
 
       expect(result.users[0].id).toBe(1);
       expect(result.users[0].stats.total).toBe(5);
+      expect(result.users[0].stats.agree).toBe(3);
 
       expect(result.users[1].id).toBe(2);
       expect(result.users[1].stats.total).toBe(0);
+      expect(result.users[1].stats.new).toBe(0);
 
       expect(result.stats).toEqual(mockStats);
+
+      expect(mockUserService.findAll).toHaveBeenCalledWith(1, 5);
+    });
+    it('should use default pagination when arguments are missing', async () => {
+      mockUserService.findAll.mockResolvedValue({ items: [], total: 0 });
+      mockOrdersService.getStatsByStatus.mockResolvedValue({});
+      mockOrdersService.getManagersPerformance.mockResolvedValue([]);
+
+      await service.getAllUsers();
+
+      expect(mockUserService.findAll).toHaveBeenCalledWith(1, 5);
     });
   });
 

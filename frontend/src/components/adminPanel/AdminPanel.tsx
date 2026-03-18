@@ -1,21 +1,14 @@
-import { useAppDispatch, useAppSelector } from "../store/store.ts";
-import { useEffect, useState } from "react";
-import { fetchAllUsers } from "../../slices/adminSlice.ts";
-import { ManagerCard } from "../manager/ManagerCard.tsx";
+import {useAppSelector} from "../store/store.ts";
+import {useState} from "react";
+import {ManagerCard} from "../manager/ManagerCard.tsx";
 import {CreateManagerModal} from "../manager/CreateManagerModal.tsx";
 import {BackToOrdersButton} from "./BackToOrdersButton.tsx";
 
 
 export const AdminPanel = () => {
-    const dispatch = useAppDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { stats, users, loading } = useAppSelector((state) => state.adminStoreSlice);
-
-
-    useEffect(() => {
-        dispatch(fetchAllUsers());
-    }, [dispatch]);
 
     if (loading && !users.length) return <div className="text-center mt-10">Loading...</div>;
 

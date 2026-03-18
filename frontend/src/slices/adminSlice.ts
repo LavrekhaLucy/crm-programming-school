@@ -9,6 +9,7 @@ import type {IFetchAllUsersResponse} from "../models/interfaces/IUser/IFetchAllU
 interface OrdersState {
     users: IUser[];
     stats: IOrdersStats | null;
+    total: number;
     loading: boolean;
     error: string | null;
     items: [];
@@ -17,6 +18,7 @@ interface OrdersState {
 const initialAdminState: OrdersState = {
     users: [],
     stats: null,
+    total: 0,
     loading: false,
     error: null,
     items: [],
@@ -37,11 +39,11 @@ export const fetchOrdersStats = createAsyncThunk(
 
 export const fetchAllUsers = createAsyncThunk (
     'users/fetchAllUsers',
-    async (_,{rejectWithValue})=> {
+    async ({ page, limit }: { page: number; limit: number },{rejectWithValue})=> {
         try {
-            return await getAllUsers();
+            return await getAllUsers(page, limit);
         } catch(error){
-            return rejectWithValue(error as string);
+            return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
         }
     }
 );
@@ -84,8 +86,8 @@ export const toggleUserBan = createAsyncThunk(
     'admin/toggleUserBan',
     async ({ userId, action }: { userId: number; action: 'ban' | 'unban' }, { rejectWithValue }) => {
         try {
-            const data = action === 'ban' ? await banUser(userId) : await unbanUser(userId);
-            return data;
+            return action === 'ban' ? await banUser(userId) : await unbanUser(userId);
+
         } catch (error) {
             return rejectWithValue(error as string);
         }
@@ -120,12 +122,11 @@ const adminSlice = createSlice({
             .addCase(fetchAllUsers.fulfilled, (state, action: PayloadAction<IFetchAllUsersResponse>) => {
                 state.loading = false;
 
-                if (action.payload.users) {
-                    state.users = action.payload.users;
-                }
-                if (action.payload.stats) {
-                    state.stats = action.payload.stats;
-                }
+                const { users, total, stats } = action.payload;
+
+                state.users = users || [];
+                state.total = total ?? 0;
+                state.stats = stats || null;
             })
             .addCase(fetchAllUsers.rejected, (state, action) => {
                 state.loading = false;

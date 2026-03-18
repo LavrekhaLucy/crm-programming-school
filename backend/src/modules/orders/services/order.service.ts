@@ -256,6 +256,7 @@ export class OrdersService {
 
     return statsResult;
   }
+
   async getManagersPerformance(): Promise<ManagerPerformanceDto[]> {
     const rows: IOrderRawStats[] = await this.orderRepository
       .createQueryBuilder('o')

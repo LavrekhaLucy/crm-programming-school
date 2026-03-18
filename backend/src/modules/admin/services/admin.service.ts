@@ -57,17 +57,21 @@ export class AdminService {
     return { link };
   }
 
-  async getAllUsers(): Promise<{
+  async getAllUsers(
+    page: number = 1,
+    limit: number = 5,
+  ): Promise<{
     users: UserWithStatsResDto[];
+    total: number;
     stats: OrdersStatsDto;
   }> {
-    const users = await this.usersService.findAll();
+    const { items, total } = await this.usersService.findAll(page, limit);
 
     const stats = await this.ordersService.getStatsByStatus();
 
     const performanceArray = await this.ordersService.getManagersPerformance();
 
-    const usersWithStats = users.map((user) => {
+    const usersWithStats = items.map((user) => {
       const userStats = performanceArray.find((p) => p.managerId === user.id);
 
       return {
@@ -85,6 +89,7 @@ export class AdminService {
 
     return {
       users: usersWithStats,
+      total,
       stats,
     };
   }

@@ -55,16 +55,33 @@ describe('UsersService', () => {
   });
 
   describe('findAll', () => {
-    it('should find all users', async () => {
-      repository.find.mockResolvedValue([mockUserEntity]);
+    it('should find users with explicit pagination', async () => {
+      const page = 2;
+      const limit = 10;
+      const skip = (page - 1) * limit;
+      repository.findAndCount.mockResolvedValue([[mockUserEntity], 1]);
 
-      const result = await service.findAll();
+      const result = await service.findAll(page, limit);
 
-      expect(repository.find).toHaveBeenCalledWith({
-        select: ['id', 'name', 'surname', 'email', 'isActive', 'lastLogin'],
-        order: { id: 'DESC' },
-      });
-      expect(result).toEqual([mockUserEntity]);
+      expect(repository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: limit,
+          skip: skip,
+        }),
+      );
+      expect(result.items).toBeDefined();
+    });
+    it('should use default values (page=1, limit=5) when no arguments provided', async () => {
+      repository.findAndCount.mockResolvedValue([[mockUserEntity], 1]);
+
+      await service.findAll();
+
+      expect(repository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 5,
+          skip: 0,
+        }),
+      );
     });
   });
 

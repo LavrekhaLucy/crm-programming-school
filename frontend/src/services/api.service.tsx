@@ -59,8 +59,13 @@ export const getStatsByStatus = async ():Promise<IOrdersStats> => {
     return data;
 
 }
-export const getAllUsers = async (): Promise<IFetchAllUsersResponse> => {
-    const { data } = await axiosInstance.get('admin/users');
+export const getAllUsers = async (page: number = 1, limit: number = 5): Promise<IFetchAllUsersResponse> => {
+    const { data } = await axiosInstance.get('admin/users', {
+        params: {
+            limit,
+            page,
+        }
+    });
     return data;
 };
 

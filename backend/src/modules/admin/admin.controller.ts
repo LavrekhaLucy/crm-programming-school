@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
   UseInterceptors,
@@ -22,6 +23,7 @@ import { UserBaseResDto } from '../users/models/dto/res/user-base.res.dto';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CreateManagerReqDto } from './models/dto/req/create-manager.req.dto';
 import { Request } from 'express';
+import { UserWithStatsResDto } from '../users/models/dto/res/user-with-stats-res.dto';
 
 export interface RequestWithUser extends Request {
   user: UserResDto;
@@ -44,8 +46,15 @@ export class AdminController {
   }
 
   @Get('users')
-  getAllUsers(): Promise<{ users: UserBaseResDto[]; stats: OrdersStatsDto }> {
-    return this.adminService.getAllUsers();
+  async getAllUsers(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 5,
+  ): Promise<{
+    users: UserWithStatsResDto[];
+    total: number;
+    stats: OrdersStatsDto;
+  }> {
+    return this.adminService.getAllUsers(page, limit);
   }
 
   @Post(':id/re-token')

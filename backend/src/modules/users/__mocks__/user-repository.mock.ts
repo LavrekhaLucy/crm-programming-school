@@ -9,6 +9,7 @@ export const mockUserRepository: MockServiceType<Partial<UserRepository>> = {
   create: jest.fn(),
   save: jest.fn(),
   find: jest.fn(),
+  findAndCount: jest.fn(),
   findOne: jest.fn(),
   findOneBy: jest.fn(),
   update: jest.fn(),

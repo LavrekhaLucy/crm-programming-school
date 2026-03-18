@@ -45,22 +45,32 @@ describe(AdminController.name, () => {
   });
 
   describe('getAllUsers', () => {
-    it('should return an object containing users and statistics', async () => {
+    it('should return users, total and stats with explicit params', async () => {
+      const page = 2;
+      const limit = 10;
+      const mockTotal = 7;
+
       jest.spyOn(mockAdminService, 'getAllUsers').mockResolvedValue({
         users: [mockUserResDto],
+        total: mockTotal,
         stats: mockStats,
       });
 
-      const result = await adminController.getAllUsers();
+      const result = await adminController.getAllUsers(page, limit);
 
-      expect(mockAdminService.getAllUsers).toHaveBeenCalledTimes(1);
-
-      expect(result).toEqual({
+      expect(mockAdminService.getAllUsers).toHaveBeenCalledWith(page, limit);
+      expect(result.total).toBe(7);
+    });
+    it('should use default pagination values when no params provided', async () => {
+      mockAdminService.getAllUsers.mockResolvedValue({
         users: [mockUserResDto],
+        total: 7,
         stats: mockStats,
       });
 
-      expect(result.stats.new).toBe(484);
+      await adminController.getAllUsers();
+
+      expect(mockAdminService.getAllUsers).toHaveBeenCalledWith(1, 5);
     });
   });
 
