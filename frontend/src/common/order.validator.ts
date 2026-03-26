@@ -7,8 +7,12 @@ export const editOrderSchema = Joi.object({
     .email({ tlds: { allow: false } })
     .allow(null, ''),
   phone: Joi.string()
-    .pattern(/^\+?\d{10,15}$/)
-    .allow(null, ''),
+      // Дозволяємо + на початку (необов'язково), далі цифри та спецсимволи
+      .pattern(/^(\+)?[\d\s()+-]{10,25}$/)
+      .allow(null, '')
+      .messages({
+        'string.pattern.base': 'Please enter a valid phone number (10-15 digits). Symbols like +, -, ( ) and spaces are allowed.',
+      }),
   age: Joi.number().integer().min(1).max(99).allow(null),
   sum: Joi.number().min(0).allow(null),
   alreadyPaid: Joi.number().min(0).max(Joi.ref('sum')).allow(null),

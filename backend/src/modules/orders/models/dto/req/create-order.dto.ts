@@ -33,10 +33,9 @@ export class CreateOrderDto {
   @Transform(TransformHelper.trim)
   email: string;
 
-  @ApiProperty({ example: '123456789' })
+  @ApiProperty({ example: '+38 (098) 648-52-48' })
   @IsString()
-  @Length(1, 12)
-  @Transform(TransformHelper.trim)
+  @Transform(TransformHelper.toPhone)
   phone: string;
 
   @ApiProperty({ example: 25 })
@@ -45,19 +44,16 @@ export class CreateOrderDto {
   age: number;
 
   @ApiProperty({ example: 'FC' })
-  // @IsString()
   @Length(1, 10)
   @Transform(TransformHelper.trim)
   course: CoursesEnum;
 
   @ApiProperty({ example: 'Online' })
-  // @IsString()
   @Length(1, 15)
   @Transform(TransformHelper.trim)
   course_format: FormatsEnum;
 
   @ApiProperty({ example: 'VIP' })
-  // @IsString()
   @Length(1, 100)
   @Transform(TransformHelper.trim)
   course_type: TypesEnum;

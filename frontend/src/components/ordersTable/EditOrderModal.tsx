@@ -46,7 +46,13 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
     };
 
     const handleAdd = async () => {
+        if (groupMode === "select") {
+            setGroupMode("add");
+            return;
+        }
+
         if (!value.trim()) return;
+
         const newGroup = await dispatch(
             groupActions.AddCreateGroup(value)
         ).unwrap();
@@ -61,7 +67,6 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
         setGroupMode("select");
         setValue("");
     };
-
 
     const handleSelect = () => {
         setGroupMode("select");
@@ -152,9 +157,14 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                         {errors.group && <span className="text-red-500 text-xs">{errors.group}</span>}
 
                         <div className="flex justify-center gap-2 mt-2">
-                            <button type="button" onClick={handleAdd} className="px-21 py-0.5 text-sm bg-[#43a047] text-white rounded-[5px]">
-                                Add
+
+                            <button
+                                type="button"
+                                onClick={handleAdd}
+                                className={`px-21 py-0.5 text-sm rounded-[5px] text-white ${groupMode === 'add' ? 'bg-[#2e7d32] shadow-inner' : 'bg-[#43a047]'}`}
+                            > Add
                             </button>
+
                             <button type="button" onClick={handleSelect} className="px-21 py-0.5 text-sm bg-[#43a047] text-white rounded-[5px]">
                                 Select
                             </button>

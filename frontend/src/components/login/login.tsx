@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import {type RootState, useAppDispatch, useAppSelector} from "../store/store";
 import {authActions} from "../../slices/authSlice";
-import * as React from "react";
 import {getErrorMessage} from "../../utils/mapError.ts";
 
 
@@ -18,31 +17,30 @@ const Login = () => {
 
   const [error, setError] = useState<string>("");
 
+
   const validate = () => {
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email.trim() || !password.trim()) {
-      setError("Invalid email or password");
-      return false;
-    }
-
-    if (!emailRegex.test(email)) {
-      setError("Invalid email or password");
-      return false;
-    }
-
-    if (password.length < 5) {
-      setError("Invalid email or password");
-      return false;
-    }
-
     setError("");
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+    if (!password.trim()) {
+      setError("Password is required");
+      return false;
+    }
+
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!validate()) return;
 
     try {
