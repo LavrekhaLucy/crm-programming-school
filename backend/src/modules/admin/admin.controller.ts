@@ -39,10 +39,10 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Post('managers')
-  createManager(
+  async createManager(
     @Body() createManagerReqDto: CreateManagerReqDto,
   ): Promise<UserBaseResDto> {
-    return this.adminService.createManager(createManagerReqDto);
+    return await this.adminService.createManager(createManagerReqDto);
   }
 
   @Get('users')

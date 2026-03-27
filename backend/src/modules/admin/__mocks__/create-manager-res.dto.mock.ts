@@ -6,6 +6,5 @@ export const mockCreateManagerResDto = {
   name: 'name',
   surname: 'surname',
   username: 'username',
-  // password: 'password',
   role: UserRoleEnum.MANAGER,
 };

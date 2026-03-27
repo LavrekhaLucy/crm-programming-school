@@ -3,6 +3,7 @@ import type {IGroup} from "../models/interfaces/IGroup/IGroup.ts";
 import {createGroup, getGroupById, getGroups} from "../services/api.service.tsx";
 
 
+
 interface GroupState {
     groups: IGroup[];
     loading: boolean;
@@ -39,11 +40,11 @@ export const fetchGroups = createAsyncThunk(
 
 export const fetchGroupById = createAsyncThunk(
     "groups/fetchById",
-    async (id: number, { rejectWithValue }) => {
+    async (id: number, {rejectWithValue}) => {
         try {
             return await getGroupById(id);
         } catch (error) {
-            return rejectWithValue(error as string);
+            return rejectWithValue(error);
         }
     }
 );

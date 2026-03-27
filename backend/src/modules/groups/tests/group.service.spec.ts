@@ -4,6 +4,7 @@ import { CreateGroupDto } from '../models/create-group.dto';
 import { mockEntityGroup } from '../__mocks__/entity-group.mock';
 import { mockRepositoryGroup } from '../__mocks__/group-repository.mock';
 import { GroupRepository } from '../../repository/services/group.repository';
+import { ConflictException } from '@nestjs/common';
 
 describe('GroupService', () => {
   let service: GroupService;
@@ -29,17 +30,24 @@ describe('GroupService', () => {
   });
 
   describe('create', () => {
+    const dto: CreateGroupDto = { name: 'VIP' };
     it('should create and save a group', async () => {
-      const dto: CreateGroupDto = { name: 'VIP' };
-
+      mockRepositoryGroup.findOneBy.mockResolvedValue(null);
       mockRepositoryGroup.create.mockReturnValue(mockEntityGroup);
       mockRepositoryGroup.save.mockResolvedValue(mockEntityGroup);
 
       const result = await service.create(dto);
 
-      expect(mockRepositoryGroup.create).toHaveBeenCalledWith(dto);
+      expect(mockRepositoryGroup.findOneBy).toHaveBeenCalledWith(dto);
       expect(mockRepositoryGroup.save).toHaveBeenCalledWith(mockEntityGroup);
       expect(result).toEqual(mockEntityGroup);
+    });
+    it('should throw a ConflictException if the group already exists ', async () => {
+      mockRepositoryGroup.findOneBy.mockResolvedValue(mockEntityGroup);
+      await expect(service.create(dto)).rejects.toThrow(
+        new ConflictException('Group already exists'),
+      );
+      expect(mockRepositoryGroup.save).not.toHaveBeenCalled();
     });
   });
 

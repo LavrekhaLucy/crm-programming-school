@@ -5,5 +5,6 @@ export const mockRepositoryGroup: MockServiceType<Partial<GroupRepository>> = {
   create: jest.fn(),
   save: jest.fn(),
   find: jest.fn(),
+  findOneBy: jest.fn(),
   findOne: jest.fn(),
 };

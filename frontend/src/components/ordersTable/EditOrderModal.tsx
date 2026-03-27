@@ -14,6 +14,7 @@ import type {IUpdateOrder} from "../../models/interfaces/IOrders/IUpdateOrder.ts
 import {mapOrderToUpdate} from "../../utils/orderUtils.ts";
 import type {IGroup} from "../../models/interfaces/IGroup/IGroup.ts";
 import {editOrderSchema} from "../../common/order.validator.ts";
+import type {IApiError} from "../../models/interfaces/IError/IApiError.ts";
 
 
 type EditOrderModalProps = {
@@ -50,23 +51,48 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
             setGroupMode("add");
             return;
         }
-
         if (!value.trim()) return;
+        try {
+            setErrors(prev => ({...prev, group: ""}));
 
-        const newGroup = await dispatch(
-            groupActions.AddCreateGroup(value)
-        ).unwrap();
+            const newGroup = await dispatch(
+                groupActions.AddCreateGroup(value)
+            ).unwrap();
 
-        await dispatch(groupActions.fetchGroups());
+            await dispatch(groupActions.fetchGroups());
 
-        setEditedOrder(prev => ({
-            ...prev,
-            group: newGroup
-        }));
+            setEditedOrder(prev => ({
+                ...prev,
+                group: newGroup
+            }));
 
-        setGroupMode("select");
-        setValue("");
-    };
+            setGroupMode("select");
+            setValue("");
+        } catch (err: unknown) {
+            const isApiError = (error: unknown): error is IApiError => {
+                return (
+                    typeof error === 'object' &&
+                    error !== null &&
+                    ('message' in error || 'statusCode' in error)
+                );
+            };
+
+            let errorMessage = "Failed to create group";
+
+            if (isApiError(err)) {
+                errorMessage = Array.isArray(err.message) ? err.message[0] : (err.message || errorMessage);
+            } else if (typeof err === 'string') {
+                errorMessage = err;
+            }
+
+            setErrors(prev => ({
+                ...prev,
+                group: errorMessage
+            }));
+        }
+        }
+
+
 
     const handleSelect = () => {
         setGroupMode("select");
@@ -130,7 +156,12 @@ export const EditOrderModal: FC<EditOrderModalProps> = ({
                             <Input
                                 id="group"
                                 value={value}
-                                onChange={(e) => setValue(e.target.value)}
+                                onChange={(e) => {
+                                    setValue(e.target.value)
+                                    if (errors.group) {
+                                        setErrors(prev => ({...prev, group: ""}));
+                                    }
+                                }}
                                 className="w-full border px-3 py-2"
                                 placeholder="All group"
                             />

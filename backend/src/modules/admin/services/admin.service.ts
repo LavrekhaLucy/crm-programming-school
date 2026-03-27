@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrdersService } from '../../orders/services/order.service';
 import { UserService } from '../../users/services/user.service';
 import { OrdersStatsDto } from '../../orders/models/dto/req/order-stats.dto';
@@ -21,10 +25,16 @@ export class AdminService {
     private readonly emailService: EmailService,
   ) {}
 
-  createManager(
-    createManagerReqDto: CreateManagerReqDto,
-  ): Promise<UserBaseResDto> {
-    return this.usersService.create(createManagerReqDto);
+  async createManager(dto: CreateManagerReqDto): Promise<UserBaseResDto> {
+    const existingManager = await this.userRepository.findOneBy({
+      email: dto.email,
+    });
+
+    if (existingManager) {
+      throw new ConflictException('Manager with this email already exists');
+    }
+    const newManager = this.userRepository.create(dto);
+    return await this.userRepository.save(newManager);
   }
 
   async createActivationToken(managerId: number): Promise<{ link: string }> {

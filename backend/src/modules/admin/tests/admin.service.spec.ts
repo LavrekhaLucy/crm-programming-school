@@ -4,14 +4,16 @@ import { mockUserService } from '../../users/__mocks__/user-service.mock';
 import { mockOrdersService } from '../../orders/__mocks__/orders-service.mock';
 import { mockCreateManagerReqDto } from '../__mocks__/create-manager-dto.mock';
 import { mockUserResDto } from '../../users/__mocks__/user-res-dto.mock';
-import { mockUserEntity } from '../../users/__mocks__/user-entity.mock';
 import { usersModuleProviders } from '../../users/__mocks__/users-module.mock';
 import { mockOrdersStatsDto } from '../../orders/__mocks__/orders-stats-dto.mock';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { mockJwtService } from '../../auth/__mocks__/jwt-service.mock';
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { mockEmailService } from '../../auth/__mocks__/email-service.mock';
 import { UserRoleEnum } from '../../../database/entities/enums/user-role.enum';
+import { mockUserRepository } from '../../users/__mocks__/user-repository.mock';
+import { CreateManagerReqDto } from '../models/dto/req/create-manager.req.dto';
+import { mockManagerUser } from '../../users/__mocks__/manager-user.mock';
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -35,14 +37,34 @@ describe('AdminService', () => {
     jest.clearAllMocks();
   });
   describe('createManager', () => {
-    it('should delegate createManager to UserService.create', async () => {
-      mockUserService.create.mockResolvedValue(mockUserEntity);
+    const dto: CreateManagerReqDto = mockCreateManagerReqDto;
 
-      const result = await service.createManager(mockCreateManagerReqDto);
-      expect(mockUserService.create).toHaveBeenCalledWith(
-        mockCreateManagerReqDto,
+    it('should successfully create a manager if the email is free', async () => {
+      mockUserRepository.findOneBy.mockResolvedValue(null);
+
+      const savedUser = { id: 1, ...dto } as UserEntity;
+      mockUserRepository.create.mockReturnValue(savedUser);
+      mockUserRepository.save.mockResolvedValue(savedUser);
+
+      const result = await service.createManager(dto);
+
+      expect(mockUserRepository.findOneBy).toHaveBeenCalledWith({
+        email: dto.email,
+      });
+      expect(mockUserRepository.save).toHaveBeenCalledWith(savedUser);
+      expect(result).toEqual(savedUser);
+    });
+
+    it('should throw a ConflictException if the email already exists', async () => {
+      mockUserRepository.findOneBy.mockResolvedValue(
+        mockManagerUser as UserEntity,
       );
-      expect(result).toEqual(mockUserEntity);
+
+      await expect(service.createManager(dto)).rejects.toThrow(
+        new ConflictException('Manager with this email already exists'),
+      );
+
+      expect(mockUserRepository.save).not.toHaveBeenCalled();
     });
   });
 
@@ -121,7 +143,6 @@ describe('AdminService', () => {
       consoleSpy.mockRestore();
     });
   });
-
   describe('getAllUsers', () => {
     it('should combine users with their performance stats and return total count', async () => {
       const mockTotal = 2;
@@ -179,7 +200,6 @@ describe('AdminService', () => {
       expect(mockUserService.findAll).toHaveBeenCalledWith(1, 5);
     });
   });
-
   describe('disableUser', () => {
     it('should delegate disableUser to UserService.disable', async () => {
       mockUserService.disable.mockResolvedValue(mockUserResDto);

@@ -41,6 +41,10 @@ axiosInstance.interceptors.response.use(
             return Promise.reject('Session expired');
         }
 
-        return Promise.reject(message);
-    }
-);
+        return Promise.reject({
+            message: message,
+            statusCode: status,
+            error: responseData?.error || 'Error'
+        });
+    })
+
