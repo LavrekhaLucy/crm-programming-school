@@ -16,14 +16,20 @@ export const ManagerCard: FC<State> = ({ user }) => {
 
     const isSelf = !loading && me?.id === user.id;
 
+    const handleCopyLink = async (userId: number) => {
+        try {
+            const result = await dispatch(adminActions.copyActivationLink(userId)).unwrap();
 
-
-    const handleCopyLink = (userId: number) => {
-        dispatch(adminActions.copyActivationLink(userId));
-        setIsCopied(true);
-
-        setTimeout(() => setIsCopied(false), 2000);
+            if (result && result.link) {
+                await navigator.clipboard.writeText(result.link);
+                setIsCopied(true);
+                setTimeout(() => setIsCopied(false), 2000);
+            }
+        } catch (err) {
+            console.error("Failed to fetch or copy activation link:", err);
+        }
     };
+
     const handleToggleBan = (userId: number, action: 'ban' | 'unban') => {
         setIsCopied(false);
         if (isSelf) return;
@@ -45,7 +51,7 @@ export const ManagerCard: FC<State> = ({ user }) => {
                         </span>
                         )}
                     </div>
-            {/*<div className="text-sm space-y-1">*/}
+
                 <p>id: {user.id}</p>
                 <p>email: {user.email}</p>
                 <p>name: {user.name}</p>
