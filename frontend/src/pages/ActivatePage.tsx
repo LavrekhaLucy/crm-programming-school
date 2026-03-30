@@ -1,6 +1,6 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "react-hook-form";
-import {activateAccount, authActions} from "../slices/authSlice.ts";
+import {authActions} from "../slices/authSlice.ts";
 import {useAppDispatch, useAppSelector} from "../components/store/store.ts";
 import Input from "../components/ui/input.tsx";
 
@@ -25,12 +25,22 @@ export const ActivatePage = () => {
             password: formData.password
         }));
 
-        if (activateAccount.fulfilled.match(resultAction)) {
+        // if (activateAccount.fulfilled.match(resultAction)) {
+        //     alert("Account activated successfully!");
+        //     navigate("/login");
+        // } else {
+        //     alert(resultAction.payload || "Error occurred");
+        // }
+
+        if (authActions.activateAccount.fulfilled.match(resultAction)) {
             alert("Account activated successfully!");
             navigate("/login");
         } else {
             alert(resultAction.payload || "Error occurred");
         }
+
+
+
     };
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#43a047]">
