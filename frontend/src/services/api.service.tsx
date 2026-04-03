@@ -27,8 +27,23 @@ export const getMeRequest = async (): Promise<IUser> => {
     return res;
 };
 
-export const activateUserAccount = async (data:IActivateUser): Promise<void> => {
-    await axiosInstance.patch('/auth/activate', data);
+// export const activateUserAccount = async (data:IActivateUser): Promise<void> => {
+//     await axiosInstance.patch('/auth/activate', data);
+// };
+// export const resetUserPassword = async (data:IActivateUser): Promise<void> => {
+//     await axiosInstance.patch('/auth/recovery', data);
+// };
+
+export const activateUserAccount = async (data: IActivateUser): Promise<void> => {
+    await axiosInstance.patch('/auth/activate', data, {
+        headers: { Authorization: '' }
+    });
+};
+
+export const resetUserPassword = async (data: IActivateUser): Promise<void> => {
+    await axiosInstance.patch('/auth/recovery', data, {
+        headers: { Authorization: '' }
+    });
 };
 
 
@@ -78,6 +93,11 @@ export const getActivationLink = async (id: number): Promise<{ link: string }> =
         const { data } = await axiosInstance.post<{ link: string }>(`/admin/${id}/re-token`);
         return data;
     }
+
+export const getRecoveryLink = async (id: number): Promise<{link:string}> => {
+    const {data} = await axiosInstance.post(`/admin/${id}/recovery-token`);
+    return data;
+}
 
 export const banUser = async (userId: number): Promise<IUser> => {
     const { data } = await axiosInstance.patch<IUser>(`/admin/${userId}/ban`);

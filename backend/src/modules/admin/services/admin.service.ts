@@ -14,6 +14,7 @@ import { EmailService } from '../../auth/services/email.service';
 import { UserRepository } from '../../repository/services/user.repository';
 import { UserWithStatsResDto } from '../../users/models/dto/res/user-with-stats-res.dto';
 import { UserResDto } from '../../users/models/dto/res/user.res.dto';
+import { IActionTokenPayload } from '../../auth/interfaces/IAction-token-payload.interface';
 
 @Injectable()
 export class AdminService {
@@ -62,6 +63,32 @@ export class AdminService {
       })
       .catch((err) => {
         console.error('Activation email failed to send:', err);
+      });
+
+    return { link };
+  }
+  async createRecoveryToken(userId: number): Promise<{ link: string }> {
+    const user = await this.usersService.findById(userId);
+    if (!user) throw new NotFoundException(`User not found`);
+
+    const payload: IActionTokenPayload = {
+      sub: user.id,
+      email: user.email,
+      action: 'recovery',
+    };
+
+    const token = this.jwtService.sign(payload, { expiresIn: '30m' });
+    const link = `${process.env.APP_FRONT_URL}/auth/recovery/${token}`;
+
+    await this.userRepository.update(userId, { actionToken: token });
+
+    await this.emailService
+      .sendMail(EmailTypeEnum.FORGOT_PASSWORD, user.email, {
+        name: user.name,
+        link: link,
+      })
+      .catch((err) => {
+        console.error('Recovery email failed to send:', err);
       });
 
     return { link };

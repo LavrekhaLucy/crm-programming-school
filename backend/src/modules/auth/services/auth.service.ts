@@ -23,14 +23,7 @@ import { ActivateDto } from '../dto/req/activate-token.dto';
 import * as bcrypt from 'bcrypt';
 import { EmailTypeEnum } from '../../../database/entities/enums/email-type.enum';
 import { EmailService } from './email.service';
-
-export interface IActivateTokenPayload {
-  sub: number;
-  email: string;
-  action: 'activate';
-  iat?: number;
-  exp?: number;
-}
+import { IActionTokenPayload } from '../interfaces/IAction-token-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -143,7 +136,7 @@ export class AuthService {
   }
 
   async activate(dto: ActivateDto) {
-    let payload: IActivateTokenPayload;
+    let payload: IActionTokenPayload;
 
     try {
       payload = this.jwtService.verify(dto.token);
@@ -183,6 +176,43 @@ export class AuthService {
       .catch((err) => console.error('Welcome email failed', err));
 
     return { message: 'Account activated successfully' };
+  }
+
+  async recovery(dto: ActivateDto) {
+    let payload: IActionTokenPayload;
+
+    try {
+      payload = this.jwtService.verify(dto.token);
+    } catch {
+      throw new BadRequestException('Invalid or expired token');
+    }
+    if (payload.action !== 'recovery') {
+      throw new BadRequestException('Invalid token type for password recovery');
+    }
+
+    const user = await this.userRepository.findOne({
+      where: {
+        id: payload.sub,
+        actionToken: dto.token,
+      },
+      select: ['id', 'email', 'name', 'password', 'isActive', 'actionToken'],
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found or token invalid');
+    }
+
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+    await this.userRepository.update(user.id, {
+      password: hashedPassword,
+      actionToken: null,
+    });
+    this.emailService
+      .sendMail(EmailTypeEnum.WELCOME, user.email, { name: user.name })
+      .catch((err) => console.error('Recovery success email failed', err));
+
+    return { message: 'Password updated successfully' };
   }
 
   async logOut(refreshTokenDto: RefreshTokenDto): Promise<void> {

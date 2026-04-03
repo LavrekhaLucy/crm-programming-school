@@ -9,6 +9,7 @@ import { UserRequest } from '../interfaces/user-request.interface';
 import { mockRequest } from '../__mocks__/request.mock';
 import { mockExpectedResult } from '../__mocks__/expect-result.mock';
 import { activateDtoMock } from '../__mocks__/activate-dto.mock';
+import { BadRequestException } from '@nestjs/common';
 
 describe(AuthController.name, () => {
   let authController: AuthController;
@@ -59,6 +60,36 @@ describe(AuthController.name, () => {
       expect(mockAuthService.activate).toHaveBeenCalledWith(activateDtoMock);
 
       expect(result).toEqual(expectedResult);
+    });
+    it('should throw BadRequestException if token is invalid', async () => {
+      mockAuthService.activate.mockRejectedValue(
+        new BadRequestException('Invalid token'),
+      );
+
+      await expect(authController.activate(activateDtoMock)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+  });
+  describe('recovery', () => {
+    it('should call authService.recovery with correct parameters', async () => {
+      const expectedResult = { message: 'Password updated successfully' };
+      mockAuthService.recovery.mockResolvedValue(expectedResult);
+
+      const result = await authController.recovery(activateDtoMock);
+
+      expect(mockAuthService.recovery).toHaveBeenCalledWith(activateDtoMock);
+
+      expect(result).toEqual(expectedResult);
+    });
+    it('should throw BadRequestException if token is invalid', async () => {
+      mockAuthService.recovery.mockRejectedValue(
+        new BadRequestException('Invalid token'),
+      );
+
+      await expect(authController.recovery(activateDtoMock)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
   describe('getMe', () => {

@@ -1,9 +1,10 @@
 import {createAsyncThunk, createSlice, type PayloadAction} from '@reduxjs/toolkit';
 import type {IOrdersStats} from "../models/interfaces/IOrders/orders-stats.interface.ts";
-import {banUser, createManager, getActivationLink, getAllUsers, getStatsByStatus, unbanUser} from "../services/api.service.tsx";
+import {banUser, createManager, getActivationLink, getAllUsers, getRecoveryLink, getStatsByStatus, unbanUser} from "../services/api.service.tsx";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
 import type {IManager} from "../models/interfaces/IManager/IManager.ts";
 import type {IFetchAllUsersResponse} from "../models/interfaces/IUser/IFetchAllUsersResponse.ts";
+import {getErrorMessage} from "../utils/mapError.ts";
 
 
 interface OrdersState {
@@ -65,22 +66,35 @@ export const copyActivationLink = createAsyncThunk(
             const response = await getActivationLink(userId);
             const link = response.link;
 
-            if (!navigator.clipboard) {
-                return rejectWithValue('Clipboard API not available');
-            }
-
-            await navigator.clipboard.writeText(link);
-            alert('Link copied to clipboard!');
-
             return { userId, link };
 
         } catch (error) {
-            const message = error as string || 'Failed to copy link';
-            alert (message);
-            return rejectWithValue(message);
+            const message = getErrorMessage(error);
+            const firstMessage = message === "Incorrect login or password"
+                ? "Failed to copy link"
+                : message;
+            return rejectWithValue(firstMessage);
         }
     }
 );
+export const copyRecoveryLink = createAsyncThunk(
+    'admin/copyRecoveryLink',
+    async (userId: number, { rejectWithValue }) => {
+        try {
+            const { link } = await getRecoveryLink(userId);
+             return { userId, link };
+
+        } catch (error: unknown) {
+            const message = getErrorMessage(error);
+
+            const finalMessage = message === "Incorrect login or password"
+                ? "Failed to generate or copy recovery link"
+                : message;
+            return rejectWithValue(finalMessage);
+        }
+    }
+);
+
 
 export const toggleUserBan = createAsyncThunk(
     'admin/toggleUserBan',
@@ -157,7 +171,20 @@ const adminSlice = createSlice({
             .addCase(copyActivationLink.rejected, (state) => {
                 state.loading = false;
             })
-        //toggleUserBan
+
+            //copyRecoveryLink
+            .addCase(copyRecoveryLink.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(copyRecoveryLink.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(copyRecoveryLink.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            //toggleUserBan
             .addCase(toggleUserBan.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -178,5 +205,5 @@ const adminSlice = createSlice({
     },
 });
 
-export const adminActions = {...adminSlice.actions, fetchAllUsers, addManager, copyActivationLink, fetchOrdersStats, toggleUserBan};
+export const adminActions = {...adminSlice.actions, fetchAllUsers, addManager, copyActivationLink,copyRecoveryLink, fetchOrdersStats, toggleUserBan};
 export default adminSlice;

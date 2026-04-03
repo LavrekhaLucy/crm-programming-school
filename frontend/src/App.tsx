@@ -5,12 +5,12 @@ import {useAuth} from "./components/hooks/useAuth.ts";
 
 
 
+
 function App() {
     useAuth();
 
   return (
     <div>
-
       <Header/>
       <Outlet/>
       <Footer/>

@@ -143,113 +143,203 @@ describe('AuthService', () => {
     });
   });
 
-  describe('activate', () => {
-    it('should activate user successfully', async () => {
-      const dto = { token: 'valid-token', password: '12345678' };
+  describe('AuthService Recovery/Activation', () => {
+    let consoleSpy: jest.SpyInstance;
 
-      mockJwtService.verify.mockReturnValue({
-        sub: 1,
-        action: 'activate',
-      });
-
-      mockUserRepository.findOne.mockResolvedValue({
-        ...mockUserEntity,
-        isActive: false,
-      } as UserEntity);
-
+    beforeEach(() => {
+      jest.clearAllMocks();
+      consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPassword' as never);
-
-      const result = await service.activate(dto);
-
-      expect(result).toEqual({ message: 'Account activated successfully' });
-      expect(mockUserRepository.update).toHaveBeenCalledWith(1, {
-        password: 'hashedPassword',
-        isActive: true,
-        actionToken: null,
-      });
-      expect(mockEmailService.sendMail).toHaveBeenCalledWith(
-        EmailTypeEnum.WELCOME,
-        mockUserEntity.email,
-        { name: mockUserEntity.name },
-      );
     });
 
-    it('should log an error if welcome email fails', async () => {
-      const dto = { token: 'valid-token', password: 'password123' };
-
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
-      mockJwtService.verify.mockReturnValue({ sub: 1, action: 'activate' });
-      mockUserRepository.findOne.mockResolvedValue({
-        ...mockUserEntity,
-        isActive: false,
-      } as UserEntity);
-      jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPassword' as never);
-
-      const emailError = new Error('SMTP Error');
-      mockEmailService.sendMail.mockRejectedValue(emailError);
-
-      await service.activate(dto);
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Welcome email failed',
-        emailError,
-      );
+    afterEach(() => {
+      consoleSpy.mockRestore();
     });
 
-    it('should throw if token invalid', async () => {
-      mockJwtService.verify.mockImplementation(() => {
-        throw new Error();
+    describe('activate', () => {
+      it('should activate user successfully', async () => {
+        const dto = { token: 'valid-token', password: '12345678' };
+
+        mockJwtService.verify.mockReturnValue({
+          sub: 1,
+          action: 'activate',
+        });
+
+        mockUserRepository.findOne.mockResolvedValue({
+          ...mockUserEntity,
+          isActive: false,
+        } as UserEntity);
+
+        const result = await service.activate(dto);
+
+        expect(result).toEqual({ message: 'Account activated successfully' });
+        expect(mockUserRepository.update).toHaveBeenCalledWith(1, {
+          password: 'hashedPassword',
+          isActive: true,
+          actionToken: null,
+        });
+        expect(mockEmailService.sendMail).toHaveBeenCalledWith(
+          EmailTypeEnum.WELCOME,
+          mockUserEntity.email,
+          { name: mockUserEntity.name },
+        );
       });
 
-      await expect(
-        service.activate({ token: 'bad', password: '123' }),
-      ).rejects.toThrow(BadRequestException);
+      it('should log an error if welcome email fails', async () => {
+        const dto = { token: 'valid-token', password: 'password123' };
+
+        mockJwtService.verify.mockReturnValue({ sub: 1, action: 'activate' });
+        mockUserRepository.findOne.mockResolvedValue({
+          ...mockUserEntity,
+          isActive: false,
+        } as UserEntity);
+        jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPassword' as never);
+
+        const emailError = new Error('SMTP Error');
+        mockEmailService.sendMail.mockRejectedValue(emailError);
+
+        await service.activate(dto);
+
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Welcome email failed',
+          emailError,
+        );
+      });
+
+      it('should throw if token invalid', async () => {
+        mockJwtService.verify.mockImplementation(() => {
+          throw new Error();
+        });
+
+        await expect(
+          service.activate({ token: 'bad', password: '123' }),
+        ).rejects.toThrow(BadRequestException);
+      });
+
+      it('should throw if token type invalid', async () => {
+        mockJwtService.verify.mockReturnValue({
+          sub: 1,
+          action: 'wrong',
+        });
+
+        await expect(
+          service.activate({ token: 'token', password: '123' }),
+        ).rejects.toThrow(BadRequestException);
+      });
+
+      it('should throw if user not found', async () => {
+        mockJwtService.verify.mockReturnValue({
+          sub: 1,
+          action: 'activate',
+        });
+
+        mockUserRepository.findOne.mockResolvedValue(null);
+
+        await expect(
+          service.activate({ token: 'token', password: '123' }),
+        ).rejects.toThrow(NotFoundException);
+      });
+
+      it('should throw if user already active', async () => {
+        mockJwtService.verify.mockReturnValue({
+          sub: 1,
+          action: 'activate',
+        });
+
+        mockUserRepository.findOne.mockResolvedValue({
+          id: 1,
+          isActive: true,
+        } as UserEntity);
+
+        await expect(
+          service.activate({ token: 'token', password: '123' }),
+        ).rejects.toThrow(BadRequestException);
+      });
     });
+    describe('recovery', () => {
+      it('should recovery password successfully', async () => {
+        const dto = { token: 'valid-token', password: '12345678' };
 
-    it('should throw if token type invalid', async () => {
-      mockJwtService.verify.mockReturnValue({
-        sub: 1,
-        action: 'wrong',
+        mockJwtService.verify.mockReturnValue({
+          sub: 1,
+          action: 'recovery',
+        });
+
+        mockUserRepository.findOne.mockResolvedValue({
+          ...mockUserEntity,
+          isActive: false,
+        } as UserEntity);
+
+        const result = await service.recovery(dto);
+
+        expect(result).toEqual({ message: 'Password updated successfully' });
+        expect(mockUserRepository.update).toHaveBeenCalledWith(1, {
+          password: 'hashedPassword',
+          actionToken: null,
+        });
+        expect(mockEmailService.sendMail).toHaveBeenCalledWith(
+          EmailTypeEnum.WELCOME,
+          mockUserEntity.email,
+          { name: mockUserEntity.name },
+        );
       });
 
-      await expect(
-        service.activate({ token: 'token', password: '123' }),
-      ).rejects.toThrow(BadRequestException);
-    });
+      it('should log an error if welcome email fails', async () => {
+        const dto = { token: 'valid-token', password: 'password1234' };
 
-    it('should throw if user not found', async () => {
-      mockJwtService.verify.mockReturnValue({
-        sub: 1,
-        action: 'activate',
+        mockJwtService.verify.mockReturnValue({ sub: 1, action: 'recovery' });
+        mockUserRepository.findOne.mockResolvedValue({
+          ...mockUserEntity,
+          isActive: true,
+        } as UserEntity);
+        jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashedPassword' as never);
+
+        const emailError = new Error('SMTP Error');
+        mockEmailService.sendMail.mockRejectedValue(emailError);
+
+        await service.recovery(dto);
+
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Recovery success email failed',
+          emailError,
+        );
       });
 
-      mockUserRepository.findOne.mockResolvedValue(null);
+      it('should throw if token invalid', async () => {
+        mockJwtService.verify.mockImplementation(() => {
+          throw new Error();
+        });
 
-      await expect(
-        service.activate({ token: 'token', password: '123' }),
-      ).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw if user already active', async () => {
-      mockJwtService.verify.mockReturnValue({
-        sub: 1,
-        action: 'activate',
+        await expect(
+          service.recovery({ token: 'bad', password: '123' }),
+        ).rejects.toThrow(BadRequestException);
       });
 
-      mockUserRepository.findOne.mockResolvedValue({
-        id: 1,
-        isActive: true,
-      } as UserEntity);
+      it('should throw if token type is not recovery', async () => {
+        mockJwtService.verify.mockReturnValue({
+          sub: 1,
+          action: 'activate',
+        });
 
-      await expect(
-        service.activate({ token: 'token', password: '123' }),
-      ).rejects.toThrow(BadRequestException);
+        await expect(
+          service.recovery({ token: 'token', password: '123' }),
+        ).rejects.toThrow(BadRequestException);
+      });
+
+      it('should throw if user not found', async () => {
+        mockJwtService.verify.mockReturnValue({
+          sub: 1,
+          action: 'recovery',
+        });
+
+        mockUserRepository.findOne.mockResolvedValue(null);
+
+        await expect(
+          service.recovery({ token: 'token', password: '123' }),
+        ).rejects.toThrow(NotFoundException);
+      });
     });
   });
-
   describe('getMe', () => {
     it('should return user data without sensitive information', async () => {
       const loadCountSpy = jest.spyOn(userQB, 'loadRelationCountAndMap');

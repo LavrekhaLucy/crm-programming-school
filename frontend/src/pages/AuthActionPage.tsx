@@ -1,54 +1,56 @@
 import {useNavigate, useParams} from "react-router-dom";
+import {useAppDispatch, useAppSelector} from "../components/store/store.ts";
 import {useForm} from "react-hook-form";
 import {authActions} from "../slices/authSlice.ts";
-import {useAppDispatch, useAppSelector} from "../components/store/store.ts";
+import {toast} from "react-hot-toast";
 import Input from "../components/ui/input.tsx";
-
+import {useEffect} from "react";
 
 interface IActivateForm {
     password: string;
     confirmPassword?: string;
 }
 
-export const ActivatePage = () => {
+export const AuthActionPage = ({ type }: { type: 'activate' | 'recovery' }) => {
     const { token } = useParams<{ token: string }>();
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-
     const { loading } = useAppSelector((state) => state.authStoreSlice);
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm<IActivateForm>();
 
+    useEffect(() => {
+        dispatch(authActions.resetAuthState());
+    }, [dispatch]);
+
     const onSubmit = async (formData: IActivateForm) => {
-        const resultAction = await dispatch(authActions.activateAccount({
+        const action = type === 'activate'
+            ? authActions.activateAccount
+            : authActions.resetPassword;
+
+        const resultAction = await dispatch(action({
             token: token || "",
             password: formData.password
         }));
 
-        // if (activateAccount.fulfilled.match(resultAction)) {
-        //     alert("Account activated successfully!");
-        //     navigate("/login");
-        // } else {
-        //     alert(resultAction.payload || "Error occurred");
-        // }
-
-        if (authActions.activateAccount.fulfilled.match(resultAction)) {
-            alert("Account activated successfully!");
+        if (action.fulfilled.match(resultAction)) {
+            toast.success(type === 'activate' ? "Account activated!" : "Password updated!");
             navigate("/login");
         } else {
-            alert(resultAction.payload || "Error occurred");
+            toast.error(resultAction.payload as string || "Error occurred");
         }
-
-
-
     };
+
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#43a047]">
-        <div className="flex items-center justify-center min-h-screen  bg-[#43a047">
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded shadow-md w-96 space-y-4">
+                <h2 className="text-center font-bold text-xl uppercase text-gray-700">
+                    {type === 'activate' ? "Activate Account" : "Reset Password"}
+                </h2>
 
                 <div>
-                    <label htmlFor ="password" className="block text-sm font-medium mb-1"> Password</label>
+                    <label htmlFor="password" className="block text-sm font-medium mb-1">New Password</label>
                     <Input
                         id="password"
                         type="password"
@@ -63,7 +65,7 @@ export const ActivatePage = () => {
                 </div>
 
                 <div>
-                    <label htmlFor ="password" className="block text-sm font-medium mb-1">Confirm Password</label>
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium mb-1">Confirm Password</label>
                     <Input
                         id='confirmPassword'
                         type="password"
@@ -77,15 +79,14 @@ export const ActivatePage = () => {
                     {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
                 </div>
 
-
-                <button disabled={loading}
-                 type="submit"
-                 className="w-full bg-green-600 text-white py-2 rounded uppercase font-bold hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+                <button
+                    disabled={loading}
+                    type="submit"
+                    className="w-full bg-green-600 text-white py-2 rounded uppercase font-bold hover:bg-green-700 disabled:bg-gray-400 transition-colors"
                 >
-                    {loading ? "Processing..." : "Activate"}
+                    {loading ? "Processing..." : (type === 'activate' ? "Activate" : "Set New Password")}
                 </button>
             </form>
-        </div>
         </div>
     );
 };

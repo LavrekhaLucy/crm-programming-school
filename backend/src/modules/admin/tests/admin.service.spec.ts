@@ -67,7 +67,6 @@ describe('AdminService', () => {
       expect(mockUserRepository.save).not.toHaveBeenCalled();
     });
   });
-
   describe('createActivationToken', () => {
     const managerId = 1;
 
@@ -138,6 +137,85 @@ describe('AdminService', () => {
 
       expect(consoleSpy).toHaveBeenCalledWith(
         'Activation email failed to send:',
+        emailError,
+      );
+      consoleSpy.mockRestore();
+    });
+  });
+  describe('createRecoveryToken', () => {
+    const userId = 1;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      process.env.APP_FRONT_URL = 'http://localhost:3000';
+    });
+
+    it('should successfully create a recovery link', async () => {
+      const mockUser = Object.assign(new UserEntity(), {
+        id: userId,
+        email: 'user@example.com',
+        name: 'John Doe',
+      });
+
+      jest.spyOn(mockUserService, 'findById').mockResolvedValueOnce(mockUser);
+      mockJwtService.sign.mockReturnValue('mocked_jwt_token');
+
+      const result = await service.createRecoveryToken(userId);
+
+      expect(result).toEqual({
+        link: `${process.env.APP_FRONT_URL}/auth/recovery/mocked_jwt_token`,
+      });
+      expect(mockJwtService.sign).toHaveBeenCalledWith(
+        {
+          sub: userId,
+          email: 'user@example.com',
+          action: 'recovery',
+        },
+        { expiresIn: '30m' },
+      );
+
+      expect(mockUserRepository.update).toHaveBeenCalledWith(userId, {
+        actionToken: 'mocked_jwt_token',
+      });
+    });
+
+    it('should throw NotFoundException when user is not found', async () => {
+      jest.spyOn(mockUserService, 'findById').mockResolvedValueOnce(null);
+
+      await expect(service.createRecoveryToken(999)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(mockJwtService.sign).not.toHaveBeenCalled();
+    });
+
+    it('should log an error to console if email service fails but return the link', async () => {
+      const mockManager = Object.assign(new UserEntity(), {
+        id: userId,
+        email: 'manager@example.com',
+        name: 'John Doe',
+      });
+
+      jest
+        .spyOn(mockUserService, 'findById')
+        .mockResolvedValueOnce(mockManager);
+      mockJwtService.sign.mockReturnValue('mocked_jwt_token');
+
+      const emailError = new Error('SMTP Connection Failed');
+      jest
+        .spyOn(mockEmailService, 'sendMail')
+        .mockRejectedValueOnce(emailError);
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await service.createRecoveryToken(userId);
+
+      expect(result.link).toBeDefined();
+
+      await new Promise((resolve) => process.nextTick(resolve));
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Recovery email failed to send:',
         emailError,
       );
       consoleSpy.mockRestore();

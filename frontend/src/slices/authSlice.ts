@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import {activateUserAccount, getMeRequest, loginRequest} from "../services/api.service.tsx";
+import {activateUserAccount, getMeRequest, loginRequest, resetUserPassword} from "../services/api.service.tsx";
 import type {ILoginData} from "../models/interfaces/ILogin/ILoginData.ts";
 import type {IUser} from "../models/interfaces/IUser/IUser.ts";
+import {getErrorMessage} from "../utils/mapError.ts";
 
 
 type AuthState = {
@@ -59,8 +60,19 @@ export const activateAccount = createAsyncThunk<void, { token: string; password:
     async ({ token, password }, { rejectWithValue }) => {
         try {
             await activateUserAccount({ token, password });
-        } catch (error) {
-            return rejectWithValue(error as string);
+        } catch (error:unknown) {
+            return rejectWithValue(getErrorMessage(error));
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk<void, { token: string; password: string }>(
+    'auth/resetPassword',
+    async ({ token, password }, { rejectWithValue }) => {
+        try {
+            await resetUserPassword({ token, password });
+        } catch (error: unknown) {
+            return rejectWithValue(getErrorMessage(error));
         }
     }
 );
@@ -69,12 +81,18 @@ export const activateAccount = createAsyncThunk<void, { token: string; password:
 const authSlice = createSlice({
     name: "auth",
     initialState:initialAuthState,
-    reducers: {
-        logout(state) {
-            state.token = null;
-            state.error = null;
-            localStorage.removeItem("token");
-        },
+        reducers: {
+            logout(state) {
+                state.token = null;
+                state.me = null;
+                state.error = null;
+                state.loading = false;
+                localStorage.removeItem("token");
+            },
+            resetAuthState(state) {
+                state.error = null;
+                state.loading = false;
+            }
     },
     extraReducers: (builder) => {
         builder
@@ -118,12 +136,22 @@ const authSlice = createSlice({
             .addCase(activateAccount.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            //resetPassword
+            .addCase(resetPassword.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(resetPassword.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(resetPassword.rejected, (state) => {
+                state.loading = false;
             });
     },
 });
 
-export const { logout } = authSlice.actions;
-export const authActions = {...authSlice.actions, login, fetchMe, activateAccount};
+export const { logout, resetAuthState } = authSlice.actions;
+export const authActions = {...authSlice.actions, login, fetchMe, activateAccount, resetPassword};
 export default authSlice;
 
 

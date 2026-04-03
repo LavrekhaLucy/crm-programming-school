@@ -36,6 +36,10 @@ export class AuthController {
   async activate(@Body() activateDto: ActivateDto) {
     return await this.authService.activate(activateDto);
   }
+  @Patch('recovery')
+  async recovery(@Body() recoveryDto: ActivateDto) {
+    return await this.authService.recovery(recoveryDto);
+  }
 
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiBearerAuth()

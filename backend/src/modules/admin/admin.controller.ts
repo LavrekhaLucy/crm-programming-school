@@ -62,6 +62,11 @@ export class AdminController {
     return await this.adminService.createActivationToken(id);
   }
 
+  @Post(':id/recovery-token')
+  async recoveryToken(@Param('id', ParseIntPipe) id: number) {
+    return await this.adminService.createRecoveryToken(id);
+  }
+
   @Patch(':id/ban')
   async ban(
     @Param('id', ParseIntPipe) id: number,

@@ -77,8 +77,9 @@ describe(AdminController.name, () => {
   describe('re-token', () => {
     it('should return a token when calling reToken', async () => {
       const userId = 1;
-      const expectedResult = { token: 'mock.jwt.token' };
-
+      const expectedResult = {
+        link: 'http://localhost:3000/auth/activation/mock.jwt.token',
+      };
       jest
         .spyOn(mockAdminService, 'createActivationToken')
         .mockResolvedValue(expectedResult);
@@ -100,6 +101,39 @@ describe(AdminController.name, () => {
 
       await expect(adminController.reToken(userId)).rejects.toThrow(
         NotFoundException,
+      );
+    });
+  });
+
+  describe('recovery-token', () => {
+    it('should return a link when calling recoveryToken', async () => {
+      const userId = 1;
+      const expectedResult = {
+        link: 'http://localhost:3000/auth/recovery/mock.jwt.token',
+      };
+
+      jest
+        .spyOn(mockAdminService, 'createRecoveryToken')
+        .mockResolvedValue(expectedResult);
+
+      const result = await adminController.recoveryToken(userId);
+
+      expect(result).toEqual(expectedResult);
+      expect(mockAdminService.createRecoveryToken).toHaveBeenCalledWith(userId);
+    });
+
+    it('should throw NotFoundException if service fails', async () => {
+      const userId = 999;
+
+      jest
+        .spyOn(mockAdminService, 'createRecoveryToken')
+        .mockRejectedValue(new NotFoundException('User not found'));
+
+      await expect(adminController.recoveryToken(userId)).rejects.toThrow(
+        NotFoundException,
+      );
+      await expect(adminController.recoveryToken(userId)).rejects.toThrow(
+        'User not found',
       );
     });
   });

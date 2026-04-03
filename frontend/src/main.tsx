@@ -5,13 +5,15 @@ import {routes} from "./routes/routes.tsx";
 import {Provider} from "react-redux";
 import {store} from "./components/store/store.ts";
 import './services/http/axios';
+import {Toaster} from "react-hot-toast";
 
 
 createRoot(document.getElementById('root')!)
 
   .render(
     <Provider store={store}>
-      <RouterProvider router={routes}/>
+        <Toaster position="top-center" />
+        <RouterProvider router={routes}/>
     </Provider>
 
   )

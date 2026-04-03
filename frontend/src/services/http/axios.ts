@@ -12,10 +12,24 @@ export const axiosInstance = axios.create({
 });
 
 
+// axiosInstance.interceptors.request.use((config) => {
+//     const token = localStorage.getItem("token");
+//     console.log("JWT token sent:", token);
+//     if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     }
+//
+//     return config;
+// });
+
 axiosInstance.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
-    console.log("JWT token sent:", token);
-    if (token) {
+
+    // Перевіряємо, чи це запит на активацію або відновлення
+    const isPublicRoute = config.url?.includes('/auth/activate') || config.url?.includes('/auth/recovery');
+
+    // Додаємо токен ТІЛЬКИ якщо це не публічний роут і токен існує
+    if (token && !isPublicRoute) {
         config.headers.Authorization = `Bearer ${token}`;
     }
 

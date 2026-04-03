@@ -3,6 +3,7 @@ import type {IUser} from "../../models/interfaces/IUser/IUser.ts";
 import {useAppDispatch} from "../store/store.ts";
 import {adminActions} from "../../slices/adminSlice.ts";
 import {useAuth} from "../hooks/useAuth.ts";
+import { toast } from 'react-hot-toast';
 
 type State = {
     user: IUser ;
@@ -16,17 +17,24 @@ export const ManagerCard: FC<State> = ({ user }) => {
 
     const isSelf = !loading && me?.id === user.id;
 
-    const handleCopyLink = async (userId: number) => {
-        try {
-            const result = await dispatch(adminActions.copyActivationLink(userId)).unwrap();
 
-            if (result && result.link) {
+    const handleCopyLink = async (userId: number, isActive: boolean) => {
+        try {
+            const action = isActive
+                ? adminActions.copyRecoveryLink
+                : adminActions.copyActivationLink;
+            const result = await dispatch(action(userId)).unwrap();
+
+            if (result?.link) {
                 await navigator.clipboard.writeText(result.link);
+
                 setIsCopied(true);
                 setTimeout(() => setIsCopied(false), 2000);
+
+                toast.success(isActive ? 'Recovery link copied!' : 'Activation link copied!');
             }
         } catch (err) {
-            console.error("Failed to fetch or copy activation link:", err);
+            toast.error(err as string);
         }
     };
 
@@ -74,22 +82,29 @@ export const ManagerCard: FC<State> = ({ user }) => {
                     <p>New: {user.stats?.new || 0}</p>
 
                     <div className="min-w-35 flex justify-end">
+
+
+
                         <button
-                            onClick={() => handleCopyLink(user.id)}
+                            onClick={() => handleCopyLink(user.id, user.isActive)}
                             disabled={loading || isSelf}
-                            className={`w-fit whitespace-nowrap px-3 py-1 rounded text-xs uppercase transition-colors ${
+                            className={`w-fit whitespace-nowrap px-3 py-1 rounded text-xs uppercase transition-colors font-medium ${
                                 !loading && isSelf
                                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                    : "bg-green-600 text-white hover:bg-green-700"
+                                    : "bg-green-600 text-white hover:bg-green-700 active:bg-green-800"
                             }`}
-                            title={isSelf ? "You cannot copy your own activation link" : ""}
+                            title={isSelf ? "You cannot manage your own links" : ""}
                         >
                             {isCopied
-                                ? "COPY TO CLIPBOARD"
+                                ? "COPIED"
                                 : (user.isActive ? "Recovery Password" : "Activate")
                             }
                         </button>
+
+
+
                     </div>
+
 
 
                     <button
