@@ -28,7 +28,6 @@ const initialAdminState: OrdersState = {
 export const fetchOrdersStats = createAsyncThunk(
     'orders/fetchStats',
     async (_, { rejectWithValue }) => {
-        console.log("Thunk started!");
         try {
             return await getStatsByStatus();
         } catch (error) {
@@ -109,7 +108,7 @@ export const toggleUserBan = createAsyncThunk(
 );
 
 const adminSlice = createSlice({
-    name: 'orders',
+    name: 'admin',
     initialState:initialAdminState,
     reducers: {},
     extraReducers: (builder) => {
@@ -154,8 +153,9 @@ const adminSlice = createSlice({
             })
             .addCase(addManager.fulfilled, (state, action: PayloadAction<IUser>) => {
                 state.loading = false;
-                state.users.push(action.payload);
+                state.users.unshift(action.payload);
             })
+
             .addCase(addManager.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;

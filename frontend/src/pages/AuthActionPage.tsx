@@ -1,7 +1,7 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../components/store/store.ts";
 import {useForm} from "react-hook-form";
-import {authActions} from "../slices/authSlice.ts";
+import {authActions, resetAuthState} from "../slices/authSlice.ts";
 import {toast} from "react-hot-toast";
 import Input from "../components/ui/input.tsx";
 import {useEffect} from "react";
@@ -17,27 +17,34 @@ export const AuthActionPage = ({ type }: { type: 'activate' | 'recovery' }) => {
     const navigate = useNavigate();
     const { loading } = useAppSelector((state) => state.authStoreSlice);
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<IActivateForm>();
+    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<IActivateForm>();
 
     useEffect(() => {
-        dispatch(authActions.resetAuthState());
-    }, [dispatch]);
+        localStorage.clear();
+        dispatch(resetAuthState());
+    }, [dispatch, token]);
 
     const onSubmit = async (formData: IActivateForm) => {
+        try {
+
         const action = type === 'activate'
             ? authActions.activateAccount
             : authActions.resetPassword;
 
-        const resultAction = await dispatch(action({
-            token: token || "",
-            password: formData.password
-        }));
+            await dispatch(action({
+                token: token || "",
+                password: formData.password
+            })).unwrap();
 
-        if (action.fulfilled.match(resultAction)) {
+            localStorage.clear();
+
+            dispatch(authActions.logout());
+
             toast.success(type === 'activate' ? "Account activated!" : "Password updated!");
-            navigate("/login");
-        } else {
-            toast.error(resultAction.payload as string || "Error occurred");
+            reset();
+            navigate("/login", { replace: true });
+        } catch (err) {
+            toast.error(typeof err === 'string' ? err : "Error occurred");
         }
     };
 
@@ -54,6 +61,7 @@ export const AuthActionPage = ({ type }: { type: 'activate' | 'recovery' }) => {
                     <Input
                         id="password"
                         type="password"
+                        autoComplete="new-password"
                         {...register("password", {
                             required: "Password is required",
                             minLength: { value: 8, message: "Min 8 chars" }
@@ -69,6 +77,7 @@ export const AuthActionPage = ({ type }: { type: 'activate' | 'recovery' }) => {
                     <Input
                         id='confirmPassword'
                         type="password"
+                        autoComplete="new-password"
                         {...register("confirmPassword", {
                             required: "Please confirm your password",
                             validate: (value) => value === watch('password') || "Passwords do not match"

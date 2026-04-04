@@ -27,25 +27,12 @@ export const getMeRequest = async (): Promise<IUser> => {
     return res;
 };
 
-// export const activateUserAccount = async (data:IActivateUser): Promise<void> => {
-//     await axiosInstance.patch('/auth/activate', data);
-// };
-// export const resetUserPassword = async (data:IActivateUser): Promise<void> => {
-//     await axiosInstance.patch('/auth/recovery', data);
-// };
-
-export const activateUserAccount = async (data: IActivateUser): Promise<void> => {
-    await axiosInstance.patch('/auth/activate', data, {
-        headers: { Authorization: '' }
-    });
+export const activateUserAccount = async (data:IActivateUser): Promise<void> => {
+    await axiosInstance.patch('/auth/activate', data);
 };
-
-export const resetUserPassword = async (data: IActivateUser): Promise<void> => {
-    await axiosInstance.patch('/auth/recovery', data, {
-        headers: { Authorization: '' }
-    });
+export const resetUserPassword = async (data:IActivateUser): Promise<void> => {
+    await axiosInstance.patch('/auth/recovery', data);
 };
-
 
 // Orders
 export const getOrders = async (filters: IOrderFilters,): Promise<IOrdersResponseModel> => {
